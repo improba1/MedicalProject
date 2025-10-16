@@ -7,8 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.example.demo.backend_patient.model.Patient;
+
 import com.example.demo.backend_patient.repos.PatientRepository;
+import com.example.demo.model.Patient;
+
 import lombok.RequiredArgsConstructor;
 
 @Service

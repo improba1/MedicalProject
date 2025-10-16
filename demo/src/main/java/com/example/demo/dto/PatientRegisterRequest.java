@@ -1,5 +1,7 @@
 package com.example.demo.dto;
 
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,4 +14,6 @@ public class PatientRegisterRequest {
     private String login;
     private String password;
     private boolean active = true;
+    private String email;
+    private String phone;
 }
