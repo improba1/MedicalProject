@@ -1,5 +1,8 @@
 package com.example.demo.backend_patient.auth;
 
+
+import java.util.Date;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,11 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.demo.backend_patient.model.Patient;
+
 import com.example.demo.backend_patient.repos.PatientRepository;
 import com.example.demo.dto.PatientLoginRequest;
 import com.example.demo.dto.PatientLoginResponse;
 import com.example.demo.dto.PatientRegisterRequest;
+import com.example.demo.model.Patient;
 import com.example.demo.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,7 @@ public class AuthPatientController {
     
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody PatientLoginRequest loginRequest) {
+        
         Authentication auth;
         try {
             auth = authenticationManager.authenticate(
@@ -60,6 +65,9 @@ public class AuthPatientController {
         patient.setPassword(passwordEncoder.encode(regRequest.getPassword())); 
         patient.setActive(true);
         patient.setRole("USER");
+        patient.setEmail(regRequest.getEmail());
+        patient.setPhone(regRequest.getPhone());
+        patient.setDate_of_registration(new Date());
         patientRepository.save(patient);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully!");
     }
