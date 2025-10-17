@@ -1,7 +1,7 @@
 package com.example.demo.backend_patient.auth;
 
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +67,7 @@ public class AuthPatientController {
         patient.setRole("USER");
         patient.setEmail(regRequest.getEmail());
         patient.setPhone(regRequest.getPhone());
-        patient.setDate_of_registration(new Date());
+        patient.setDate_of_registration(LocalDateTime.now());
         patientRepository.save(patient);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully!");
     }

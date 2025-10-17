@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -31,7 +31,7 @@ public class Visit {
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    private Date appointment_time;
+    private LocalDateTime appointment_time;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
@@ -41,7 +41,7 @@ public class Visit {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    private Date session_time;
+    private LocalDateTime session_time;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "raport_id", nullable = false)

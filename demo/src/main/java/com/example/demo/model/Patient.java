@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,5 +35,5 @@ public class Patient {
     private String role;
     private String email;
     private String phone;
-    private Date date_of_registration;
+    private LocalDateTime date_of_registration;
 }
