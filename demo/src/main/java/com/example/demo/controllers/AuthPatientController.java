@@ -1,8 +1,6 @@
-package com.example.demo.backend_patient.auth;
-
+package com.example.demo.controllers;
 
 import java.time.LocalDateTime;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,14 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.demo.backend_patient.repos.PatientRepository;
 import com.example.demo.dto.PatientLoginRequest;
 import com.example.demo.dto.PatientLoginResponse;
 import com.example.demo.dto.PatientRegisterRequest;
 import com.example.demo.model.Patient;
+import com.example.demo.repos.PatientRepository;
 import com.example.demo.security.JwtUtil;
-
 import lombok.RequiredArgsConstructor;
 
 @RestController
