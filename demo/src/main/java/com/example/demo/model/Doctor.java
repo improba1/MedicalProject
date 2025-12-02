@@ -1,49 +1,53 @@
 package com.example.demo.model;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.example.demo.enums.Specialization;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "doctors")
-public class Doctor {
+@Getter
+@Setter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Doctor extends User {
 
-    @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
-    private UUID id;
+    private String qualification;
+    private double rating;
 
-    private String name;
-    private String last_name;
-    private String email;
-    private String login;
-    private String password;
-    private String phone;
+    @Column(name = "start_date")
+    private LocalDate startDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "specialization_id", nullable = false)
+    @Transient
+    public int getExperienceYears() {
+        if (startDate == null) return 0;
+        return (int) ChronoUnit.YEARS.between(startDate, LocalDate.now());
+    }
+
+    @OneToOne(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Image image;
+
+    @Enumerated(EnumType.STRING)
     private Specialization specialization;
 
-    private short experience_years;
-    private String qualification;
-    private String role;
-    private boolean active;
-    private LocalDateTime date_of_registration;
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<Visit> visits = new HashSet<>();
+
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<DoctorAvailability> availableSlots = new HashSet<>();
+
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Raport> raports = new ArrayList<>();
 }
