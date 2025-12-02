@@ -1,54 +1,47 @@
 package com.example.demo.model;
 
-import java.util.Date;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-
-@Setter 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "raports")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Raport {
 
     @Id
     @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    @OneToOne
+    @JoinColumn(name = "visit_id", nullable = false, unique = true)
+    private Visit visit;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
+
+    @Column(nullable = false)
     private String diagnosis;
+
+    @Column(nullable = false)
     private String symptoms;
-    private String anamnesis;
-    private String examination;
-    private String tests_assigned;
-    private String treatment;
+
+    @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
     private String notes;
-    private String next_visit;
-    private String status;
-    private boolean active;
-    
 }
