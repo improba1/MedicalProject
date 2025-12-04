@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,7 @@ import com.example.demo.services.impl.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/payments")
 public class PaymentController {
@@ -35,9 +36,9 @@ public class PaymentController {
     }
 
     @GetMapping("/success")
-    public ResponseEntity<String> success() {
-        return ResponseEntity.ok("success");
-    }
+        public String successPage() {
+            return "redirect:/success.html";
+        }
 
     @GetMapping("/cancel")
     public ResponseEntity<String> cancel() {

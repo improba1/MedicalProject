@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Success</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, #e8fdf3, #c1f3da, #a8e6cf);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h1 {
+      font-size: 5rem;
+      color: #2ecc71;
+      text-shadow: 0 0 15px rgba(46, 204, 113, 0.8),
+                   0 0 30px rgba(46, 204, 113, 0.5);
+      animation: pop 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(1);
+        text-shadow: 0 0 15px rgba(46, 204, 113, 0.8),
+                     0 0 30px rgba(46, 204, 113, 0.5);
+      }
+      to {
+        transform: scale(1.1);
+        text-shadow: 0 0 25px rgba(46, 204, 113, 1),
+                     0 0 45px rgba(46, 204, 113, 0.8);
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Success ✅</h1>
+</body>
+</html>

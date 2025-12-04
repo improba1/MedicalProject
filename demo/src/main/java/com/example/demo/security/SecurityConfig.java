@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/payments/webhook").permitAll()
                 .requestMatchers("/api/payments/success").permitAll()
                 .requestMatchers("/api/payments/cancel").permitAll()
+                .requestMatchers("/success.html").permitAll()
                 .anyRequest().authenticated() 
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
