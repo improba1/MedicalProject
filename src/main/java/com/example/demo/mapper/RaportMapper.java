@@ -1,4 +1,4 @@
-package com.example.demo.mapper.raport;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.response.RaportResponse;
 import com.example.demo.model.Raport;

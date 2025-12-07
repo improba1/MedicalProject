@@ -1,4 +1,4 @@
-package com.example.demo.mapper.user;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.request.user.AddUserRequest;
 import com.example.demo.dto.request.user.UpdateUserRequest;

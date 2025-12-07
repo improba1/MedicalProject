@@ -2,7 +2,7 @@ package com.example.demo.controller.admin;
 
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.UserResponse;
-import com.example.demo.mapper.user.UserMapper;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;

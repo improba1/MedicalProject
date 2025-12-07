@@ -1,4 +1,4 @@
-package com.example.demo.mapper.patient;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.request.patient.RegisterPatientRequest;
 import com.example.demo.dto.request.patient.UpdatePatientRequest;

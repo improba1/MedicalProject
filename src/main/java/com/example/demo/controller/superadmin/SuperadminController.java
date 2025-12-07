@@ -3,7 +3,7 @@ package com.example.demo.controller.superadmin;
 import com.example.demo.dto.request.user.AddUserRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.UserResponse;
-import com.example.demo.mapper.user.UserMapper;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.service.user.UserService;
 import jakarta.validation.Valid;

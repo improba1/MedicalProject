@@ -3,7 +3,7 @@ package com.example.demo.controller.doctor;
 import com.example.demo.dto.request.visit.UpdateVisitRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
-import com.example.demo.mapper.visit.VisitMapper;
+import com.example.demo.mapper.VisitMapper;
 import com.example.demo.model.User;
 import com.example.demo.service.doctor.DoctorService;
 import jakarta.validation.Valid;

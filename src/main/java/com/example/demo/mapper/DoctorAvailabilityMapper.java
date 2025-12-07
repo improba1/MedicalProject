@@ -1,4 +1,4 @@
-package com.example.demo.mapper.doctor;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.response.DoctorAvailabilityResponse;
 import com.example.demo.model.DoctorAvailability;

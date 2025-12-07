@@ -1,4 +1,4 @@
-package com.example.demo.mapper.image;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.response.ImageResponse;
 import com.example.demo.model.Image;

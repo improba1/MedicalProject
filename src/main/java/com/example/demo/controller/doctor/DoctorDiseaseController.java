@@ -1,7 +1,7 @@
 package com.example.demo.controller.doctor;
 
 import com.example.demo.dto.response.DiseaseResponse;
-import com.example.demo.mapper.disease.DiseaseMapper;
+import com.example.demo.mapper.DiseaseMapper;
 import com.example.demo.model.Disease;
 import com.example.demo.service.disease.DiseaseService;
 import lombok.RequiredArgsConstructor;
