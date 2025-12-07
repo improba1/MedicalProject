@@ -8,7 +8,6 @@ const WelcomeScreen = () => {
     return(
         <AnimatedPage>
             <div className={styles.pageContainer}>
-                
                 <div className={styles.wrapper}>
                     
                     <div className={styles.logoContainer}>
