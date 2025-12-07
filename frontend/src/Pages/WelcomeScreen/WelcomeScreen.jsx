@@ -3,13 +3,11 @@ import { Link } from 'react-router-dom';
 import styles from './WelcomeScreen.module.css';
 import AnimatedPage from '../../Components/AnimatedPage/AnimatedPage';
 import icon from '../../Assets/applicationIcon.png';
-import LogOutButton from '../../Components/LogOutButton/LogOutButton';
 
 const WelcomeScreen = () => {
     return(
         <AnimatedPage>
             <div className={styles.pageContainer}>
-                
                 <div className={styles.wrapper}>
                     
                     <div className={styles.logoContainer}>
