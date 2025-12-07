@@ -24,8 +24,6 @@ yarn-error.log*
 .idea/
 .vscode/
 package-lock.json
-demo/.mvn/
-demo/HELP.md
 frontend/README.md
 frontend/package-lock.json
 frontend/package.json
