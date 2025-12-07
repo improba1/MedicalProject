@@ -3,7 +3,7 @@ package com.example.demo.controller.public_;
 import com.example.demo.dto.request.doctor.DoctorSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.DoctorResponse;
-import com.example.demo.mapper.doctor.DoctorMapper;
+import com.example.demo.mapper.DoctorMapper;
 import com.example.demo.model.Doctor;
 import com.example.demo.service.doctor.DoctorService;
 import lombok.RequiredArgsConstructor;

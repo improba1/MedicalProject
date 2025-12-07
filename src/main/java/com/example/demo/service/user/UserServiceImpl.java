@@ -2,7 +2,7 @@ package com.example.demo.service.user;
 
 import com.example.demo.dto.request.user.UpdateUserRequest;
 import com.example.demo.dto.response.UserResponse;
-import com.example.demo.mapper.user.UserMapper;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.logout.LogoutService;

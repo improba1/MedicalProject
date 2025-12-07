@@ -4,7 +4,7 @@ import com.example.demo.dto.request.doctor_availability.AddAvailabilityRequest;
 import com.example.demo.dto.request.doctor_availability.UpdateAvailabilityRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.DoctorAvailabilityResponse;
-import com.example.demo.mapper.doctor.DoctorAvailabilityMapper;
+import com.example.demo.mapper.DoctorAvailabilityMapper;
 import com.example.demo.model.User;
 import com.example.demo.service.doctors_availability_service.DoctorAvailabilityService;
 import jakarta.validation.Valid;

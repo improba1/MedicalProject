@@ -4,7 +4,7 @@ import com.example.demo.dto.request.doctor.DoctorSearchRequest;
 import com.example.demo.dto.request.doctor.UpdateDoctorRequest;
 import com.example.demo.dto.response.DoctorResponse;
 import com.example.demo.enums.VisitStatus;
-import com.example.demo.mapper.doctor.DoctorMapper;
+import com.example.demo.mapper.DoctorMapper;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.DoctorAvailability;
 import com.example.demo.model.Visit;

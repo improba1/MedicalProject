@@ -2,7 +2,7 @@ package com.example.demo.service.visit;
 
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.enums.VisitStatus;
-import com.example.demo.mapper.visit.VisitMapper;
+import com.example.demo.mapper.VisitMapper;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Patient;
 import com.example.demo.model.Visit;

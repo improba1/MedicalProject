@@ -1,4 +1,4 @@
-package com.example.demo.mapper.visit;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.model.Visit;

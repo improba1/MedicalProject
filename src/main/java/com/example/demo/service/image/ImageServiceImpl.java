@@ -2,7 +2,7 @@ package com.example.demo.service.image;
 
 import com.example.demo.dto.response.ImageResponse;
 import com.example.demo.exceptions.ResourceNotFoundException;
-import com.example.demo.mapper.image.ImageMapper;
+import com.example.demo.mapper.ImageMapper;
 import com.example.demo.model.Image;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.service.doctor.DoctorService;

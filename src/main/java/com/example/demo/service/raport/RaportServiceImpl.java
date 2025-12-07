@@ -1,7 +1,7 @@
 package com.example.demo.service.raport;
 
 import com.example.demo.dto.response.RaportResponse;
-import com.example.demo.mapper.raport.RaportMapper;
+import com.example.demo.mapper.RaportMapper;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Patient;
 import com.example.demo.model.Raport;

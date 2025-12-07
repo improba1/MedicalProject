@@ -2,7 +2,7 @@ package com.example.demo.service.disease;
 
 import com.example.demo.dto.request.disease.UpdateDiseaseRequest;
 import com.example.demo.dto.response.DiseaseResponse;
-import com.example.demo.mapper.disease.DiseaseMapper;
+import com.example.demo.mapper.DiseaseMapper;
 import com.example.demo.model.Disease;
 import com.example.demo.repository.DiseaseRepository;
 import jakarta.persistence.EntityNotFoundException;
