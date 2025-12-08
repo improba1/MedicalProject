@@ -4,6 +4,7 @@ import styles from './WelcomeScreen.module.css';
 import AnimatedPage from '../../Components/AnimatedPage/AnimatedPage';
 import icon from '../../Assets/applicationIcon.png';
 
+
 const WelcomeScreen = () => {
     return(
         <AnimatedPage>

@@ -1,11 +1,11 @@
 .button{
     position: fixed;
-    right: 40px;
+    right: 225px;
     top: 36px;
-    width: 155px;
+    width: 50px;
     height: 50px;
     border-radius: 50px;
-    background-color: #F5782D;
+    background-color: #242424;
     color: #FFFFFF;
     border: none;
     cursor: pointer;
