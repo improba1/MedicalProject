@@ -19,7 +19,7 @@ const BackButton = ({ className = '' }) => {
             className={`${styles.button} ${className}`}
         >
             {/* 3. Убрали color="white", теперь цвет берется из CSS (color: inherit) */}
-            <IoIosArrowBack size={24} style={{ color: 'inherit' }} /> 
+            <IoIosArrowBack size={40} style={{ color: 'inherit' }} /> 
         </button>
     );
 };
