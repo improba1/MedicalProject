@@ -20,9 +20,9 @@ public class DoctorAvailability {
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
+    @Column(name = "doctor_id", nullable = false, columnDefinition = "uuid")
+    private UUID doctorId;
 
+    @Column(name = "available_time")
     private LocalDateTime availableTime;
 }

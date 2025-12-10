@@ -3,6 +3,8 @@ package com.example.demo.controller.admin;
 import com.example.demo.dto.request.user.UpdateUserRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.UserResponse;
+import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.User;
 import com.example.demo.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,17 +15,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("${api.prefix}/admin/profile")
+@RequestMapping("${api.prefix}/admin/me/profile")
 @RequiredArgsConstructor
 public class AdminProfileController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     // 🔹 Подивитись свій профіль
     @PreAuthorize("hasAuthority('admin:read')")
     @GetMapping("/get")
     public ResponseEntity<ApiResponse<UserResponse>> getProfile() {
-        UserResponse response = userService.getCurrentUserProfile();
+        User admin = userService.getCurrentUser();
+        UserResponse response = userMapper.toResponse(admin);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile fetched successfully", response));
     }
 
@@ -31,15 +35,16 @@ public class AdminProfileController {
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<UserResponse>> updateProfile(@RequestBody UpdateUserRequest request) {
-        UserResponse response = userService.updateProfile(request);
+        User updatedAdmin = userService.updateCurrentUser(request);
+        UserResponse response = userMapper.toResponse(updatedAdmin);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile updated successfully", response));
     }
 
-    // 🔹 Видалити профіль (з автоматичним logout)
+    // 🔹 Видалити профіль (деактивація з logout)
     @DeleteMapping("/deactivate")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ApiResponse<Void>> deactivateProfile(HttpServletRequest request, HttpServletResponse response) {
-        userService.deactivateProfile(request, response);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile deleted and logged out successfully", null));
+        userService.deactivateCurrentUser(request, response);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile deactivated and logged out successfully", null));
     }
 }

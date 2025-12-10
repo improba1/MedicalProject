@@ -32,6 +32,7 @@ public class Visit {
     @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
     private Raport raport;
 
+    @Column(name = "appointment_time")
     private LocalDateTime appointmentTime;
 
     @Enumerated(EnumType.STRING)

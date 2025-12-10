@@ -2,6 +2,8 @@ package com.example.demo.controller.patient;
 
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.RaportResponse;
+import com.example.demo.mapper.RaportMapper;
+import com.example.demo.model.Raport;
 import com.example.demo.service.raport.RaportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,24 +15,28 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("${api.prefix}/user/raports")
-@PreAuthorize("hasRole('USER')")
+@RequestMapping("${api.prefix}/patient/me/raports")
 @RequiredArgsConstructor
 public class PatientRaportController {
 
     private final RaportService raportService;
+    private final RaportMapper raportMapper;
 
-    // 🔹 Отримати рапорт за візитом
-    @GetMapping("/visit/{visitId}")
+    // 🔹 Отримати рапорт за візитом (тільки свій)
+    @GetMapping("/get-by-visit-id/{visitId}")
+    @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<RaportResponse>> getRaportByVisit(@PathVariable UUID visitId) {
-        RaportResponse response = raportService.getRaportByVisitForUser(visitId);
+        Raport raport = raportService.getRaportByVisitForUser(visitId);
+        RaportResponse response = raportMapper.toResponse(raport);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Raport fetched successfully", response));
     }
 
     // 🔹 Отримати всі свої рапорти
-    @GetMapping("/all")
+    @GetMapping("/get-all")
+    @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<List<RaportResponse>>> getAllRaports() {
-        List<RaportResponse> raports = raportService.getUserRaports();
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User raports fetched successfully", raports));
+        List<Raport> raports = raportService.getUserRaports();
+        List<RaportResponse> responses = raportMapper.toResponseList(raports);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User raports fetched successfully", responses));
     }
 }

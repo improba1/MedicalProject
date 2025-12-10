@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 public class AddAvailabilityRequest {
-    @NotNull
+
     private UUID doctorId;
 
     @NotNull

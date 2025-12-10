@@ -28,6 +28,7 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/**",
+            "/api/v1/images/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -54,6 +55,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL).permitAll()
 
+                                .requestMatchers(POST, apiPrefix + "/auth/logout").hasAuthority("user:logout")
+
                                 // ADMIN доступ
                                 .requestMatchers(apiPrefix + "/admin/**").hasRole(ADMIN.name())
                                 .requestMatchers(GET, apiPrefix + "/admin/**").hasAuthority(ADMIN_READ.getPermission())
@@ -77,13 +80,7 @@ public class SecurityConfig {
 
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(logout ->
-                        logout.logoutUrl("/api/v1/auth/logout")
-                                .addLogoutHandler(logoutHandler)
-                                .logoutSuccessHandler((request, response, authentication) ->
-                                        SecurityContextHolder.clearContext())
-                );
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

@@ -4,8 +4,13 @@ import com.example.demo.model.Patient;
 import com.example.demo.model.Visit;
 import com.example.demo.repository.PatientRepository;
 import com.example.demo.repository.VisitRepository;
+import com.example.demo.service.logout.LogoutService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +22,8 @@ public class PatientServiceImpl implements PatientService {
 
     private final PatientRepository patientRepository;
     private final VisitRepository visitRepository;
+    private final LogoutService logoutService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Patient getById(UUID id) {
@@ -26,6 +33,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Patient create(Patient patient) {
+        patient.setPassword(passwordEncoder.encode(patient.getPassword()));
         return patientRepository.save(patient);
     }
 
@@ -35,12 +43,51 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public void delete(UUID id) {
-        patientRepository.deleteById(id);
+    public void delete(UUID id, HttpServletRequest request, HttpServletResponse response) {
+        Patient patient = getById(id);
+        patientRepository.delete(patient);
+        logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Override
+    public Patient deactivatePatientById(UUID id, HttpServletRequest request, HttpServletResponse response) {
+        Patient patient = getById(id);
+        patient.setActive(false);
+        Patient updated = patientRepository.save(patient);
+        logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+        return updated;
     }
 
     @Override
     public List<Visit> getVisits(UUID patientId) {
         return visitRepository.findByPatientId(patientId);
+    }
+
+    @Override
+    public Patient getAuthenticatedPatient() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return patientRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Authenticated patient not found"));
+    }
+
+    // повертаємо ентіті — контролер робить mapping
+    @Override
+    public Patient getCurrentPatient() {
+        return getAuthenticatedPatient();
+    }
+
+    // сервіс оновлює ентіті, але дані доходять у вигляді вже зміненого Patient
+    @Override
+    public Patient updateCurrentPatient(Patient patient) {
+        return patientRepository.save(patient);
+    }
+
+    @Override
+    public void deletePatientProfile(HttpServletRequest request, HttpServletResponse response) {
+        Patient currentPatient = getAuthenticatedPatient();
+        currentPatient.setActive(false);
+        patientRepository.save(currentPatient);
+        logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
     }
 }

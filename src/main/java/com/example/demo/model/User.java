@@ -44,6 +44,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
@@ -53,6 +54,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Token> tokens = new ArrayList<>();
 
+    @Column(name = "is_active")
     private boolean isActive;
 
     @Override

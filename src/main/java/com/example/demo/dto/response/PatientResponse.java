@@ -19,7 +19,4 @@ public class PatientResponse{
     private String address;
     private LocalDate birthDate;
     private String sex;
-
-    private List<UUID> visitIds;
-    private List<UUID> raportIds;
 }

@@ -19,7 +19,7 @@ public class CreateRaportRequest {
     private UUID patientId;
 
     @NotBlank
-    private String diagnosis;
+    private String disease;
 
     @NotBlank
     private String symptoms;
