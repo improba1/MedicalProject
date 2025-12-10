@@ -1,12 +1,26 @@
 .background {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    position: fixed; /* или absolute */
+    top: 0;
+    left: 0;
     width: 100%;
-    background-color: #000; 
+    height: 100%;
+    background-image: url('../../Assets/background2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1; /* ниже черного квадрата */
 }
 
+.backgroundBlack{
+    position: absolute; 
+    left: 2%;
+    right: 2%;
+    top: 2%;
+    bottom: 2%;
+    border-radius: 50px;
+    background-color: black;
+    z-index: 2; 
+}
 .txt{
     position: fixed;
     left: 110px;

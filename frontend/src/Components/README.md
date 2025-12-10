@@ -5,3 +5,5 @@
 ## MyProfileButton - black button with profile icon. Moves to profile.
 
 ## Healthcare - text 'Healthcare' on the left corner.
+
+## Background - background (image + black квадрат). Just wrap content with this component.

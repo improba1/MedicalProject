@@ -5,10 +5,12 @@ import styles from './MyProfile.module.css';
 import BackBtn from '../../Components/BackButton/BackButton';
 import ProfileInput from '../../Components/ProfileInput/ProfileInput';
 import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
+import Background from '../../Components/Background/Background';
+
 
 const MyProfile = () => {
     return(
-            <div alt="background" className={styles.background}>
+            <Background>
                  <LogOutBtn/>
                  <BackBtn/>
                  <HealthcareTxt/>
@@ -24,7 +26,7 @@ const MyProfile = () => {
                  <button className={styles.button}>
                     Edit profile
                  </button>
-            </div>
+            </Background>
             
 
            
