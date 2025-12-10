@@ -4,11 +4,11 @@ import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
 import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
 import styles from './DoctorHomePage.module.css';
 import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import src from '../../Assets/DocHomeBackground.svg';
+import Background from '../../Components/Background/Background';
 
 const MyProfile = (props) => {
     return(
-            <div alt="background" className={styles.background}>
+            <Background>
                  <LogOutBtn/>
                  <MyProfileBtn/>
                  <HealthcareTxt/>
@@ -28,9 +28,7 @@ const MyProfile = (props) => {
                     </Link>
                  </div>
                  {/* <img src={src} className={styles.img}></img> */}
-            </div>
-            
-
+            </Background>
            
     )
 
