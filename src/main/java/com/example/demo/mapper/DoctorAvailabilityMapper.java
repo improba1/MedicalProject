@@ -1,5 +1,7 @@
 package com.example.demo.mapper;
 
+import com.example.demo.dto.request.doctor_availability.AddAvailabilityRequest;
+import com.example.demo.dto.request.doctor_availability.UpdateAvailabilityRequest;
 import com.example.demo.dto.response.DoctorAvailabilityResponse;
 import com.example.demo.model.DoctorAvailability;
 import org.springframework.stereotype.Component;
@@ -10,10 +12,12 @@ import java.util.stream.Collectors;
 @Component
 public class DoctorAvailabilityMapper {
 
+    // 🔹 Ентіті → DTO (Response)
     public DoctorAvailabilityResponse toResponse(DoctorAvailability availability) {
+        if (availability == null) return null;
         return DoctorAvailabilityResponse.builder()
                 .id(availability.getId())
-                .doctorId(availability.getDoctor().getId())
+                .doctorId(availability.getDoctorId())
                 .availableTime(availability.getAvailableTime())
                 .build();
     }
@@ -22,5 +26,30 @@ public class DoctorAvailabilityMapper {
         return availabilities.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    // 🔹 DTO (AddAvailabilityRequest) → Ентіті
+    public DoctorAvailability toEntity(AddAvailabilityRequest request) {
+        if (request == null) return null;
+        return DoctorAvailability.builder()
+                .doctorId(request.getDoctorId())
+                .availableTime(request.getAvailableTime())
+                .build();
+    }
+
+    // 🔹 DTO (UpdateAvailabilityRequest) → Ентіті (оновлення існуючого слота)
+    public DoctorAvailability toEntity(UpdateAvailabilityRequest request) {
+        if (request == null) return null;
+        return DoctorAvailability.builder()
+                .id(request.getAvailabilityId())
+                .availableTime(request.getNewAvailableTime())
+                .build();
+    }
+
+    // 🔹 Оновлення існуючого ентіті з DTO (корисно для сервісу)
+    public void updateEntity(DoctorAvailability availability, UpdateAvailabilityRequest request) {
+        if (availability != null && request != null) {
+            availability.setAvailableTime(request.getNewAvailableTime());
+        }
     }
 }

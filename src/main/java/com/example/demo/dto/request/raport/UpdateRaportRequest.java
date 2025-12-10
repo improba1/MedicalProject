@@ -10,8 +10,8 @@ import java.util.UUID;
 @Data
 public class UpdateRaportRequest {
 
-    @NotBlank(message = "Diagnosis is required")
-    private String diagnosis;
+    @NotBlank(message = "Disease is required")
+    private String disease;
 
     @NotBlank(message = "Symptoms are required")
     private String symptoms;

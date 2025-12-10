@@ -1,9 +1,5 @@
 package com.example.demo.service.raport;
 
-import com.example.demo.dto.response.RaportResponse;
-import com.example.demo.mapper.RaportMapper;
-import com.example.demo.model.Doctor;
-import com.example.demo.model.Patient;
 import com.example.demo.model.Raport;
 import com.example.demo.repository.RaportRepository;
 import com.example.demo.repository.UserRepository;
@@ -22,7 +18,6 @@ public class RaportServiceImpl implements RaportService {
 
     private final RaportRepository raportRepository;
     private final UserRepository userRepository;
-    private final RaportMapper raportMapper;
 
     @Override
     public Raport getById(UUID id) {
@@ -44,7 +39,7 @@ public class RaportServiceImpl implements RaportService {
     @Override
     public Raport update(UUID id, Raport raport) {
         Raport existing = getById(id);
-        existing.setDiagnosis(raport.getDiagnosis());
+        existing.setDisease(raport.getDisease());
         existing.setSymptoms(raport.getSymptoms());
         existing.setPrice(raport.getPrice());
         existing.setNotes(raport.getNotes());
@@ -62,16 +57,12 @@ public class RaportServiceImpl implements RaportService {
 
     @Override
     public List<Raport> getByDoctorId(UUID doctorId) {
-        Doctor doctor = new Doctor();
-        doctor.setId(doctorId);
-        return raportRepository.findByDoctor(doctor);
+        return raportRepository.findByDoctorId(doctorId);
     }
 
     @Override
     public List<Raport> getByPatientId(UUID patientId) {
-        Patient patient = new Patient();
-        patient.setId(patientId);
-        return raportRepository.findByPatient(patient);
+        return raportRepository.findByPatientId(patientId);
     }
 
     @Override
@@ -80,35 +71,70 @@ public class RaportServiceImpl implements RaportService {
     }
 
     // ==========================
-    // 🔹 Методи для користувача
+    // 🔹 Методи для користувача (повертають ентіті)
     // ==========================
 
     @Override
-    public RaportResponse getRaportByVisitForUser(UUID visitId) {
+    public Raport getRaportByVisitForUser(UUID visitId) {
         UUID currentUserId = getCurrentUserId();
         Raport raport = raportRepository.findByVisitId(visitId);
         if (raport == null || !raport.getPatient().getId().equals(currentUserId)) {
             throw new EntityNotFoundException("Raport not found for this user and visit");
         }
-        return raportMapper.toResponse(raport);
+        return raport;
     }
 
     @Override
-    public List<RaportResponse> getUserRaports() {
+    public List<Raport> getUserRaports() {
         UUID currentUserId = getCurrentUserId();
-        Patient patient = new Patient();
-        patient.setId(currentUserId);
-        return raportMapper.toResponseList(raportRepository.findByPatient(patient));
+        return raportRepository.findByPatientId(currentUserId);
     }
 
     // ==========================
-    // 🔹 Хелпер для отримання поточного користувача
+    // 🔹 Методи для лікаря (повертають ентіті)
+    // ==========================
+
+    @Override
+    public Raport getOwnRaportByVisit(UUID visitId) {
+        UUID currentDoctorId = getCurrentDoctorId();
+        Raport raport = raportRepository.findByVisitId(visitId);
+        if (raport == null || !raport.getDoctor().getId().equals(currentDoctorId)) {
+            throw new EntityNotFoundException("Raport not found for this doctor and visit");
+        }
+        return raport;
+    }
+
+    @Override
+    public List<Raport> getDoctorRaports() {
+        UUID currentDoctorId = getCurrentDoctorId();
+        return raportRepository.findByDoctorId(currentDoctorId);
+    }
+
+    @Override
+    public List<Raport> getOwnRaportsByPatient(UUID patientId) {
+        UUID currentDoctorId = getCurrentDoctorId();
+        return raportRepository.findByPatientId(patientId)
+                .stream()
+                .filter(r -> r.getDoctor().getId().equals(currentDoctorId))
+                .toList();
+    }
+
+    // ==========================
+    // 🔹 Хелпери для отримання поточного користувача/лікаря
     // ==========================
     private UUID getCurrentUserId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName(); // у JWT username = email
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"))
+                .getId();
+    }
+
+    private UUID getCurrentDoctorId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // у JWT username = email
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"))
                 .getId();
     }
 }

@@ -32,7 +32,7 @@ public class Raport {
     private Patient patient;
 
     @Column(nullable = false)
-    private String diagnosis;
+    private String disease;
 
     @Column(nullable = false)
     private String symptoms;
@@ -40,7 +40,7 @@ public class Raport {
     @Column(nullable = false)
     private Double price;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "created_at")
     private LocalDateTime createdAt;
 
     private String notes;

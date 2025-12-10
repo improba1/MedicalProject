@@ -9,12 +9,11 @@ import java.util.UUID;
 
 @Data
 public class UpdateAvailabilityRequest {
-    @NotNull(message = "Availability ID is required")
+
+    @NotNull
     private UUID availabilityId;
 
-    @NotNull(message = "Doctor ID is required")
-    private UUID doctorId;
-
+    @NotNull
     @Future(message = "Availability time must be in the future")
     private LocalDateTime newAvailableTime;
 }

@@ -1,8 +1,6 @@
 package com.example.demo.service.visit;
 
-import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.enums.VisitStatus;
-import com.example.demo.mapper.VisitMapper;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Patient;
 import com.example.demo.model.Visit;
@@ -25,7 +23,6 @@ public class VisitServiceImpl implements VisitService {
     private final VisitRepository visitRepository;
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
-    private final VisitMapper visitMapper;
 
     @Override
     public Visit getById(UUID id) {
@@ -59,11 +56,11 @@ public class VisitServiceImpl implements VisitService {
     }
 
     // ==========================
-    // 🔹 Методи для пацієнта
+    // 🔹 Методи для пацієнта (повертають ентіті)
     // ==========================
 
     @Override
-    public VisitResponse bookVisit(UUID doctorId, String appointmentTime) {
+    public Visit bookVisit(UUID doctorId, LocalDateTime appointmentTime) {
         UUID currentUserId = getCurrentUserId();
         Patient patient = (Patient) userRepository.findById(currentUserId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -74,16 +71,15 @@ public class VisitServiceImpl implements VisitService {
         Visit visit = Visit.builder()
                 .doctor(doctor)
                 .patient(patient)
-                .appointmentTime(LocalDateTime.parse(appointmentTime))
+                .appointmentTime(appointmentTime)
                 .status(VisitStatus.SCHEDULED)
                 .build();
 
-        Visit saved = visitRepository.save(visit);
-        return visitMapper.toResponse(saved);
+        return visitRepository.save(visit);
     }
 
     @Override
-    public VisitResponse rescheduleVisit(UUID visitId, String newTime) {
+    public Visit rescheduleVisit(UUID visitId, LocalDateTime newTime) {
         UUID currentUserId = getCurrentUserId();
         Visit visit = getById(visitId);
 
@@ -91,13 +87,13 @@ public class VisitServiceImpl implements VisitService {
             throw new EntityNotFoundException("Visit not found for this user");
         }
 
-        visit.setAppointmentTime(LocalDateTime.parse(newTime));
-        Visit updated = visitRepository.save(visit);
-        return visitMapper.toResponse(updated);
+        visit.setAppointmentTime(newTime);
+        visit.setStatus(VisitStatus.RESCHEDULED);
+        return visitRepository.save(visit);
     }
 
     @Override
-    public void cancelVisit(UUID visitId) {
+    public Visit cancelVisit(UUID visitId) {
         UUID currentUserId = getCurrentUserId();
         Visit visit = getById(visitId);
 
@@ -106,22 +102,21 @@ public class VisitServiceImpl implements VisitService {
         }
 
         visit.setStatus(VisitStatus.CANCELED);
-        visitRepository.save(visit);
+        return visitRepository.save(visit);
     }
 
     @Override
-    public List<VisitResponse> getUserVisits() {
+    public List<Visit> getUserVisits() {
         UUID currentUserId = getCurrentUserId();
-        return visitMapper.toResponseList(visitRepository.findByPatientId(currentUserId));
+        return visitRepository.findByPatientId(currentUserId);
     }
 
     @Override
-    public List<VisitResponse> getUpcomingUserVisits() {
+    public List<Visit> getUpcomingUserVisits() {
         UUID currentUserId = getCurrentUserId();
         return visitRepository.findByPatientId(currentUserId)
                 .stream()
                 .filter(v -> v.getAppointmentTime().isAfter(LocalDateTime.now()))
-                .map(visitMapper::toResponse)
                 .toList();
     }
 

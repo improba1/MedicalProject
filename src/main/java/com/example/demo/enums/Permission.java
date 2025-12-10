@@ -16,6 +16,10 @@ public enum Permission {
     DOCTOR_UPDATE("doctor:update"),
     DOCTOR_CREATE("doctor:create"),
     DOCTOR_DELETE("doctor:delete"),
+    PATIENT_READ("patient:read"),
+    PATIENT_UPDATE("patient:update"),
+    PATIENT_CREATE("patient:create"),
+    PATIENT_DELETE("patient:delete"),
     LOGOUT("user:logout");;
 
     @Getter

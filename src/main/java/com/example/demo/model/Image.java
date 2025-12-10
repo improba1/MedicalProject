@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import java.sql.Blob;
 import java.util.UUID;
 
 @Entity
@@ -18,16 +19,20 @@ import java.util.UUID;
 public class Image {
 
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "file_name")
     private String fileName;
+
+    @Column(name = "file_type")
     private String fileType;
 
-    @Lob
-    private Blob image;
+    @Column(name = "image_data", columnDefinition = "BYTEA")
+    private byte[] imageData;
 
+    @Column(name = "download_url")
     private String downloadUrl;
 
     @OneToOne

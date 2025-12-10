@@ -11,10 +11,10 @@ import java.util.UUID;
 public interface RaportRepository extends JpaRepository<Raport, UUID> {
 
     // Знайти всі рапорти певного лікаря
-    List<Raport> findByDoctor(Doctor doctor);
+    List<Raport> findByDoctorId(UUID doctorId);
 
     // Знайти всі рапорти певного пацієнта
-    List<Raport> findByPatient(Patient patient);
+    List<Raport> findByPatientId(UUID patientId);
 
     // Знайти всі рапорти за візитом
     Raport findByVisitId(UUID visitId);

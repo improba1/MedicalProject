@@ -35,12 +35,15 @@ public class AdminDiseaseController {
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "Disease created successfully", response));
     }
 
-    // UPDATE disease (тепер чисто через сервіс)
+    // UPDATE disease
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<DiseaseResponse>> updateDisease(@PathVariable UUID id,
                                                                       @RequestBody UpdateDiseaseRequest request) {
-        DiseaseResponse response = diseaseService.updateDisease(id, request);
+        Disease disease = diseaseService.getById(id);
+        diseaseMapper.updateEntity(disease, request);
+        Disease updated = diseaseService.update(disease);
+        DiseaseResponse response = diseaseMapper.toResponse(updated);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Disease updated successfully", response));
     }
 

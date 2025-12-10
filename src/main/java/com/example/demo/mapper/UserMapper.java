@@ -49,7 +49,8 @@ public class UserMapper {
                 .nickname(user.getNickname())
                 .phone(user.getPhone())
                 .address(user.getAddress())
-                .birthDate(user.getBirthDate())   // 🔹 віддаємо дату народження
+                .birthDate(user.getBirthDate())
+                .isActive(user.isActive())
                 .sex(user.getSex() != null ? user.getSex().name() : null)
                 .role(user.getRole() != null ? user.getRole().name() : null)
                 .build();

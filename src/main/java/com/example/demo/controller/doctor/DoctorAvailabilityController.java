@@ -5,14 +5,13 @@ import com.example.demo.dto.request.doctor_availability.UpdateAvailabilityReques
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.DoctorAvailabilityResponse;
 import com.example.demo.mapper.DoctorAvailabilityMapper;
-import com.example.demo.model.User;
-import com.example.demo.service.doctors_availability_service.DoctorAvailabilityService;
+import com.example.demo.model.DoctorAvailability;
+import com.example.demo.service.doctor.DoctorAvailabilityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,164 +23,148 @@ import java.util.UUID;
 public class DoctorAvailabilityController {
 
     private final DoctorAvailabilityService availabilityService;
-    private final DoctorAvailabilityMapper availabilityMapper;
+    private final DoctorAvailabilityMapper mapper;
 
-    // 🔹 Отримати всі свої слоти
-    @GetMapping("/get")
+    // ------------------ GET ALL ------------------
+    @GetMapping
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getMyAvailability(
-            @AuthenticationPrincipal User user) {
-
-        var availabilities = availabilityService.getByDoctor(user.getId());
-        var responses = availabilityMapper.toResponseList(availabilities);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability fetched successfully", responses));
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getMyAvailability() {
+        List<DoctorAvailability> list = availabilityService.getOwnAvailabilities();
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Doctor availability fetched successfully",
+                mapper.toResponseList(list)
+        ));
     }
 
-    // 🔹 Додати слот
-    @PostMapping("/add")
+    // ------------------ ADD ------------------
+    @PostMapping
     @PreAuthorize("hasAuthority('doctor:create')")
-    public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> addMyAvailability(
-            @AuthenticationPrincipal User user,
+    public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> add(
             @Valid @RequestBody AddAvailabilityRequest request) {
 
-        var saved = availabilityService.addAvailability(user.getId(), request);
-        var response = availabilityMapper.toResponse(saved);
+        DoctorAvailability entity = mapper.toEntity(request);
+        DoctorAvailability saved = availabilityService.create(entity);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(HttpStatus.CREATED.value(),
-                        "Doctor availability created successfully", response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(
+                HttpStatus.CREATED.value(),
+                "Availability created successfully",
+                mapper.toResponse(saved)
+        ));
     }
 
-    // 🔹 Оновити слот
-    @PutMapping("/update/{availabilityId}")
+    // ------------------ UPDATE ------------------
+    @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('doctor:update')")
-    public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> updateMyAvailability(
-            @AuthenticationPrincipal User user,
-            @PathVariable UUID availabilityId,
+    public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> update(
+            @PathVariable UUID id,
             @Valid @RequestBody UpdateAvailabilityRequest request) {
 
-        var updated = availabilityService.updateForDoctor(user.getId(), availabilityId, request);
-        var response = availabilityMapper.toResponse(updated);
+        request.setAvailabilityId(id);
+        DoctorAvailability entity = mapper.toEntity(request);
+        DoctorAvailability updated = availabilityService.updateExisting(entity);
 
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability updated successfully", response));
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Availability updated successfully",
+                mapper.toResponse(updated)
+        ));
     }
 
-    // 🔹 Видалити слот
-    @DeleteMapping("/delete/{availabilityId}")
+    // ------------------ DELETE ------------------
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('doctor:delete')")
-    public ResponseEntity<Void> deleteMyAvailability(
-            @AuthenticationPrincipal User user,
-            @PathVariable UUID availabilityId) {
-
-        availabilityService.deleteForDoctor(user.getId(), availabilityId);
-        return ResponseEntity.noContent().build(); // 204 No Content
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+        availabilityService.deleteOwn(id);
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Availability deleted successfully",
+                null
+        ));
     }
 
-    // 🔹 Отримати конкретний слот
-    @GetMapping("/{availabilityId}")
+    // ------------------ GET ONE ------------------
+    @GetMapping("/{id}/details")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> getAvailabilityById(
-            @AuthenticationPrincipal User user,
-            @PathVariable UUID availabilityId) {
-
-        var availability = availabilityService.getById(availabilityId);
-        var response = availabilityMapper.toResponse(availability);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability fetched successfully", response));
+    public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> getOne(@PathVariable UUID id) {
+        DoctorAvailability entity = availabilityService.getById(id);
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Availability fetched successfully",
+                mapper.toResponse(entity)
+        ));
     }
 
-    // 🔹 Пошук за датами
+    // ------------------ FILTERS ------------------
     @GetMapping("/today")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getToday(
-            @AuthenticationPrincipal User user) {
-
-        var availabilities = availabilityService.getToday(user.getId());
-        var responses = availabilityMapper.toResponseList(availabilities);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability for today fetched successfully", responses));
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> today() {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Fetched",
+                mapper.toResponseList(availabilityService.getOwnToday())
+        ));
     }
 
     @GetMapping("/next-hour")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getNextHour(
-            @AuthenticationPrincipal User user) {
-
-        var availabilities = availabilityService.getNextHour(user.getId());
-        var responses = availabilityMapper.toResponseList(availabilities);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability for next hour fetched successfully", responses));
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> nextHour() {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Fetched",
+                mapper.toResponseList(availabilityService.getOwnNextHour())
+        ));
     }
 
     @GetMapping("/this-week")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getThisWeek(
-            @AuthenticationPrincipal User user) {
-
-        var availabilities = availabilityService.getThisWeek(user.getId());
-        var responses = availabilityMapper.toResponseList(availabilities);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability for this week fetched successfully", responses));
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> thisWeek() {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Fetched",
+                mapper.toResponseList(availabilityService.getOwnThisWeek())
+        ));
     }
 
     @GetMapping("/next-week")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getNextWeek(
-            @AuthenticationPrincipal User user) {
-
-        var availabilities = availabilityService.getNextWeek(user.getId());
-        var responses = availabilityMapper.toResponseList(availabilities);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability for next week fetched successfully", responses));
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> nextWeek() {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Fetched",
+                mapper.toResponseList(availabilityService.getOwnNextWeek())
+        ));
     }
 
     @GetMapping("/month/{year}/{month}")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getByMonth(
-            @AuthenticationPrincipal User user,
-            @PathVariable int year,
-            @PathVariable int month) {
-
-        var availabilities = availabilityService.getByMonth(user.getId(), year, month);
-        var responses = availabilityMapper.toResponseList(availabilities);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability for month fetched successfully", responses));
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byMonth(
+            @PathVariable int year, @PathVariable int month) {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Fetched",
+                mapper.toResponseList(availabilityService.getOwnByMonth(year, month))
+        ));
     }
 
     @GetMapping("/day/{year}/{month}/{day}")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getByDay(
-            @AuthenticationPrincipal User user,
-            @PathVariable int year,
-            @PathVariable int month,
-            @PathVariable int day) {
-
-        var availabilities = availabilityService.getByDay(user.getId(), year, month, day);
-        var responses = availabilityMapper.toResponseList(availabilities);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability for day fetched successfully", responses));
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byDay(
+            @PathVariable int year, @PathVariable int month, @PathVariable int day) {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Fetched",
+                mapper.toResponseList(availabilityService.getOwnByDay(year, month, day))
+        ));
     }
 
     @GetMapping("/year/{year}")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getByYear(
-            @AuthenticationPrincipal User user,
-            @PathVariable int year) {
-
-        var availabilities = availabilityService.getByYear(user.getId(), year);
-        var responses = availabilityMapper.toResponseList(availabilities);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor availability for year fetched successfully", responses));
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byYear(@PathVariable int year) {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Fetched",
+                mapper.toResponseList(availabilityService.getOwnByYear(year))
+        ));
     }
 }

@@ -44,6 +44,8 @@ public class AuthServiceImpl implements AuthService {
                 .email(request.getEmail())
                 .nickname(request.getNickname())
                 .phone(request.getPhone())
+                .birthDate(request.getBirthDate())
+                .sex(request.getSex())
                 .address(request.getAddress())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.PATIENT)
