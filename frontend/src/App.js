@@ -26,7 +26,7 @@ function App() {
         <Route path="/doc-home-page" element={<DoctorHomePage name="Dr.House" />} />
         <Route path="/new-raport" element={<NewRaport />} />
         <Route path="/manage-schedule" element={<ManageSchedule />} />
-        <Route path="/my-patients" element={<MyPatients />} />
+        <Route path="/my-patients" element={<MyPatients name="patient's name" />} />
         
         
       </Routes>
