@@ -61,6 +61,7 @@ package-lock.json
 frontend/README.md
 frontend/package-lock.json
 frontend/package.json
+package.json
 
 mvnw
 mvnw.cmd
