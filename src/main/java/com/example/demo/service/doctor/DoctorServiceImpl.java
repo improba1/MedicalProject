@@ -2,16 +2,11 @@ package com.example.demo.service.doctor;
 
 import com.example.demo.dto.request.doctor.DoctorSearchRequest;
 import com.example.demo.dto.request.doctor.UpdateDoctorRequest;
-import com.example.demo.dto.response.DoctorResponse;
-import com.example.demo.enums.VisitStatus;
-import com.example.demo.mapper.DoctorMapper;
 import com.example.demo.model.Doctor;
-import com.example.demo.model.DoctorAvailability;
-import com.example.demo.model.Visit;
-import com.example.demo.repository.DoctorAvailabilityRepository;
+import com.example.demo.model.Image;
 import com.example.demo.repository.DoctorRepository;
-import com.example.demo.repository.VisitRepository;
 import com.example.demo.repository.specification.doctor.DoctorSpecificationBuilder;
+import com.example.demo.service.image.ImageService;
 import com.example.demo.service.logout.LogoutService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,11 +25,9 @@ import java.util.UUID;
 public class DoctorServiceImpl implements DoctorService {
 
     private final DoctorRepository doctorRepository;
-    private final VisitRepository visitRepository;
-    private final DoctorAvailabilityRepository availabilityRepository;
     private final PasswordEncoder passwordEncoder;
-    private final DoctorMapper doctorMapper;
     private final LogoutService logoutService;
+    private final ImageService imageService;
 
     @Override
     public Doctor getById(UUID id) {
@@ -60,57 +53,51 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public void delete(UUID id) {
-        Doctor doctor = getById(id);
-        doctorRepository.delete(doctor);
+        doctorRepository.delete(getById(id));
     }
 
     @Override
     public List<Doctor> searchDoctors(DoctorSearchRequest request) {
         return doctorRepository.findAll(DoctorSpecificationBuilder.build(request));
     }
-    /////////////////////////////////////////////////
+
     @Override
-    public List<Visit> getVisits(UUID doctorId) {
-        return visitRepository.findByDoctorId(doctorId);
+    public Doctor getCurrentDoctor() {
+        return getAuthenticatedDoctor();
     }
 
     @Override
-    public List<DoctorAvailability> getAvailability(UUID doctorId) {
-        return availabilityRepository.findByDoctorId(doctorId);
+    public Doctor updateCurrentDoctor(Doctor doctor) {
+        return doctorRepository.save(doctor);
     }
 
     @Override
-    public Visit cancelVisit(UUID visitId) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
-        visit.setStatus(VisitStatus.CANCELED);
-        return visitRepository.save(visit);
+    public Doctor updateOwnProfileWithImage(Doctor doctor, MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            Image image = (doctor.getImage() == null)
+                    ? imageService.saveImage(doctor.getId(), file)
+                    : imageService.updateImage(doctor.getImage().getId(), file);
+            doctor.setImage(image);
+        }
+        return doctorRepository.save(doctor);
     }
 
     @Override
-    public Visit rescheduleVisit(UUID visitId, LocalDateTime newTime) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
-        visit.setAppointmentTime(newTime);
-        visit.setStatus(VisitStatus.RESCHEDULED);
-        return visitRepository.save(visit);
-    }
-/// ///////////////////
-    @Override
-    public DoctorResponse getCurrentDoctorProfile() {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        return doctorMapper.toResponse(currentDoctor);
+    public Doctor updateDoctorWithImage(UUID doctorId, UpdateDoctorRequest request, MultipartFile imageFile) {
+        Doctor doctor = getById(doctorId);
+        if (imageFile != null && !imageFile.isEmpty()) {
+            Image image = (doctor.getImage() == null)
+                    ? imageService.saveImage(doctor.getId(), imageFile)
+                    : imageService.updateImage(doctor.getImage().getId(), imageFile);
+
+            doctor.setImage(image);
+        }
+
+        return doctorRepository.save(doctor);
     }
 
     @Override
-    public DoctorResponse updateDoctorProfile(UpdateDoctorRequest request) {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        doctorMapper.updateEntity(currentDoctor, request);
-        return doctorMapper.toResponse(doctorRepository.save(currentDoctor));
-    }
-
-    @Override
-    public void deleteDoctorProfile(HttpServletRequest request, HttpServletResponse response) {
+    public void deactivateDoctorProfile(HttpServletRequest request, HttpServletResponse response) {
         Doctor currentDoctor = getAuthenticatedDoctor();
         currentDoctor.setActive(false);
         doctorRepository.save(currentDoctor);
@@ -118,12 +105,9 @@ public class DoctorServiceImpl implements DoctorService {
         logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
     }
 
-    @Override
-    public Doctor getAuthenticatedDoctor() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
+    private Doctor getAuthenticatedDoctor() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"));
     }
-
 }

@@ -26,11 +26,44 @@ public class AdminUserController {
 
     @GetMapping("/get/{id}")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<UserResponse>> getById(@PathVariable UUID id) {
         User user = userService.getById(id);
+        System.out.println(user.isActive());
         UserResponse response = userMapper.toResponse(user);
+        System.out.println(response.isActive());
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User fetched successfully", response));
     }
+
+    // 🔹 Пошук за email
+    @GetMapping("/get/email")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<UserResponse>> searchByEmail(@RequestParam String email) {
+        User user = userService.getByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        UserResponse response = userMapper.toResponse(user);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User fetched successfully by email", response));
+    }
+
+    // 🔹 Пошук за nickname
+    @GetMapping("/get/nickname")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<UserResponse>> searchByNickname(@RequestParam String nickname) {
+        User user = userService.getByNickname(nickname)
+                .orElseThrow(() -> new RuntimeException("User not found with nickname: " + nickname));
+        UserResponse response = userMapper.toResponse(user);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User fetched successfully by nickname", response));
+    }
+
+    // 🔹 Пошук за phone
+    @GetMapping("/get/phone")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<UserResponse>> searchByPhone(@RequestParam String phone) {
+        User user = userService.getByPhone(phone)
+                .orElseThrow(() -> new RuntimeException("User not found with phone: " + phone));
+        UserResponse response = userMapper.toResponse(user);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User fetched successfully by phone", response));
+    }
+
 
     // 🔹 Отримати всіх користувачів
     @GetMapping("/get-all")
@@ -47,7 +80,7 @@ public class AdminUserController {
     public ResponseEntity<ApiResponse<Void>> deactivateProfileById(@PathVariable UUID id,
                                                                    HttpServletRequest request,
                                                                    HttpServletResponse response) {
-        userService.deactivateProfileById(id, request, response);
+        userService.deactivateUserById(id, request, response);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
                 "Profile with ID " + id + " deactivated and logged out successfully", null));
     }

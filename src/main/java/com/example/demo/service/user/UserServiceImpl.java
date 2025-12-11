@@ -1,7 +1,6 @@
 package com.example.demo.service.user;
 
 import com.example.demo.dto.request.user.UpdateUserRequest;
-import com.example.demo.dto.response.UserResponse;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
@@ -44,6 +43,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> getByNickname(String nickname) {
+        return userRepository.findByNickname(nickname);
+    }
+
+    @Override
+    public Optional<User> getByPhone(String phone) {
+        return userRepository.findByPhone(phone);
+    }
+
+    @Override
     public User create(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
@@ -60,25 +69,23 @@ public class UserServiceImpl implements UserService {
     }
 
     // ==========================
-    // 🔹 Бізнес-логіка для профілю
+    // 🔹 Профіль залогованого користувача
     // ==========================
 
     @Override
-    public UserResponse getCurrentUserProfile() {
-        User currentUser = getAuthenticatedUser();
-        return userMapper.toResponse(currentUser);
+    public User getCurrentUser() {
+        return getAuthenticatedUser();
     }
 
     @Override
-    public UserResponse updateProfile(UpdateUserRequest request) {
+    public User updateCurrentUser(UpdateUserRequest request) {
         User currentUser = getAuthenticatedUser();
         userMapper.updateEntity(currentUser, request);
-        User updated = userRepository.save(currentUser);
-        return userMapper.toResponse(updated);
+        return userRepository.save(currentUser);
     }
 
     @Override
-    public void deactivateProfile(HttpServletRequest request, HttpServletResponse response) {
+    public void deactivateCurrentUser(HttpServletRequest request, HttpServletResponse response) {
         User currentUser = getAuthenticatedUser();
         currentUser.setActive(false);
         userRepository.save(currentUser);
@@ -86,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deactivateProfileById(UUID id, HttpServletRequest request, HttpServletResponse response) {
+    public void deactivateUserById(UUID id, HttpServletRequest request, HttpServletResponse response) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         user.setActive(false);
@@ -94,14 +101,12 @@ public class UserServiceImpl implements UserService {
         logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
     }
 
-
-
     // ==========================
     // 🔹 Хелпер для отримання поточного користувача
     // ==========================
     private User getAuthenticatedUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName(); // у JWT username = email
+        String email = authentication.getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"));
     }

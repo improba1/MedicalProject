@@ -1,7 +1,5 @@
 package com.example.demo.service.disease;
 
-import com.example.demo.dto.request.disease.UpdateDiseaseRequest;
-import com.example.demo.dto.response.DiseaseResponse;
 import com.example.demo.model.Disease;
 
 import java.util.List;
@@ -16,6 +14,4 @@ public interface DiseaseService {
     Disease addDisease(Disease disease);
     Disease update(Disease disease);
     void deleteDisease(UUID id);
-
-    DiseaseResponse updateDisease(UUID id, UpdateDiseaseRequest request); // 🔹 новий метод
 }

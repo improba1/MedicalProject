@@ -1,8 +1,8 @@
 package com.example.demo.service.visit;
 
-import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.model.Visit;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,13 +21,13 @@ public interface VisitService {
     List<Visit> getByPatient(UUID patientId);
 
     // 🔹 нові методи для пацієнта
-    VisitResponse bookVisit(UUID doctorId, String appointmentTime);
+    Visit bookVisit(UUID doctorId, LocalDateTime appointmentTime);
 
-    VisitResponse rescheduleVisit(UUID visitId, String newTime);
+    Visit rescheduleVisit(UUID visitId, LocalDateTime newTime);
 
-    void cancelVisit(UUID visitId);
+    Visit cancelVisit(UUID visitId);
 
-    List<VisitResponse> getUserVisits();
+    List<Visit> getUserVisits();
 
-    List<VisitResponse> getUpcomingUserVisits();
+    List<Visit> getUpcomingUserVisits();
 }

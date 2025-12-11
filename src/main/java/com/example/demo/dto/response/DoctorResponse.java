@@ -26,9 +26,5 @@ public class DoctorResponse {
     private int experienceYears;
     private double rating;
 
-    private List<UUID> visitIds;
-    private List<UUID> availabilityIds;
-    private List<UUID> raportIds;
-
     private ImageResponse image;
 }

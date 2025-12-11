@@ -1,6 +1,5 @@
 package com.example.demo.dto.request.user;
 
-import com.example.demo.enums.Role;
 import com.example.demo.enums.Sex;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -29,11 +28,6 @@ public class UpdateUserRequest {
     @Pattern(regexp = "\\+?[0-9]{9,15}", message = "Invalid phone number")
     private String phone;
 
-    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
-    private String password;
-
     @Size(max = 255, message = "Address must not exceed 255 characters")
     private String address;
-
-    private Role role; // адмін може змінити роль
 }

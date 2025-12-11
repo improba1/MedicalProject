@@ -1,8 +1,5 @@
 package com.example.demo.service.disease;
 
-import com.example.demo.dto.request.disease.UpdateDiseaseRequest;
-import com.example.demo.dto.response.DiseaseResponse;
-import com.example.demo.mapper.DiseaseMapper;
 import com.example.demo.model.Disease;
 import com.example.demo.repository.DiseaseRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,7 +14,6 @@ import java.util.UUID;
 public class DiseaseServiceImpl implements DiseaseService {
 
     private final DiseaseRepository diseaseRepository;
-    private final DiseaseMapper diseaseMapper;
 
     @Override
     public List<Disease> searchByCode(String codePart) {
@@ -60,13 +56,5 @@ public class DiseaseServiceImpl implements DiseaseService {
     @Override
     public void deleteDisease(UUID id) {
         diseaseRepository.deleteById(id);
-    }
-
-    @Override
-    public DiseaseResponse updateDisease(UUID id, UpdateDiseaseRequest request) {
-        Disease disease = getById(id);
-        diseaseMapper.updateEntity(disease, request); // 🔹 застосовуємо зміни з DTO
-        Disease updated = diseaseRepository.save(disease);
-        return diseaseMapper.toResponse(updated);     // 🔹 повертаємо DTO у відповідь
     }
 }

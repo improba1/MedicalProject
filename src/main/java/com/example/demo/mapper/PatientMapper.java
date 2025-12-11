@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import com.example.demo.dto.request.patient.RegisterPatientRequest;
 import com.example.demo.dto.request.patient.UpdatePatientRequest;
 import com.example.demo.dto.response.PatientResponse;
+import com.example.demo.enums.Role;
 import com.example.demo.model.Patient;
 import com.example.demo.model.Raport;
 import com.example.demo.model.Visit;
@@ -17,13 +18,16 @@ public class PatientMapper {
 
     public Patient toEntity(RegisterPatientRequest request) {
         return Patient.builder()
+                .nickname(request.getNickname())
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
+                .birthDate(request.getBirthDate())
+                .sex(request.getSex())
                 .email(request.getEmail())
-                .nickname(request.getNickname())
-                .password(request.getPassword())
                 .phone(request.getPhone())
+                .password(request.getPassword())
                 .address(request.getAddress())
+                .role(Role.PATIENT)
                 .isActive(true)
                 .build();
     }
@@ -36,23 +40,16 @@ public class PatientMapper {
     }
 
     public PatientResponse toResponse(Patient patient) {
-        List<UUID> visitIds = patient.getVisits() != null
-                ? patient.getVisits().stream().map(Visit::getId).collect(Collectors.toList())
-                : List.of();
-
-        List<UUID> raportIds = patient.getRaports() != null
-                ? patient.getRaports().stream().map(Raport::getId).collect(Collectors.toList())
-                : List.of();
-
         return PatientResponse.builder()
                 .id(patient.getId())
+                .nickname(patient.getNickname())
                 .firstname(patient.getFirstname())
                 .lastname(patient.getLastname())
+                .birthDate(patient.getBirthDate())
+                .sex(patient.getSex() != null ? patient.getSex().name() : null)
                 .email(patient.getEmail())
                 .phone(patient.getPhone())
                 .address(patient.getAddress())
-                .visitIds(visitIds)
-                .raportIds(raportIds)
                 .build();
     }
 
