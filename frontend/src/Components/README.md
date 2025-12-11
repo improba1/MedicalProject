@@ -7,3 +7,5 @@
 ## Healthcare - text 'Healthcare' on the left corner.
 
 ## Background - background (image + black квадрат). Just wrap content with this component.
+
+## PatintList - container for the list of patients.
