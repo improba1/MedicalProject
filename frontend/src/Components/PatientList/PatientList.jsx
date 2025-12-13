@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import styles from './PatientList.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const PatientsList = () => {
+    const navigate = useNavigate();
     const [patients, setPatients] = useState([
         { id: 1, firstName: "John", lastName: "Doe", age: 45, lastVisit: "2024-01-15" },
         { id: 2, firstName: "Anna", lastName: "Smith", age: 32, lastVisit: "2024-01-10" },
@@ -15,6 +17,7 @@ const PatientsList = () => {
 
     const handlePatientClick = (patientId) => {
         console.log('Selected patient:', patientId);
+        navigate(`/my-patients/${patientId}`);
     };
 
     const handleAddPatient = () => {

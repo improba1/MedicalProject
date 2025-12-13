@@ -5,6 +5,7 @@ import BackBtn from '../../Components/BackButton/BackButton';
 import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
 import styles from './MyPatients.module.css';
 import PatientsList from '../../Components/PatientList/PatientList';
+import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
 
 const MyPatients = () => {
     return (
@@ -13,6 +14,7 @@ const MyPatients = () => {
             <BackBtn></BackBtn>
             <LogOutBtn></LogOutBtn>
             <HealthcareTxt></HealthcareTxt>
+            <MyProfileBtn></MyProfileBtn>
             <h1 className={styles.pageTitle}>My Patients</h1>
             <p className={styles.pageSubtitle}>Manage your patients and their records</p>
             

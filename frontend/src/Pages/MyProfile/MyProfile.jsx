@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
 import styles from './MyProfile.module.css';
 import BackBtn from '../../Components/BackButton/BackButton';
-import ProfileInput from '../../Components/ProfileInput/ProfileInput';
 import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
 import Background from '../../Components/Background/Background';
+import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
 
 
 const MyProfile = () => {
@@ -14,15 +14,22 @@ const MyProfile = () => {
                  <LogOutBtn/>
                  <BackBtn/>
                  <HealthcareTxt/>
+                 <MyProfileBtn></MyProfileBtn>
                  <span className={styles.yourprofile}>Your profile</span>
-                 <div className={styles.info}>
-                    <ProfileInput value="Agnieszka" valueName="First name" />
-                    <ProfileInput value="Sakowicz" valueName="Last name" />
-                    <ProfileInput value="33" valueName="Age" />
-                    <ProfileInput value="agnieszka@gmail.com" valueName="Email" />
-                    <ProfileInput value="+48238498" valueName="Phone" />
-                    <ProfileInput value="agnieszka123" valueName="Login" />
-                 </div>
+                 <div className={styles.container}>
+                                 
+                                 <div className={styles.contentRow}>
+                                     
+                                     <div className={styles.infoCard}>
+                                       <InfoRow value="Agnieszka" label="First name" />
+                                       <InfoRow value="Sakowicz" label="Last name" />
+                                       <InfoRow value="33" label="Age" />
+                                       <InfoRow value="agnieszka@gmail.com" label="Email" />
+                                       <InfoRow value="+48238498" label="Phone" />
+                                       <InfoRow value="agnieszka123" label="Login" />
+                                     </div>
+                                 </div>
+                             </div>
                  <button className={styles.button}>
                     Edit profile
                  </button>
@@ -33,5 +40,11 @@ const MyProfile = () => {
     )
 
 }
+const InfoRow = ({ label, value }) => (
+    <div className={styles.infoRow}>
+        <span className={styles.label}>{label}: </span>
+        <span className={styles.value}>{value}</span>
+    </div>
+);
 
 export default MyProfile
