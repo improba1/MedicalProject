@@ -1,0 +1,117 @@
+.headerTitle {
+    color: white;
+    font-size: 1.2rem;
+    font-family: sans-serif;
+}
+
+/* --- ГЛАВНЫЙ БЛОК (Заголовок + Карточки) --- */
+.mainContent {
+    position: fixed;
+    left: 7%;
+    padding-top: 8%;   
+    color: white;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Имя пациента */
+.patientName {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 40px; 
+}
+
+/* Секции */
+.section {
+    margin-bottom: 50px;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: #e0e0e0;
+}
+
+/* Сетка карточек (чтобы стояли в ряд) */
+.grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* --- ДИЗАЙН КАРТОЧКИ --- */
+.card {
+    background-color: #242424; 
+    border-radius: 16px;
+    padding: 20px;
+    width: 200px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer; /* Курсор превращается в руку */
+    border: 1px solid transparent;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.iconBox {
+    width: 35px;
+    height: 35px;
+    background-color: #F5782D;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    /* Плавность для иконки */
+    transition: all 0.3s ease;
+}
+
+.date {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+}
+
+.cardTitle {
+    font-size: 0.95rem;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.cardText {
+    font-size: 0.8rem;
+    color: #888;
+    margin: 2px 0;
+}
+
+.cardDoctor {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: auto; 
+    padding-top: 10px;
+}
+
+.card:hover {
+    transform: translateY(-8px); /* Поднимаем карточку вверх на 8px */
+    background-color: #262626;   /* Делаем фон чуть светлее */
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5); /* Большая мягкая тень */
+    border-color: rgba(255, 255, 255, 0.1);  /* Тонкая светлая обводка */
+}
+
+/* БОНУС: Анимация иконки внутри карточки */
+/* Когда наводим на .card, увеличиваем .iconBox */
+.card:hover .iconBox {
+    transform: scale(1.1) rotate(5deg); /* Чуть увеличиваем и поворачиваем */
+    background-color: rgba(255, 255, 255, 0.3); /* Делаем оранжевый ярче */
+}
+
+/* ... остальные стили (iconBox, date, text и т.д.) оставь как были, 
+   но добавь transition в .iconBox, чтобы он тоже плавно рос */

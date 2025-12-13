@@ -1,0 +1,70 @@
+
+.button{
+    position: fixed;
+    width: 40%;
+    height: 9%;
+    bottom: 36%;
+    left: 30%;
+    border: #242424;
+    border-radius: 50px;
+    background-color: #6C5BD4;
+    color: #FFFFFF;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+
+
+.title{
+    position: fixed;
+    left: 28%;
+    top: 15%;
+    color: white;
+    font-size: 50px;
+    font-weight: 700;
+}
+
+.input2{
+    position: fixed;
+    width: 40%;
+    height: 9%;
+    bottom: 20%;
+    left: 30%;
+    /* top: 50%; */
+    background: transparent;
+    border: 1px solid grey;
+    border-radius: 40px;
+    font-size: 16px;
+    padding: 20px 45px 20px 20px;
+    color: rgb(128, 128, 128);
+}
+
+
+.input1{
+    position: fixed;
+    width: 40%;
+    height: 9%;
+    top: 40%;
+    left: 30%;
+    background: transparent;
+    border: 1px solid grey;
+    border-radius: 40px;
+    font-size: 16px;
+    padding: 20px 45px 20px 20px;
+    color: rgb(128, 128, 128);
+}
+
+.placeholder{
+    position: fixed; 
+    top: 35%;
+    right: 25%;
+    width: 50%;
+    height: 50%;
+    border-radius: 5%;
+    background-color: #242424;
+}
+
+

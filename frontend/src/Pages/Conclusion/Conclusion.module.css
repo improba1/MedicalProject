@@ -1,0 +1,110 @@
+.container {
+    padding-left: 80px;
+    padding-top: 40px;
+    color: white;
+    font-family: 'Arial', sans-serif;
+}
+
+.navHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 50px;
+}
+
+.navLeft {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.pageTitle {
+    position: fixed;
+    left: 6%;
+    top: 15%;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #ffffff;
+}
+
+.contentRow {
+    position: fixed;
+    left: 5%;
+    top: 28%;
+    display: flex;
+    align-items: center; 
+    gap: 100px; 
+    flex-wrap: wrap;
+}
+
+
+.infoCard {
+    background-color: #1a1a1a; 
+    border-radius: 24px;
+    padding: 40px;
+    min-width: 450px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+.infoRow {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.label {
+    
+    color: #b0b0b0; 
+    font-weight: 600;
+}
+
+.value {
+    color: #ffffff;
+    font-weight: 400;
+    margin-left: 5px;
+}
+
+
+.documentLink {
+    color: #aaaaaa; 
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 5px;
+    transition: color 0.2s;
+}
+
+.documentLink:hover {
+    color: #ffffff;
+}
+
+
+.saveBtn {
+    position: fixed;
+    right: 4%;
+    bottom: 6%;
+    background-color: #f97316; 
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border: none;
+    padding: 15px 80px; 
+    border-radius: 50px; 
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.saveBtn:hover {
+    background-color: #ea580c;
+    transform: scale(1.05);
+}
+
+
+.buttonContainer a {
+    text-decoration: none;
+}
+

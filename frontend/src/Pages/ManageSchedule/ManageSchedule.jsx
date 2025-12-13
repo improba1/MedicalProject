@@ -4,6 +4,7 @@ import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
 import BackBtn from '../../Components/BackButton/BackButton';
 import styles from './ManageSchedule.module.css';
 import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
+import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
 
 const ManageSchedule = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -90,6 +91,7 @@ const ManageSchedule = () => {
             <LogOutBtn />
             <BackBtn />
             <HealthcareTxt></HealthcareTxt>
+            <MyProfileBtn></MyProfileBtn>
             
             <div >
                 {/* Заголовок */}
