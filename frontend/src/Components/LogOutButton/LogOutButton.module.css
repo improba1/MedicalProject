@@ -17,6 +17,7 @@
     font-weight: 600;
     padding: 0 24px;
     transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .icon{

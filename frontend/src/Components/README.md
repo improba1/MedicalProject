@@ -9,3 +9,5 @@
 ## Background - background (image + black квадрат). Just wrap content with this component.
 
 ## PatintList - container for the list of patients.
+
+## HeartBackground - heart icon on the background of main screens.

@@ -14,11 +14,8 @@ const BackButton = ({ className = '' }) => {
         <button 
             type="button"
             onClick={goBack}
-            // 2. ВАЖНО: Склеиваем стандартный класс кнопки + внешний класс для позиционирования
-            // Если className не передать, будет просто styles.button
             className={`${styles.button} ${className}`}
         >
-            {/* 3. Убрали color="white", теперь цвет берется из CSS (color: inherit) */}
             <IoIosArrowBack size={40} style={{ color: 'inherit' }} /> 
         </button>
     );

@@ -1,7 +1,5 @@
 .button {
-    position: fixed;
-    top: 5%;
-    left: 5%;
+    position: absolute;
     background: transparent;
     border: none;
     cursor: pointer;

@@ -11,6 +11,8 @@ import NewRaport from './Pages/NewRaport/NewRaport';
 import ManageSchedule from './Pages/ManageSchedule/ManageSchedule';
 import MyPatients from './Pages/MyPatients/MyPatients';
 
+import AdminHomePage from './Pages/AdminHomePage/AdminHomePage';
+
 function App() {
   const location = useLocation();
 
@@ -27,6 +29,8 @@ function App() {
         <Route path="/new-raport" element={<NewRaport />} />
         <Route path="/manage-schedule" element={<ManageSchedule />} />
         <Route path="/my-patients" element={<MyPatients name="patient's name" />} />
+
+        <Route path="/admin" element={<AdminHomePage />} />
         
         
       </Routes>
