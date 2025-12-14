@@ -58,13 +58,23 @@
     height: 80px;
     border-radius: 50px;
     background-color: #F5782D;
+    border-color: #242424;
     color: #FFFFFF;
     cursor: pointer;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     font-weight: 600;
+    cursor: pointer;
+    /* box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4); */
+    transition: transform 0.2s, background-color 0.2s;
 }
+
+.newraportbtn:hover {
+    background-color: #ea580c;
+    transform: scale(1.05);
+}
+
 
 
 .newraportbtnbackground{
@@ -113,6 +123,14 @@
     justify-content: center;
     font-size: 24px;
     font-weight: 600;
+    cursor: pointer;
+    /* box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4); */
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.button1:hover {
+    background-color: #5447a5;
+    transform: scale(1.05);
 }
 
 .button2{
@@ -129,6 +147,14 @@
     justify-content: center;
     font-size: 24px;
     font-weight: 600;
+    cursor: pointer;
+    /* box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4); */
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.button2:hover {
+    background-color: #5447a5;
+    transform: scale(1.05);
 }
 
 .img{
