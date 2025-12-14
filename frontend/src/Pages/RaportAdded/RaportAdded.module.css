@@ -1,0 +1,39 @@
+.title{
+    position: fixed;
+    left: 8%;
+    top: 150px;
+    color: #F5782D;
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.subtitle{
+    position: fixed;
+    left: 8%;
+    right: 30%;
+    top: 25%;
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.button{
+    position: fixed;
+    left: 8%;
+    top: 40%;
+    background-color: #f97316; 
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border: none;
+    padding: 15px 80px; 
+    border-radius: 50px; 
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.button:hover {
+    background-color: #ea580c;
+    transform: scale(1.05);
+}
