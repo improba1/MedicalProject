@@ -1,6 +1,7 @@
 .healthcare{
+    position: fixed;
+    top: 6%;
     left: 10%;
-    top: 5%;
     color: white;
     font-size: 24px;
     font-weight: 600;
