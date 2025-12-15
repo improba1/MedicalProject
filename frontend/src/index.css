@@ -10,12 +10,7 @@ body {
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /*background-image: url(./Assets/background.png);*/
-    background: black;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: black;    
     min-height: 100vh;
     
 }
