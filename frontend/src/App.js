@@ -12,6 +12,7 @@ import ManageSchedule from './Pages/ManageSchedule/ManageSchedule';
 import MyPatients from './Pages/MyPatients/MyPatients';
 
 import AdminHomePage from './Pages/AdminHomePage/AdminHomePage';
+import RemoveDoctor from './Pages/RemoveDoctor/RemoveDoctor';
 
 function App() {
   const location = useLocation();
@@ -31,6 +32,7 @@ function App() {
         <Route path="/my-patients" element={<MyPatients name="patient's name" />} />
 
         <Route path="/admin" element={<AdminHomePage />} />
+        <Route path="/admin/remove-doctor" element={<RemoveDoctor />} />
         
         
       </Routes>

@@ -8,42 +8,44 @@ import BackButton from '../../Components/BackButton/BackButton';
 const SignUpForm = () => {
     return(
             <AnimatedPage>
-                <div className={styles.wrapper}>
-                    <form action=""> 
-                            <div className={styles.header}>
-                                <BackButton className={styles.backBtn} />
-                                <h1 className={styles.title}>Sign Up</h1>
-                            </div>
-
-                                <div className={styles.inputBox}>
-                                    <input type="text" placeholder="First name"></input>
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input type="text" placeholder="Last name"></input>
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input type="text" placeholder="Age"></input>
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input type="text" placeholder="Email"></input>
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input type="text" placeholder="Phone"></input>
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input type="text" placeholder="Login"></input>
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input type="text" placeholder="Password"></input>
+                <div className={styles.pageContainer}>
+                    <div className={styles.wrapper}>
+                        <form action=""> 
+                                <div className={styles.header}>
+                                    <BackButton className={styles.backBtn} />
+                                    <h1 className={styles.title}>Sign Up</h1>
                                 </div>
 
-                            <button type="submit" className={styles.submitBtn}>Sign Up</button>
+                                    <div className={styles.inputBox}>
+                                        <input type="text" placeholder="First name"></input>
+                                    </div>
+                                    <div className={styles.inputBox}>
+                                        <input type="text" placeholder="Last name"></input>
+                                    </div>
+                                    <div className={styles.inputBox}>
+                                        <input type="text" placeholder="Age"></input>
+                                    </div>
+                                    <div className={styles.inputBox}>
+                                        <input type="text" placeholder="Email"></input>
+                                    </div>
+                                    <div className={styles.inputBox}>
+                                        <input type="text" placeholder="Phone"></input>
+                                    </div>
+                                    <div className={styles.inputBox}>
+                                        <input type="text" placeholder="Login"></input>
+                                    </div>
+                                    <div className={styles.inputBox}>
+                                        <input type="text" placeholder="Password"></input>
+                                    </div>
 
-                            <div className={styles.loginLink}>
-                                <p>Already have an account? <Link to="/login" className={styles.link}>Login</Link></p>
-                            </div>
-                    </form>
-            </div>
+                                <button type="submit" className={styles.submitBtn}>Sign Up</button>
+
+                                <div className={styles.loginLink}>
+                                    <p>Already have an account? <Link to="/login" className={styles.link}>Login</Link></p>
+                                </div>
+                        </form>
+                    </div>
+                </div>
             </AnimatedPage>
     )
 

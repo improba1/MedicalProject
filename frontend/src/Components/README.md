@@ -11,3 +11,7 @@
 ## PatintList - container for the list of patients.
 
 ## HeartBackground - heart icon on the background of main screens.
+
+## HeaderWithoutProfile - static header for almost all screens.
+
+## HeaderWithProfile - static header for user's main screens.

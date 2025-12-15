@@ -1,0 +1,73 @@
+.pageContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    background-color: black;
+}
+
+.mainContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 75vh;
+    width: 100%;
+}
+
+.title {
+    color: white;
+    font-size: 4rem;
+    font-weight: 600;
+}
+
+.actionCard {
+    width: 450px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.inputBox input {
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    outline: none;
+    border: 1px solid grey;
+    border-radius: 40px;
+    font-size: 16px;
+    padding: 20px 25px;
+    color: white;
+}
+
+.inputBox input::placeholder {
+    color: rgb(95, 91, 91);
+}
+
+.removeBtn {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 18px 0;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 0.2s, opacity 0.2s;
+    cursor: pointer;
+    border: none;
+    color: white;
+    background-color: #6C5CE7;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+.removeBtn:active {
+    transform: scale(0.98);
+}
+
+.removeBtn:hover {
+    opacity: 0.9;
+}
