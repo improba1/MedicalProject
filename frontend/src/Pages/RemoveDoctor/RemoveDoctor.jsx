@@ -4,6 +4,8 @@ import styles from './RemoveDoctor.module.css';
 import AnimatedPage from '../../Components/AnimatedPage/AnimatedPage';
 import HeaderWithoutProfile from '../../Components/HeaderWithoutProfile/HeaderWithoutProfile'
 
+
+
 const RemoveDoctor = () => {
     return (
         <AnimatedPage>
