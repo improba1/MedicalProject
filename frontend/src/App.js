@@ -10,6 +10,14 @@ import DoctorHomePage from './Pages/DoctorHomePage/DoctorHomePage';
 import NewRaport from './Pages/NewRaport/NewRaport';
 import ManageSchedule from './Pages/ManageSchedule/ManageSchedule';
 import MyPatients from './Pages/MyPatients/MyPatients';
+import Conclusion from './Pages/Conclusion/Conclusion';
+import RaportAdded from './Pages/RaportAdded/RaportAdded';
+import LabTest from './Pages/LabTest/LabTest';
+import CreateReferral from './Pages/CreateReferral/CreateReferral';
+import Ai from './Pages/Ai/Ai';
+import PatientDetails from './Pages/PatientDetails/PatientDetails';
+import AppointmentDetails from './Pages/AppointmentDetails/AppointmentDetails';
+
 
 import AdminHomePage from './Pages/AdminHomePage/AdminHomePage';
 import RemoveDoctor from './Pages/RemoveDoctor/RemoveDoctor';
@@ -30,6 +38,15 @@ function App() {
         <Route path="/new-raport" element={<NewRaport />} />
         <Route path="/manage-schedule" element={<ManageSchedule />} />
         <Route path="/my-patients" element={<MyPatients name="patient's name" />} />
+        <Route path="/my-patients/:id" element={<PatientDetails />} />
+        <Route path="/conclusion" element={<Conclusion />} />
+        <Route path="/raport-added" element={<RaportAdded />} />
+        <Route path="/lab-test" element={<LabTest />} />
+        <Route path="/create-referral" element={<CreateReferral />} />
+        <Route path="/ai" element={<Ai />} />
+        <Route path="/appointment-details" element={<AppointmentDetails />} />
+        
+
 
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/admin/remove-doctor" element={<RemoveDoctor />} />

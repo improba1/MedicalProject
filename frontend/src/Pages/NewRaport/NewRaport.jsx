@@ -5,6 +5,7 @@ import Background from '../../Components/Background/Background';
 import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
 import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
 import BackBtn from '../../Components/BackButton/BackButton';
+import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
 
 const NewRaport = (props) => {
     return (
@@ -12,6 +13,7 @@ const NewRaport = (props) => {
             <LogOutBtn></LogOutBtn>
             <HealthcareTxt></HealthcareTxt>
             <BackBtn></BackBtn>
+            <MyProfileBtn></MyProfileBtn>
             <span className={styles.newraport}>New raport: <span className={styles.patientname}>{props.name}</span></span>
             <div className={styles.placeholder}>
                 <input className={styles.anamnesis} type="text" placeholder="Anamnesis"></input>
@@ -21,15 +23,19 @@ const NewRaport = (props) => {
             </div>
             <textarea className={styles.additional} type="text" placeholder="Additional notes"></textarea>
 
-            <Link>
+            <Link to="/lab-test">
                 <button className={styles.lab}>Lab test referral</button>
             </Link>
-            <Link>
+            <Link to="/create-referral">
                 <button className={styles.create}>Create referral</button>
             </Link>
             <span className={styles.text}>You can use the AI assistant to analyze patient-reported symptoms. The system will provide a list of likely diagnoses to support your clinical decision-making</span>
-            <button className={styles.ai}>AI assistant</button>
-            <button className={styles.next}>Next step</button>
+            <Link to="/ai">
+                <button className={styles.ai}>AI assistant</button>
+            </Link>
+            <Link to="/conclusion">
+                <button className={styles.next}>Next step</button>
+            </Link>
         </Background>
     );
 };
