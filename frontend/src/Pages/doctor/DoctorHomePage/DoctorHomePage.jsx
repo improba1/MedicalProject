@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 import styles from './DoctorHomePage.module.css';
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import Background from '../../Components/Background/Background';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import Background from '../../../Components/Background/Background';
 
 const MyProfile = (props) => {
     return(

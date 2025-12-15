@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './WelcomeScreen.module.css';
-import AnimatedPage from '../../Components/AnimatedPage/AnimatedPage';
+import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import icon from '../../Assets/applicationIcon.png';
 
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './CreateReferral.module.css';
-import Background from '../../Components/Background/Background';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import BackBtn from '../../Components/BackButton/BackButton';
+import Background from '../../../Components/Background/Background';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import BackBtn from '../../../Components/BackButton/BackButton';
 import { Link } from 'react-router-dom';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 const CreateReferral = () => {
     return (

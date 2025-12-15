@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
 import styles from './MyProfile.module.css';
-import BackBtn from '../../Components/BackButton/BackButton';
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import Background from '../../Components/Background/Background';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import BackBtn from '../../../Components/BackButton/BackButton';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import Background from '../../../Components/Background/Background';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 
 const MyProfile = () => {

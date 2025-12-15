@@ -1,10 +1,10 @@
 import React from 'react';
 import styles from './Ai.module.css';
-import Background from '../../Components/Background/Background';
-import BackBtn from '../../Components/BackButton/BackButton';
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import Background from '../../../Components/Background/Background';
+import BackBtn from '../../../Components/BackButton/BackButton';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 const Ai = () => {
     return (

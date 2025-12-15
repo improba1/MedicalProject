@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Background from '../../Components/Background/Background';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
-import BackBtn from '../../Components/BackButton/BackButton'; 
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
+import Background from '../../../Components/Background/Background';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
+import BackBtn from '../../../Components/BackButton/BackButton'; 
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
 import styles from './AppointmentDetails.module.css';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 const AppointmentDetails = () => {
     const location = useLocation();

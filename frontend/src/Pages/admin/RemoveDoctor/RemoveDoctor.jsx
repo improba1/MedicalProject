@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './RemoveDoctor.module.css';
-import AnimatedPage from '../../Components/AnimatedPage/AnimatedPage';
-import HeaderWithoutProfile from '../../Components/HeaderWithoutProfile/HeaderWithoutProfile'
+import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
+import HeaderWithoutProfile from '../../../Components/HeaderWithoutProfile/HeaderWithoutProfile'
 
 const RemoveDoctor = () => {
     return (

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import Background from '../../Components/Background/Background';
-import BackBtn from '../../Components/BackButton/BackButton';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import Background from '../../../Components/Background/Background';
+import BackBtn from '../../../Components/BackButton/BackButton';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
 import styles from './MyPatients.module.css';
-import PatientsList from '../../Components/PatientList/PatientList';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import PatientsList from '../../../Components/PatientList/PatientList';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 const MyPatients = () => {
     return (

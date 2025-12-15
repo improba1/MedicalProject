@@ -1,11 +1,11 @@
 import React from 'react';
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import Background from '../../Components/Background/Background';
-import BackBtn from '../../Components/BackButton/BackButton';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import Background from '../../../Components/Background/Background';
+import BackBtn from '../../../Components/BackButton/BackButton';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
 import styles from './EditRaport.module.css';
 import { Link } from 'react-router-dom';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 const EditRaport = (props) => {
     return (
