@@ -2,27 +2,27 @@ import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
-import LoginForm from './Pages/LoginForm/LoginForm';
-import SignUpForm from './Pages/SignUpForm/SignUp';
-import WelcomeScreen from './Pages/WelcomeScreen/WelcomeScreen';
-import MyProfile from './Pages/MyProfile/MyProfile';
-import DoctorHomePage from './Pages/DoctorHomePage/DoctorHomePage';
-import NewRaport from './Pages/NewRaport/NewRaport';
-import ManageSchedule from './Pages/ManageSchedule/ManageSchedule';
-import MyPatients from './Pages/MyPatients/MyPatients';
-import Conclusion from './Pages/Conclusion/Conclusion';
-import RaportAdded from './Pages/RaportAdded/RaportAdded';
-import LabTest from './Pages/LabTest/LabTest';
-import CreateReferral from './Pages/CreateReferral/CreateReferral';
-import Ai from './Pages/Ai/Ai';
-import PatientDetails from './Pages/PatientDetails/PatientDetails';
-import AppointmentDetails from './Pages/AppointmentDetails/AppointmentDetails';
-import EditRaport from './Pages/EditRaport/EditRaport';
-import EditProfile from './Pages/EditProfile/EditProfile';
+import LoginForm from './Pages/all/LoginForm/LoginForm';
+import SignUpForm from './Pages/all/SignUpForm/SignUp';
+import WelcomeScreen from './Pages/all/WelcomeScreen/WelcomeScreen';
+import MyProfile from './Pages/all/MyProfile/MyProfile';
+import DoctorHomePage from './Pages/doctor/DoctorHomePage/DoctorHomePage';
+import NewRaport from './Pages/doctor/NewRaport/NewRaport';
+import ManageSchedule from './Pages/doctor/ManageSchedule/ManageSchedule';
+import MyPatients from './Pages/doctor/MyPatients/MyPatients';
+import Conclusion from './Pages/doctor/Conclusion/Conclusion';
+import RaportAdded from './Pages/doctor/RaportAdded/RaportAdded';
+import LabTest from './Pages/doctor/LabTest/LabTest';
+import CreateReferral from './Pages/doctor/CreateReferral/CreateReferral';
+import Ai from './Pages/doctor/Ai/Ai';
+import PatientDetails from './Pages/doctor/PatientDetails/PatientDetails';
+import AppointmentDetails from './Pages/doctor/AppointmentDetails/AppointmentDetails';
+import EditRaport from './Pages/doctor/EditRaport/EditRaport';
+import EditProfile from './Pages/all/EditProfile/EditProfile';
 
 
-import AdminHomePage from './Pages/AdminHomePage/AdminHomePage';
-import RemoveDoctor from './Pages/RemoveDoctor/RemoveDoctor';
+import AdminHomePage from './Pages/admin/AdminHomePage/AdminHomePage';
+import RemoveDoctor from './Pages/admin/RemoveDoctor/RemoveDoctor';
 
 function App() {
   const location = useLocation();

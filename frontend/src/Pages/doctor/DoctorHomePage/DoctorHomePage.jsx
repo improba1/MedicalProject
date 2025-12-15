@@ -27,7 +27,6 @@ const MyProfile = (props) => {
                         <button className={styles.button2}>My patients</button>
                     </Link>
                  </div>
-                 {/* <img src={src} className={styles.img}></img> */}
             </Background>
            
     )
