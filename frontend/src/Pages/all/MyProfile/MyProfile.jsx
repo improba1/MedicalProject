@@ -30,9 +30,11 @@ const MyProfile = () => {
                                      </div>
                                  </div>
                              </div>
-                 <button className={styles.button}>
-                    Edit profile
-                 </button>
+                <Link to="/edit-profile">
+                    <button className={styles.button}>
+                        Edit profile
+                    </button>
+                </Link>
             </Background>
             
 

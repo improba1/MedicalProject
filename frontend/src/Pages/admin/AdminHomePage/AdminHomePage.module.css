@@ -6,41 +6,21 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 100px;
     z-index: 10;
-}
-
-.headerLeft {
-    display: flex;
-    align-items: center;
-}
-
-.headerRight {
-    display: flex;
-    align-items: center;
-    gap: 20px;
 }
 
 .titleBlock {
     margin-top: 60px;
+    margin-left: 100px;
     width: 100%;
-    padding-right: 600px;
     box-sizing: border-box;
     z-index: 10;
-    text-align: left;
 }
 
 .title {
     color: white;
     font-size: 4rem;
     font-weight: 600;
-    margin: 0;
 }
 
 .highlight {

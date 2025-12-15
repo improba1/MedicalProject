@@ -1,3 +1,11 @@
+.pageContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+}
+
 .backBtn{
     position:absolute;
     top: 30px;
@@ -9,11 +17,12 @@
 .wrapper{
     position: relative;
     width: 420px;
-    height: 450px;
+    height: 700px;
     background-color: rgb(24, 24, 24);
     border-radius: 40px;
     padding: 30px 40px;
     z-index: 10;
+
 }
 
 .wrapper .header h1{
@@ -25,7 +34,7 @@
     position: relative;
     width: 100%;
     height: 50px;
-    margin: 40px 0;
+    margin: 20px 0;
 }
 
 .inputBox input{
@@ -68,7 +77,7 @@
 .wrapper .submitBtn{
     width: 100%;
     height: 45px;
-    margin-top: 30px;
+    margin-top: 10px;
     background: #F5782D;
     border: none;
     outline: none;
@@ -80,24 +89,24 @@
     color: white;
 }
 
-.wrapper .registerLink{
+.wrapper .loginLink{
     font-size: 14.5px;
     text-align: center;
     margin-top: 20px;
 }
 
-.registerLink p{
+.loginLink p{
     color: white;
     text-decoration: none;
     font-weight: 600;
 }
 
-.transLink{
+.link{
     color: #F5782D;
     text-decoration: none;
     font-weight: 600;
 }
 
-.transLink:hover{
+.link:hover{
     text-decoration: underline;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Background from '../../Components/Background/Background';
 import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
 import BackBtn from '../../Components/BackButton/BackButton'; 
@@ -52,12 +52,11 @@ const AppointmentDetails = () => {
                             </a>
                         </div>
                     </div>
-
-                    {/* Правая часть: Кнопка редактирования */}
-                    <button className={styles.editBtn}>
-                        Edit raport
-                    </button>
-                    
+                    <Link to="/edit-raport">
+                        <button className={styles.editBtn}>
+                            Edit raport
+                        </button>
+                    </Link>
                 </div>
             </div>
         </Background>

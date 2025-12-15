@@ -17,9 +17,12 @@ import CreateReferral from './Pages/CreateReferral/CreateReferral';
 import Ai from './Pages/Ai/Ai';
 import PatientDetails from './Pages/PatientDetails/PatientDetails';
 import AppointmentDetails from './Pages/AppointmentDetails/AppointmentDetails';
+import EditRaport from './Pages/EditRaport/EditRaport';
+import EditProfile from './Pages/EditProfile/EditProfile';
 
 
 import AdminHomePage from './Pages/AdminHomePage/AdminHomePage';
+import RemoveDoctor from './Pages/RemoveDoctor/RemoveDoctor';
 
 function App() {
   const location = useLocation();
@@ -44,10 +47,13 @@ function App() {
         <Route path="/create-referral" element={<CreateReferral />} />
         <Route path="/ai" element={<Ai />} />
         <Route path="/appointment-details" element={<AppointmentDetails />} />
+        <Route path="/edit-raport" element={<EditRaport />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
         
 
 
         <Route path="/admin" element={<AdminHomePage />} />
+        <Route path="/admin/remove-doctor" element={<RemoveDoctor />} />
         
         
       </Routes>
