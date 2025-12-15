@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Background from '../../Components/Background/Background';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
-import BackBtn from '../../Components/BackButton/BackButton'; 
+import Background from '../../../Components/Background/Background';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
+import BackBtn from '../../../Components/BackButton/BackButton'; 
 import styles from './PatientDetails.module.css';
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 const PatientDetails = () => {
     const navigate = useNavigate();

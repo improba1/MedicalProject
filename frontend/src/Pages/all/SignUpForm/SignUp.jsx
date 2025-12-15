@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styles from './SignUp.module.css';
 import { Link } from 'react-router-dom';
-import AnimatedPage from '../../Components/AnimatedPage/AnimatedPage';
-import BackButton from '../../Components/BackButton/BackButton';
+import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
+import BackButton from '../../../Components/BackButton/BackButton';
 
 
 const SignUpForm = () => {

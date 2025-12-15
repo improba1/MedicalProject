@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import Background from '../../Components/Background/Background';
-import LogOutBtn from '../../Components/LogOutButton/LogOutButton';
-import BackBtn from '../../Components/BackButton/BackButton';
+import Background from '../../../Components/Background/Background';
+import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
+import BackBtn from '../../../Components/BackButton/BackButton';
 import styles from './ManageSchedule.module.css';
-import HealthcareTxt from '../../Components/HealthcareText/Healthcare';
-import MyProfileBtn from '../../Components/MyProfileButton/MyProfileButton';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 const ManageSchedule = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AdminHomePage.module.css';
-import AnimatedPage from '../../Components/AnimatedPage/AnimatedPage';
-import HeartBackground from '../../Components/HeartBackground/HeartBackground';
-import HeaderWithProfile from '../../Components/HeaderWithProfile/HeaderWithProfile'
+import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
+import HeartBackground from '../../../Components/HeartBackground/HeartBackground';
+import HeaderWithProfile from '../../../Components/HeaderWithProfile/HeaderWithProfile'
 
 
 const AdminHomePage = () => {

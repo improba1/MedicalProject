@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './EditProfile.module.css';
-import Background from '../../Components/Background/Background';
-import BackBtn from '../../Components/BackButton/BackButton';
+import Background from '../../../Components/Background/Background';
+import BackBtn from '../../../Components/BackButton/BackButton';
 import { Link } from 'react-router-dom';
 
 const EditProfile = () => {

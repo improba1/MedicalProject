@@ -3,8 +3,8 @@ import styles from './LoginForm.module.css';
 import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { Link } from 'react-router-dom';
-import AnimatedPage from '../../Components/AnimatedPage/AnimatedPage';
-import BackButton from '../../Components/BackButton/BackButton';
+import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
+import BackButton from '../../../Components/BackButton/BackButton';
 
 
 const LoginForm = () => {
