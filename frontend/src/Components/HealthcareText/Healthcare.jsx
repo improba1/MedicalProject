@@ -8,5 +8,3 @@ const Healthcare = () => {
 };
 
 export default Healthcare;
-
-<span className={styles.healthcare}>Healthcare</span>
