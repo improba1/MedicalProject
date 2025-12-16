@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './SecondHealthcareText';
+import styles from './SecondHealthcareText.module.css';
 
 const SecondHealthcare = () => {
     return (
