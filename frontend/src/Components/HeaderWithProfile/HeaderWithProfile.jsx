@@ -1,17 +1,15 @@
 import React from 'react';
 import styles from './HeaderWithProfile.module.css';
 
-import BackBtn from '../BackButton/BackButton'; 
-import HealthcareTxt from '../HealthcareText/Healthcare';
-import LogOutBtn from '../LogOutButton/LogOutButton';
-import MyProfileBtn from '../MyProfileButton/MyProfileButton';
+import HealthcareTxt from '../SecondHealthcareText/SecondHealthcareText';
+import LogOutBtn from '../SecondLogOutButton/SecondLogOutButton';
+import MyProfileBtn from '../SecondMyProfileButton/SecondMyProfileButton';
 
 
 const HeaderWithProfile = () => {
     return (
         <header className={styles.header}>
             <div className={styles.leftGroup}>
-                <BackBtn />
                 <HealthcareTxt />
             </div>
             <div className={styles.rightGroup}>

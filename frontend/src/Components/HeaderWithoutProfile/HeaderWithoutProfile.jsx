@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './HeaderWithoutProfile.module.css';
 
-import BackBtn from '../BackButton/BackButton'; 
-import HealthcareTxt from '../HealthcareText/Healthcare';
-import LogOutBtn from '../LogOutButton/LogOutButton';
+import BackBtn from '../SecondBackButton/SecondBackButton'; 
+import HealthcareTxt from '../SecondHealthcareText/SecondHealthcareText';
+import LogOutBtn from '../SecondLogOutButton/SecondLogOutButton';
 
 const HeaderWithoutProfile = () => {
     return (
