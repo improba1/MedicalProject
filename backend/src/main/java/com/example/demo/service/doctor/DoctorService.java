@@ -1,7 +1,6 @@
 package com.example.demo.service.doctor;
 
 import com.example.demo.dto.request.doctor.DoctorSearchRequest;
-import com.example.demo.dto.request.doctor.UpdateDoctorRequest;
 import com.example.demo.model.Doctor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +20,6 @@ public interface DoctorService {
     Doctor getCurrentDoctor();
     Doctor updateCurrentDoctor(Doctor doctor);
     Doctor updateOwnProfileWithImage(Doctor doctor, MultipartFile file);
-    Doctor updateDoctorWithImage(UUID doctorId, UpdateDoctorRequest request, MultipartFile file);
+    Doctor updateDoctorWithImage(Doctor doctor, MultipartFile imageFile);
     void deactivateDoctorProfile(HttpServletRequest request, HttpServletResponse response);
 }

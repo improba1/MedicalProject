@@ -45,9 +45,5 @@ public class Doctor extends User {
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Set<DoctorAvailability> availableSlots = new HashSet<>();
-
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Raport> raports = new ArrayList<>();
 }
