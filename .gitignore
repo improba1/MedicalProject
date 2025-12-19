@@ -3,7 +3,7 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-../src/main/resources/application.properties
+# ../src/main/resources/application.properties
 ### STS ###
 .apt_generated
 .classpath
@@ -12,7 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
-*.properties
+# *.properties
 *.yml
 *.yaml
 
@@ -61,7 +61,7 @@ package-lock.json
 frontend/README.md
 # frontend/package-lock.json
 # frontend/package.json
-package.json
+# package.json
 
 mvnw
 mvnw.cmd
