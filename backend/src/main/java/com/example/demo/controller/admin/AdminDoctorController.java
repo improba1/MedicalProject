@@ -44,15 +44,16 @@ public class AdminDoctorController {
             @PathVariable UUID id,
             @ModelAttribute UpdateDoctorRequest request
     ) {
-        Doctor doctor = doctorService.getById(id);
+        Doctor existing = doctorService.getById(id);                 // 1️⃣ get
+        Doctor mapped = doctorMapper.toUpdatedEntity(existing, request); // 2️⃣ map
+        Doctor saved = doctorService.updateDoctorWithImage(mapped, request.getImage()); // 3️⃣ save
+        DoctorResponse response = doctorMapper.toResponse(saved);     // 4️⃣ response
 
-        doctorMapper.updateEntity(doctor, request);
-
-        Doctor updated = doctorService.updateDoctorWithImage(id, request, request.getImage());
-        DoctorResponse response = doctorMapper.toResponse(updated);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Doctor updated successfully", response));
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Doctor updated successfully",
+                response
+        ));
     }
 
     @GetMapping("/get/{id}")

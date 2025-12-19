@@ -36,10 +36,17 @@ public class DoctorMapper {
                 .build();
     }
 
-    public void updateEntity(Doctor doctor, UpdateDoctorRequest request) {
-        if (request.getQualification() != null) doctor.setQualification(request.getQualification());
-        if (request.getRating() != null) doctor.setRating(request.getRating());
-        if (request.getAddress() != null) doctor.setAddress(request.getAddress());
+    public Doctor toUpdatedEntity(Doctor existing, UpdateDoctorRequest request) {
+        if (request.getQualification() != null)
+            existing.setQualification(request.getQualification());
+
+        if (request.getRating() != null)
+            existing.setRating(request.getRating());
+
+        if (request.getAddress() != null)
+            existing.setAddress(request.getAddress());
+
+        return existing;
     }
 
     public DoctorResponse toResponse(Doctor doctor) {

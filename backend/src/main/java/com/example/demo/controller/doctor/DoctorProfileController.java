@@ -40,13 +40,17 @@ public class DoctorProfileController {
     public ResponseEntity<ApiResponse<DoctorResponse>> updateProfile(
             @RequestBody UpdateDoctorRequest request
     ) {
-        Doctor doctor = doctorService.getCurrentDoctor();
-        doctorMapper.updateEntity(doctor, request);
-        Doctor updated = doctorService.updateCurrentDoctor(doctor);
-        DoctorResponse response = doctorMapper.toResponse(updated);
+        Doctor current = doctorService.getCurrentDoctor();              // 1️⃣ get
+        Doctor mapped = doctorMapper.toUpdatedEntity(current, request); // 2️⃣ map
+        Doctor saved = doctorService.updateCurrentDoctor(mapped);       // 3️⃣ save
+        DoctorResponse response = doctorMapper.toResponse(saved);       // 4️⃣ response
+
         return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Doctor profile updated successfully", response)
+                ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Doctor profile updated successfully",
+                        response
+                )
         );
     }
 

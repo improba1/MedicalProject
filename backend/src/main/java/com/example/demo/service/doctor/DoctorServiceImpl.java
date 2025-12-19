@@ -83,8 +83,8 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public Doctor updateDoctorWithImage(UUID doctorId, UpdateDoctorRequest request, MultipartFile imageFile) {
-        Doctor doctor = getById(doctorId);
+    public Doctor updateDoctorWithImage(Doctor doctor, MultipartFile imageFile) {
+
         if (imageFile != null && !imageFile.isEmpty()) {
             Image image = (doctor.getImage() == null)
                     ? imageService.saveImage(doctor.getId(), imageFile)
@@ -95,6 +95,7 @@ public class DoctorServiceImpl implements DoctorService {
 
         return doctorRepository.save(doctor);
     }
+
 
     @Override
     public void deactivateDoctorProfile(HttpServletRequest request, HttpServletResponse response) {
