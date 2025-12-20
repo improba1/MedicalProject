@@ -8,10 +8,10 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <version>3.5.5</version>
         <relativePath/>
     </parent>
-    
+
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -23,27 +23,13 @@
         <lombok.version>1.18.32</lombok.version>
         <junit.jupiter.version>5.10.0</junit.jupiter.version>
         <hibernate.version>6.4.4.Final</hibernate.version>
-        <springdoc.version>2.1.0</springdoc.version>
+        <springdoc.version>2.8.14</springdoc.version>
         <modelmapper-spring.version>2.4.4</modelmapper-spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Явна версія Spring Security, щоб перекрити транзитивні версії -->
-        <spring.security.version>6.5.4</spring.security.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- Жорстко імпортуємо BOM Spring Security (версія з патчами) -->
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-bom</artifactId>
-                <version>${spring.security.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <!-- Spring Boot Starters -->
@@ -104,29 +90,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring Security modules: вказано версію явно для перекриття транзитивів -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-
-        <!-- Logback (explicit safe version) -->
+        <!-- Logback -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
@@ -139,7 +103,7 @@
         </dependency>
 
 
-        <!-- Apache Commons Lang (оновлено до версії, що фіксить CVE-2025-48924) -->
+        <!-- Apache Commons Lang -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -177,7 +141,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-            <version>${spring.security.version}</version>
         </dependency>
     </dependencies>
 
