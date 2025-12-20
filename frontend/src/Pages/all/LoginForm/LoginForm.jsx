@@ -9,10 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import { authApi } from '../../../Api/authApi';
 
 
-// TODO
 const LoginForm = () => {
 
-    // 1. Состояние (State) для хранения того, что вводит пользователь
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -20,14 +18,13 @@ const LoginForm = () => {
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault(); // Чтобы страница не перезагружалась
-        setError(''); // Очищаем старые ошибки
+        e.preventDefault();
+        setError(''); 
 
         try {
-            // axios.post('куда', { данные })
             const data = await authApi.login(login, password);
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role);
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
 
             if (data.role === 'DOCTOR') {
                 navigate('/doc-home-page'); 
@@ -78,7 +75,7 @@ const LoginForm = () => {
 
 
 
-                                {error && <div style={{color: 'red'}}></div>}
+                                {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
 
 
 

@@ -9,33 +9,42 @@ import { authApi } from '../../../Api/authApi';
 
 const SignUpForm = () => {
 
-    // 1. Состояние (State) для хранения того, что вводит пользователь
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastNAme] = useState('');
+    const [firstname, setFirstName] = useState('');
+    const [lastname, setLastName] = useState('');
     const [age, setAge] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const [login, setLogin] = useState('');
+    const [nickname, setLogin] = useState(''); // Это username
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     
+    const [sex, setSex] = useState('MALE'); 
+    const [birthDate, setBirthDay] = useState('2000-01-01');
+    const [address, setAddress] = useState('Lublin');
+    
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
-        e.preventDefault(); // Чтобы страница не перезагружалась
-        setError(''); // Очищаем старые ошибки
+        e.preventDefault(); 
+        setError(''); 
+
+        const userData = {
+            firstname: firstname, 
+            lastname: lastname,
+            age: parseInt(age),    
+            email: email,
+            phone: phone,         
+            nickname: nickname,    
+            password: password,
+            sex: sex,             
+            birthDate: birthDate,  
+            address: address
+        };
 
         try {
-            // axios.post('куда', { данные })
-            const data = await authApi.register(firstName, lastName, age, email, phone, login, password);
-            //localStorage.setItem('token', data.token);
-            //localStorage.setItem('role', data.role);
-
-            if (data.role === 'DOCTOR') {
-                 navigate('/login'); 
-            } else {
-                setError('Wrong input');
-            }
+            console.log("Отправляем данные:", userData);
+            const data = await authApi.register(userData);
+            navigate('/login'); 
 
         } catch (err) {
             console.error("Login error:", err);
@@ -54,10 +63,10 @@ const SignUpForm = () => {
                                 </div>
 
                                     <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)}></input>
+                                        <input required type="text" placeholder="First name" value={firstname} onChange={(e) => setFirstName(e.target.value)}></input>
                                     </div>
                                     <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastNAme(e.target.value)}></input>
+                                        <input required type="text" placeholder="Last name" value={lastname} onChange={(e) => setLastName(e.target.value)}></input>
                                     </div>
                                     <div className={styles.inputBox}>
                                         <input required type="text" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)}></input>
@@ -69,13 +78,13 @@ const SignUpForm = () => {
                                         <input required type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)}></input>
                                     </div>
                                     <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="Login" value={login} onChange={(e) => setLogin(e.target.value)}></input>
+                                        <input required type="text" placeholder="Login" value={nickname} onChange={(e) => setLogin(e.target.value)}></input>
                                     </div>
                                     <div className={styles.inputBox}>
                                         <input required type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
                                     </div>
 
-                                    {error && <div style={{color: 'red'}}></div>}
+                                    {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
 
                                 <button type="submit" className={styles.submitBtn}>Sign Up</button>
 
