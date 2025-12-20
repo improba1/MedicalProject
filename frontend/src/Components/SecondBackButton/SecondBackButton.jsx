@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from "react-icons/io";
-import styles from './BackButton.module.css';
+import styles from './SecondBackButton.module.css';
 
-const BackButton = ({ className = '' }) => {
+const SecondBackButton = ({ className = '' }) => {
     const navigate = useNavigate();
 
     const goBack = () => {
@@ -21,4 +21,4 @@ const BackButton = ({ className = '' }) => {
     );
 };
 
-export default BackButton;
+export default SecondBackButton;

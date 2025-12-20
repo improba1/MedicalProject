@@ -1,0 +1,79 @@
+
+.yourprofile{
+    position: fixed;
+    left: 5%;
+    top: 150px;
+    color: white;
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.container {
+    position: fixed;
+    padding-left: 5%;
+    padding-top: 5%;
+    color: white;
+    font-family: 'Arial', sans-serif;
+}
+
+.contentRow {
+    position: fixed;
+    display: flex;
+    left: 5%;
+    top: 30%;
+    align-items: center; 
+    gap: 80px; 
+    flex-wrap: wrap; 
+}
+
+.infoCard {
+    background-color: #1a1a1a; 
+    border-radius: 24px;       
+    padding: 40px;
+    min-width: 350px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+
+.infoRow {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.label {
+    color: #b0b0b0; 
+    font-weight: 400;
+}
+
+.value {
+    color: #ffffff; 
+    font-weight: 400;
+    margin-left: 5px;
+}
+
+.button:hover {
+    background-color: #6a50e0;
+    transform: scale(1.05);
+}
+
+.button{
+    position: fixed;
+    bottom: 5%;
+    right: 4%;
+    width: 20%;
+    height: 8%;
+    border-radius: 50px;
+    background-color: #6C5BD4;
+    color: #FFFFFF;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+
+
+

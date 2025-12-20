@@ -1,0 +1,24 @@
+.header {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 80px;
+    padding-top: 70px;
+    box-sizing: border-box;
+    background-color: transparent;
+    z-index: 10;
+}
+
+.leftGroup {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.rightGroup {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}

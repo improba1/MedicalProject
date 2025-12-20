@@ -1,0 +1,17 @@
+.input{
+    /* background-color: #2f2f2f; */
+    height: 60px;
+    width: 60%;
+    border-radius: 50px;
+    margin: 5px auto; 
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 25px;
+}
+
+.text{
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
