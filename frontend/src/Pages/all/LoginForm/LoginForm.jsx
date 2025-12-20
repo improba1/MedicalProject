@@ -4,7 +4,7 @@ import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { Link } from 'react-router-dom';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
-import BackButton from '../../../Components/BackButton/BackButton';
+import BackButton from '../../../Components/SecondBackButton/SecondBackButton';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../../../Api/authApi';
 

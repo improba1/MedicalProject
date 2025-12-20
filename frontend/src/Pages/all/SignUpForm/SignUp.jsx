@@ -17,9 +17,9 @@ const SignUpForm = () => {
     const [nickname, setLogin] = useState(''); // Это username
     const [password, setPassword] = useState('');
     
-    const [sex, setSex] = useState('MALE'); 
-    const [birthDate, setBirthDay] = useState('2000-01-01');
-    const [address, setAddress] = useState('Lublin');
+    const [sex, setSex] = useState(''); 
+    const [birthDate, setBirthDay] = useState('');
+    const [address, setAddress] = useState('');
     
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -62,27 +62,44 @@ const SignUpForm = () => {
                                     <h1 className={styles.title}>Sign Up</h1>
                                 </div>
 
-                                    <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="First name" value={firstname} onChange={(e) => setFirstName(e.target.value)}></input>
-                                    </div>
-                                    <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="Last name" value={lastname} onChange={(e) => setLastName(e.target.value)}></input>
-                                    </div>
-                                    <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)}></input>
-                                    </div>
-                                    <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}></input>
-                                    </div>
-                                    <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)}></input>
-                                    </div>
-                                    <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="Login" value={nickname} onChange={(e) => setLogin(e.target.value)}></input>
-                                    </div>
-                                    <div className={styles.inputBox}>
-                                        <input required type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
-                                    </div>
+                                    <div className={styles.inputsContainer}>
+                            <div className={styles.leftPart}>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="First name" value={firstname} onChange={(e) => setFirstName(e.target.value)} />
+                                </div>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Last name" value={lastname} onChange={(e) => setLastName(e.target.value)} />
+                                </div>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} />
+                                </div>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                </div>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                                </div>
+                            </div>
+                            
+                            <div className={styles.rightPart}>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Sex" value={sex} onChange={(e) => setSex(e.target.value)} />
+                                </div>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Birthday (yyyy-mm-dd)" value={birthDate} onChange={(e) => setBirthDay(e.target.value)} />
+                                </div>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                                </div>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Login" value={nickname} onChange={(e) => setLogin(e.target.value)} />
+                                </div>
+                                <div className={styles.inputBox}>
+                                    <input required type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                </div>
+                            </div>
+                        </div>
+                                    
 
                                     {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
 
