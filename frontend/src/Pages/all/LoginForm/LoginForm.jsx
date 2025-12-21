@@ -4,9 +4,9 @@ import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { Link } from 'react-router-dom';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
-import BackButton from '../../../Components/BackButton/BackButton';
+import BackButton from '../../../Components/SecondBackButton/SecondBackButton';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../../../Api/authApi';
+import { authApi } from '../../../Api/all/authApi';
 
 
 const LoginForm = () => {
@@ -28,8 +28,10 @@ const LoginForm = () => {
 
             if (data.role === 'DOCTOR') {
                 navigate('/doc-home-page'); 
-            } else if(data.role == 'PATIENT'){
+            } else if(data.role === 'PATIENT'){
                 // navigate('/patient-home-page');
+            }else if(data.role ==='ADMIN'){
+                navigate('/admin');
             }
 
         } catch (err) {

@@ -5,6 +5,7 @@ import BackBtn from '../../../Components/BackButton/BackButton';
 import styles from './ManageSchedule.module.css';
 import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
 import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
+import { scheduleApi } from '../../../Api/doctor/scheduleApi';
 
 const ManageSchedule = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -48,13 +49,35 @@ const ManageSchedule = () => {
     };
 
     // Сохранить расписание
-    const saveSchedule = () => {
-        const schedule = {
-            date: selectedDate.toISOString().split('T')[0],
-            slots: timeSlots
-        };
-        console.log('Saving schedule:', schedule);
-        alert(`Schedule saved for ${schedule.date} with ${schedule.slots.length} slots`);
+    const saveSchedule = async () => {
+        const doctorId = localStorage.getItem('userId');
+        // const doctorId = ''
+        if (!doctorId) {
+            alert("Ошибка: ID врача не найден. Попробуйте перелогиниться.");
+            return;
+        }
+
+        if (timeSlots.length === 0) return;
+
+        try {
+            const dateStr = getDateString(selectedDate);
+            
+            const requests = timeSlots.map(time => {
+                const dateTimeString = `${dateStr}T${time}:00`; 
+                
+                return scheduleApi.addAvailability(doctorId, dateTimeString);
+            });
+
+            await Promise.all(requests);
+
+            alert('Schedule saved successfully!');
+            
+            setTimeSlots([]); 
+            
+        } catch (error) {
+            console.error("Error saving schedule:", error);
+            alert("Ошибка при сохранении. Проверьте консоль.");
+        }
     };
 
     // Форматирование даты
@@ -230,6 +253,7 @@ const ManageSchedule = () => {
 
                         {/* Кнопка сохранения */}
                         <button 
+                        type='submit'
                             className={styles.saveBtn}
                             onClick={saveSchedule}
                             disabled={timeSlots.length === 0}

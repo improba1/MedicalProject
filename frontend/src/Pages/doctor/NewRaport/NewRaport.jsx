@@ -6,12 +6,15 @@ import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
 import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
 import BackBtn from '../../../Components/BackButton/BackButton';
 import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
-import HeaderWithoutProfile from '../../../Components/HeaderWithoutProfile/HeaderWithoutProfile';
 
 const NewRaport = (props) => {
     return (
         <Background>
-            <HeaderWithoutProfile></HeaderWithoutProfile>
+            <LogOutBtn></LogOutBtn>
+            <HealthcareTxt></HealthcareTxt>
+            <BackBtn></BackBtn>
+            <MyProfileBtn></MyProfileBtn>
+            
             <span className={styles.newraport}>New raport: <span className={styles.patientname}>{props.name}</span></span>
             <div className={styles.placeholder}>
                 <input className={styles.anamnesis} type="text" placeholder="Anamnesis"></input>
