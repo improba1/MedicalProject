@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import BackButton from '../../../Components/BackButton/BackButton';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../../../Api/authApi';
+import { authApi } from '../../../Api/all/authApi';
 
 
 const SignUpForm = () => {
@@ -14,9 +14,8 @@ const SignUpForm = () => {
     const [age, setAge] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const [nickname, setLogin] = useState(''); // Это username
+    const [nickname, setLogin] = useState('');
     const [password, setPassword] = useState('');
-    
     const [sex, setSex] = useState(''); 
     const [birthDate, setBirthDay] = useState('');
     const [address, setAddress] = useState('');
@@ -42,12 +41,10 @@ const SignUpForm = () => {
         };
 
         try {
-            console.log("Отправляем данные:", userData);
-            const data = await authApi.register(userData);
+            await authApi.register(userData);
             navigate('/login'); 
 
         } catch (err) {
-            console.error("Login error:", err);
             setError('Wrong input');
         }
     };
@@ -83,10 +80,29 @@ const SignUpForm = () => {
                             
                             <div className={styles.rightPart}>
                                 <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Sex" value={sex} onChange={(e) => setSex(e.target.value)} />
+                                    <select 
+                                        required 
+                                        value={sex} 
+                                        onChange={(e) => setSex(e.target.value)}
+                                        style={{ color: sex ? 'white' : 'grey' }}
+                                    >
+                                        <option value="" disabled>Select Gender</option>
+                                        <option value="MALE">Male</option>
+                                        <option value="FEMALE">Female</option>
+                                    </select>
                                 </div>
                                 <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Birthday (yyyy-mm-dd)" value={birthDate} onChange={(e) => setBirthDay(e.target.value)} />
+                                    <input required 
+                                    type={(birthDate || document.activeElement === document.getElementById('dateInput')) ? "date" : "text"}
+                                    id="dateInput" 
+                                    placeholder="Birthday" 
+                                    value={birthDate} 
+                                    onChange={(e) => setBirthDay(e.target.value)}
+                                    onFocus={(e) => e.target.type = 'date'}
+                                    onBlur={(e) => {
+                                        if (!e.target.value) e.target.type = 'text'; 
+                                    }}
+                                    style={{ color: 'white' }} />
                                 </div>
                                 <div className={styles.inputBox}>
                                     <input required type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
@@ -95,16 +111,12 @@ const SignUpForm = () => {
                                     <input required type="text" placeholder="Login" value={nickname} onChange={(e) => setLogin(e.target.value)} />
                                 </div>
                                 <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                    <input required type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                                 </div>
                             </div>
                         </div>
-                                    
-
                                     {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
-
                                 <button type="submit" className={styles.submitBtn}>Sign Up</button>
-
                                 <div className={styles.loginLink}>
                                     <p>Already have an account? <Link to="/login" className={styles.link}>Login</Link></p>
                                 </div>
