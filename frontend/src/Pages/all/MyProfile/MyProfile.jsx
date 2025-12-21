@@ -18,7 +18,7 @@ const MyProfile = () => {
         const fetchProfile = async () => {
             try {
                 // const userRole = localStorage.getItem('role');
-                const userRole = 'PATIENT'; 
+                const userRole = 'ADMIN'; 
                 setRole(userRole);
                 
                 let data;
@@ -73,6 +73,7 @@ const MyProfile = () => {
                                         <InfoRow value={profile.phone} label="Phone" />
                                         <InfoRow value={profile.address} label="Address" />
                                         <InfoRow value={profile.birthDate} label="Birth day" />
+                                        <InfoRow value={profile.age} label="Age" />
                                         <InfoRow value={profile.sex} label="Sex" />
 
                                         {role === 'DOCTOR' && profile.specialization && (

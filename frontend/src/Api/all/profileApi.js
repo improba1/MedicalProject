@@ -26,5 +26,11 @@ export const profileApi = {
     getAdminProfile: async () => {
         const response = await $api.get('/admin/me/profile/get'); 
         return response.data;
-    }
+    },
+
+    updatePatientProfile: (data) => $api.put('/patient/me/profile/update', data),
+    
+    updateDoctorProfile: (data) => $api.put('/doctor/me/profile/update', data), 
+    
+    updateAdminProfile: (data) => $api.put('/admin/me/profile/update', data),
 };
