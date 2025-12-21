@@ -32,5 +32,5 @@ export const profileApi = {
     
     updateDoctorProfile: (data) => $api.put('/doctor/me/profile/update', data), 
     
-    updateAdminProfile: (data) => $api.put('/admmin/me/profile/update', data),
+    updateAdminProfile: (data) => $api.put('/admin/me/profile/update', data),
 };

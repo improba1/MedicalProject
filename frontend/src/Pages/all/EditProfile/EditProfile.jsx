@@ -50,8 +50,8 @@ const EditProfile = () => {
         const fetchUserData = async () => {
             try {
                 // const userRole = localStorage.getItem('role');
-                const userRole = 'PATIENT';
-                
+                const userRole = 'ADMIN';
+
                 setRole(userRole);
 
                 let data;
