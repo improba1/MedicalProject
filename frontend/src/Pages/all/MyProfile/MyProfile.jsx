@@ -73,6 +73,7 @@ const MyProfile = () => {
                                         <InfoRow value={profile.phone} label="Phone" />
                                         <InfoRow value={profile.address} label="Address" />
                                         <InfoRow value={profile.birthDate} label="Birth day" />
+                                        <InfoRow value={profile.age} label="Age" />
                                         <InfoRow value={profile.sex} label="Sex" />
 
                                         {role === 'DOCTOR' && profile.specialization && (
