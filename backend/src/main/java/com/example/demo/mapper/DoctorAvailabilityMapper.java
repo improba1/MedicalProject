@@ -32,7 +32,6 @@ public class DoctorAvailabilityMapper {
     public DoctorAvailability toEntity(AddAvailabilityRequest request) {
         if (request == null) return null;
         return DoctorAvailability.builder()
-                .doctorId(request.getDoctorId())
                 .availableTime(request.getAvailableTime())
                 .build();
     }
@@ -41,15 +40,7 @@ public class DoctorAvailabilityMapper {
     public DoctorAvailability toEntity(UpdateAvailabilityRequest request) {
         if (request == null) return null;
         return DoctorAvailability.builder()
-                .id(request.getAvailabilityId())
                 .availableTime(request.getNewAvailableTime())
                 .build();
-    }
-
-    // 🔹 Оновлення існуючого ентіті з DTO (корисно для сервісу)
-    public void updateEntity(DoctorAvailability availability, UpdateAvailabilityRequest request) {
-        if (availability != null && request != null) {
-            availability.setAvailableTime(request.getNewAvailableTime());
-        }
     }
 }

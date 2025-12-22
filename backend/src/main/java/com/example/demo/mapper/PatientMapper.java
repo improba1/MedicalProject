@@ -5,12 +5,9 @@ import com.example.demo.dto.request.patient.UpdatePatientRequest;
 import com.example.demo.dto.response.PatientResponse;
 import com.example.demo.enums.Role;
 import com.example.demo.model.Patient;
-import com.example.demo.model.Raport;
-import com.example.demo.model.Visit;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -50,6 +47,7 @@ public class PatientMapper {
                 .email(patient.getEmail())
                 .phone(patient.getPhone())
                 .address(patient.getAddress())
+                .role(patient.getRole() != null ? patient.getRole().name() : null)
                 .build();
     }
 

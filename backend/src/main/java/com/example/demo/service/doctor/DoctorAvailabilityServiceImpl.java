@@ -22,9 +22,15 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
     @Override
     public DoctorAvailability createForDoctor(UUID doctorId, DoctorAvailability availability) {
+
+        if (availabilityRepository.existsByDoctorIdAndAvailableTime(doctorId, availability.getAvailableTime())) {
+            throw new IllegalStateException("This time slot is already taken for this doctor");
+        }
+
         availability.setDoctorId(doctorId);
         return availabilityRepository.save(availability);
     }
+
 
     @Override
     public DoctorAvailability updateForDoctor(UUID doctorId, DoctorAvailability availability) {
@@ -64,6 +70,11 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
     @Override
     public DoctorAvailability create(DoctorAvailability availability) {
         Doctor currentDoctor = getAuthenticatedDoctor();
+
+        if (availabilityRepository.existsByDoctorIdAndAvailableTime(currentDoctor.getId(), availability.getAvailableTime())) {
+            throw new IllegalStateException("This time slot is already taken");
+        }
+
         availability.setDoctorId(currentDoctor.getId());
         return availabilityRepository.save(availability);
     }

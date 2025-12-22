@@ -78,6 +78,7 @@ public class DoctorMapper {
                 .experienceYears(doctor.getExperienceYears())
                 .rating(doctor.getRating())
                 .image(imageResponse)
+                .role(doctor.getRole() != null ? doctor.getRole().name() : null)
                 .build();
     }
 
