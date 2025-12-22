@@ -54,6 +54,7 @@ const EditProfile = () => {
 
                 setRole(userRole);
 
+                
                 let data;
                 if (userRole === 'PATIENT') {
                     const response = await profileApi.getPatientProfile();
