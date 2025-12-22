@@ -4,15 +4,13 @@ import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { Link } from 'react-router-dom';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
-import BackButton from '../../../Components/BackButton/BackButton';
+import BackButton from '../../../Components/SecondBackButton/SecondBackButton';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../../../Api/authApi';
+import { authApi } from '../../../Api/all/authApi';
 
 
-// TODO
 const LoginForm = () => {
 
-    // 1. Состояние (State) для хранения того, что вводит пользователь
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -20,19 +18,20 @@ const LoginForm = () => {
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault(); // Чтобы страница не перезагружалась
-        setError(''); // Очищаем старые ошибки
+        e.preventDefault();
+        setError(''); 
 
         try {
-            // axios.post('куда', { данные })
             const data = await authApi.login(login, password);
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role);
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
 
             if (data.role === 'DOCTOR') {
                 navigate('/doc-home-page'); 
-            } else if(data.role == 'PATIENT'){
+            } else if(data.role === 'PATIENT'){
                 // navigate('/patient-home-page');
+            }else if(data.role ==='ADMIN'){
+                navigate('/admin');
             }
 
         } catch (err) {
@@ -78,7 +77,7 @@ const LoginForm = () => {
 
 
 
-                                {error && <div style={{color: 'red'}}></div>}
+                                {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
 
 
 

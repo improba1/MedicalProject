@@ -1,0 +1,124 @@
+.pageContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    width: 100%;
+}
+
+.backBtn{
+    position: absolute;
+}
+
+.wrapper{
+    position: relative;
+    width: 850px; 
+    height: auto; 
+    min-height: 600px;
+    background-color: rgb(24, 24, 24);
+    border-radius: 40px;
+    padding: 40px 60px;
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+.inputsContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    margin-bottom: 20px;
+}
+
+.leftPart, .rightPart {
+    flex: 1;
+    width: 100%;
+}
+
+.wrapper .header h1{
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.wrapper .inputBox{
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin: 20px 0;
+}
+
+.inputBox input,
+.inputBox select{
+    appearance: none;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    border: none;
+    border: 1px solid grey;
+    border-radius: 40px;
+    font-size: 16px;
+    box-sizing: border-box; 
+    padding: 0px 20px;
+    color: white;
+}
+
+.inputBox select option {
+    color: black;
+    background: white;
+}
+
+.inputBox input::placeholder{
+    color: rgb(95, 91, 91);
+}
+
+.header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+}
+
+.title{
+    margin: 0;
+}
+
+.wrapper .submitBtn{
+    width: 100%;
+    max-width: 400px;
+    display: block;
+    margin: 30px auto 10px auto;
+    height: 45px;
+    background: #F5782D;
+    border: none;
+    outline: none;
+    border-radius: 45px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+}
+
+.wrapper .loginLink{
+    font-size: 14.5px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.loginLink p{
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link{
+    color: #F5782D;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link:hover{
+    text-decoration: underline;
+}
