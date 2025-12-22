@@ -62,8 +62,9 @@ public class AdminDoctorAvailabilityController {
             @PathVariable UUID availabilityId,
             @Valid @RequestBody UpdateAvailabilityRequest request) {
 
-        request.setAvailabilityId(availabilityId);
         DoctorAvailability entity = mapper.toEntity(request);
+        entity.setId(availabilityId);
+
         DoctorAvailability updated = availabilityService.updateForDoctor(doctorId, entity);
 
         return ResponseEntity.ok(ApiResponse.of(
@@ -89,7 +90,7 @@ public class AdminDoctorAvailabilityController {
     }
 
     // ------------------ FILTERS ------------------
-    @GetMapping("/{doctorId}/today")
+    @GetMapping("/get/{doctorId}/today")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> today(@PathVariable UUID doctorId) {
         return ResponseEntity.ok(ApiResponse.of(
@@ -99,7 +100,7 @@ public class AdminDoctorAvailabilityController {
         ));
     }
 
-    @GetMapping("/{doctorId}/next-hour")
+    @GetMapping("/get/{doctorId}/next-hour")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> nextHour(@PathVariable UUID doctorId) {
         return ResponseEntity.ok(ApiResponse.of(
@@ -109,7 +110,7 @@ public class AdminDoctorAvailabilityController {
         ));
     }
 
-    @GetMapping("/{doctorId}/this-week")
+    @GetMapping("/get/{doctorId}/this-week")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> thisWeek(@PathVariable UUID doctorId) {
         return ResponseEntity.ok(ApiResponse.of(
@@ -119,7 +120,7 @@ public class AdminDoctorAvailabilityController {
         ));
     }
 
-    @GetMapping("/{doctorId}/next-week")
+    @GetMapping("/get/{doctorId}/next-week")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> nextWeek(@PathVariable UUID doctorId) {
         return ResponseEntity.ok(ApiResponse.of(
@@ -129,7 +130,7 @@ public class AdminDoctorAvailabilityController {
         ));
     }
 
-    @GetMapping("/{doctorId}/month/{year}/{month}")
+    @GetMapping("/get/{doctorId}/month/{year}/{month}")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byMonth(
             @PathVariable UUID doctorId,
@@ -141,7 +142,7 @@ public class AdminDoctorAvailabilityController {
         ));
     }
 
-    @GetMapping("/{doctorId}/day/{year}/{month}/{day}")
+    @GetMapping("/get/{doctorId}/day/{year}/{month}/{day}")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byDay(
             @PathVariable UUID doctorId,
@@ -153,7 +154,7 @@ public class AdminDoctorAvailabilityController {
         ));
     }
 
-    @GetMapping("/{doctorId}/year/{year}")
+    @GetMapping("/get/{doctorId}/year/{year}")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byYear(
             @PathVariable UUID doctorId,
