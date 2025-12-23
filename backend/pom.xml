@@ -20,53 +20,41 @@
 
     <properties>
         <java.version>21</java.version>
-
-        <spring-framework.version>6.2.11</spring-framework.version>
-        <spring-security.version>6.5.4</spring-security.version>
-        <tomcat.version>10.1.47</tomcat.version>
         <lombok.version>1.18.32</lombok.version>
         <junit.jupiter.version>5.10.0</junit.jupiter.version>
         <hibernate.version>6.4.4.Final</hibernate.version>
         <springdoc.version>2.8.14</springdoc.version>
         <modelmapper-spring.version>2.4.4</modelmapper-spring.version>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
-
-        <!-- Spring Data JPA: ORM, Hibernate integration, repositories -->
+        <!-- Spring Boot Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-
-        <!-- Spring Security: authentication, authorization, filters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-
-        <!-- Bean Validation: @Valid, @NotNull, @Email, @Future, etc. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-
-        <!-- Spring Web: REST controllers, JSON serialization, embedded Tomcat -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
-        <!-- Email sending support: SMTP, MimeMessage, JavaMailSender -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
-        <!-- PostgreSQL JDBC driver for production database access -->
+        <!-- PostgreSQL Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -74,14 +62,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- H2 in-memory database for tests -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Lombok: reduces boilerplate (getters, setters, builders, etc.) -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -90,22 +71,18 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- JWT API: token creation and parsing -->
+        <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.11.5</version>
         </dependency>
-
-        <!-- JWT implementation: cryptographic signing and verification -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
             <version>0.11.5</version>
             <scope>runtime</scope>
         </dependency>
-
-        <!-- JWT Jackson integration: JSON serialization for tokens -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
@@ -113,68 +90,63 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Logback core: base logging engine -->
+        <!-- Logback -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>1.5.19</version>
         </dependency>
-
-        <!-- Logback classic: SLF4J implementation for logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.19</version>
         </dependency>
 
-        <!-- Apache Commons Lang: utilities for strings, objects, numbers -->
+
+        <!-- Apache Commons Lang -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.18.0</version>
         </dependency>
 
-        <!-- Swagger/OpenAPI UI for documenting REST API -->
+        <!-- SpringDoc OpenAPI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
 
-        <!-- ModelMapper: DTO <-> Entity mapping utilities -->
+        <!-- ModelMapper -->
         <dependency>
             <groupId>org.modelmapper.extensions</groupId>
             <artifactId>modelmapper-spring</artifactId>
             <version>${modelmapper-spring.version}</version>
         </dependency>
 
-        <!-- Stripe SDK: payment processing integration -->
+        <!-- Stripe -->
         <dependency>
             <groupId>com.stripe</groupId>
             <artifactId>stripe-java</artifactId>
             <version>24.3.0-beta.1</version>
         </dependency>
 
-        <!-- Spring Boot Test: testing utilities, MockMvc, assertions -->
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- Spring Security Test: @WithMockUser, security context testing -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
-
-            <!-- Enforces Java version compatibility -->
+            <!-- Maven Enforcer Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -196,7 +168,7 @@
                 </executions>
             </plugin>
 
-            <!-- Java compiler configuration: version, Lombok annotation processing -->
+            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -217,7 +189,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Spring Boot plugin: packaging, running, repackaging JAR -->
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -230,8 +202,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
-
 </project>

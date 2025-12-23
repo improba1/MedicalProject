@@ -50,7 +50,6 @@ public class UserMapper {
                 .phone(user.getPhone())
                 .address(user.getAddress())
                 .birthDate(user.getBirthDate())
-                .age(user.getAge())
                 .isActive(user.isActive())
                 .sex(user.getSex() != null ? user.getSex().name() : null)
                 .role(user.getRole() != null ? user.getRole().name() : null)
