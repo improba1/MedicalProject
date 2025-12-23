@@ -4,13 +4,11 @@ import com.example.demo.dto.request.visit.CreateVisitRequest;
 import com.example.demo.dto.request.visit.UpdateVisitRequest;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.enums.VisitStatus;
-import com.example.demo.model.Doctor;
-import com.example.demo.model.Patient;
-import com.example.demo.model.Raport;
-import com.example.demo.model.Visit;
+import com.example.demo.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,8 +31,21 @@ public class VisitMapper {
                 .collect(Collectors.toList());
     }
 
-    // 🔹 Створення Visit з DTO
-    public Visit fromCreateRequest(CreateVisitRequest request, Doctor doctor, Patient patient, Raport raport) {
+    public Visit fromCreateRequest(CreateVisitRequest request) {
+        // Ми не звертаємося до БД в мапері — але створюємо легкі об'єкти з id,
+        // які сервіс потім резолвить повністю через репозиторії.
+        Doctor doctor = new Doctor();
+        doctor.setId(request.getDoctorId());
+
+        Patient patient = new Patient();
+        patient.setId(request.getPatientId());
+
+        Raport raport = null;
+        if (request.getRaportId() != null) {
+            raport = new Raport();
+            raport.setId(request.getRaportId());
+        }
+
         return Visit.builder()
                 .doctor(doctor)
                 .patient(patient)
@@ -44,14 +55,18 @@ public class VisitMapper {
                 .build();
     }
 
-    // 🔹 Оновлення Visit з DTO
-    public Visit fromUpdateRequest(Visit visit, UpdateVisitRequest request) {
+    public Visit toUpdateEntity(UUID id, UpdateVisitRequest request) {
+        Visit visit = new Visit();
+        visit.setId(id);
+
         if (request.getNewAppointmentTime() != null) {
             visit.setAppointmentTime(request.getNewAppointmentTime());
         }
-        if (request.getStatus() != null) {
+
+        if (request.getStatus() != null && !request.getStatus().isBlank()) {
             visit.setStatus(VisitStatus.valueOf(request.getStatus().toUpperCase()));
         }
+
         return visit;
     }
 }

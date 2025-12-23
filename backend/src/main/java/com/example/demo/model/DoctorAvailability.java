@@ -25,4 +25,7 @@ public class DoctorAvailability {
 
     @Column(name = "available_time")
     private LocalDateTime availableTime;
+
+    @Column(name = "is_active")
+    private boolean isActive;
 }

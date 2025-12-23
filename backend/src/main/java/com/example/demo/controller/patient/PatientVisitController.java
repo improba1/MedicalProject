@@ -24,16 +24,6 @@ public class PatientVisitController {
     private final VisitService visitService;
     private final VisitMapper visitMapper;
 
-    // 🔹 Записатись до лікаря
-    @PostMapping("/book/{doctorId}")
-    public ResponseEntity<ApiResponse<VisitResponse>> bookVisit(@PathVariable UUID doctorId,
-                                                                @RequestParam String appointmentTime) {
-        Visit visit = visitService.bookVisit(doctorId, LocalDateTime.parse(appointmentTime)); // сервіс → ентіті
-        VisitResponse response = visitMapper.toResponse(visit);                               // ентіті → DTO
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(HttpStatus.CREATED.value(), "Visit booked successfully", response));
-    }
-
     // 🔹 Змінити запис
     @PutMapping("/reschedule/{visitId}")
     public ResponseEntity<ApiResponse<VisitResponse>> rescheduleVisit(@PathVariable UUID visitId,
