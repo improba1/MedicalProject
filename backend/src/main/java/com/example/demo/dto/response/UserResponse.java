@@ -22,7 +22,6 @@ public class UserResponse {
     private String phone;
     private String address;
     private LocalDate birthDate;
-    private int age;
     private String sex;
     private boolean isActive;
     private String role;
