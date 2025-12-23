@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,7 +18,5 @@ public class PatientResponse{
     private String phone;
     private String address;
     private LocalDate birthDate;
-    private int age;
     private String sex;
-    private String role;
 }

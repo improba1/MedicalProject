@@ -1,0 +1,94 @@
+.pageContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #000; 
+}
+
+.wrapper {
+    width: 380px;
+    background-color: #1c1c1e;
+    border-radius: 45px;    
+    padding: 50px 30px;      
+    display: flex;
+    flex-direction: column;
+    align-items: center;      
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+}
+
+.logoContainer {
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 150px;
+    height: auto;
+    object-fit: contain;
+}
+
+.textBlock {
+    margin-bottom: 50px;
+}
+
+.title {
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+.subtitle {
+    color: #8e8e93; 
+    font-size: 14px;
+    margin: 0;
+}
+
+.buttonGroup {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+
+.signInBtn, .signUpBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 18px 0;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s, opacity 0.2s;
+    cursor: pointer;
+}
+
+
+.signInBtn:active, .signUpBtn:active {
+    transform: scale(0.98);
+}
+
+.signInBtn {
+    background-color: #F5782D;
+    color: white;
+    border: none;
+}
+
+.signInBtn:hover {
+    box-shadow: 0 4px 15px rgba(235, 95, 49, 0.3);
+}
+
+.signUpBtn {
+    background-color: transparent;
+    color: white;
+    border: 1px solid #555;
+}
+
+.signUpBtn:hover {
+    box-shadow: 0 4px 15px rgba(235, 95, 49, 0.3);
+
+}

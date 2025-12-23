@@ -13,8 +13,12 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
 
     List<DoctorAvailability> findByDoctorId(UUID doctorId);
 
-    boolean existsByDoctorIdAndAvailableTime(UUID doctorId, LocalDateTime availableTime);
+    List<DoctorAvailability> findByDoctorIdAndAvailableTimeAfter(UUID doctorId, LocalDateTime date);
+
+    boolean existsByDoctorIdAndAvailableTime(UUID doctorId, LocalDateTime time);
 
     // 🔹 Пошук у діапазоні дат
-    List<DoctorAvailability> findByDoctorIdAndAvailableTimeBetween(UUID doctorId, LocalDateTime start, LocalDateTime end);
+    List<DoctorAvailability> findByDoctorIdAndAvailableTimeBetween(UUID doctorId,
+                                                                   LocalDateTime start,
+                                                                   LocalDateTime end);
 }
