@@ -43,10 +43,8 @@ public class AdminDoctorAvailabilityController {
     public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> createForDoctor(
             @PathVariable UUID doctorId,
             @Valid @RequestBody AddAvailabilityRequest request) {
-
         DoctorAvailability entity = mapper.toEntity(request);
         DoctorAvailability saved = availabilityService.createForDoctor(doctorId, entity);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(
                 HttpStatus.CREATED.value(),
                 "Availability created successfully",
@@ -61,12 +59,10 @@ public class AdminDoctorAvailabilityController {
             @PathVariable UUID doctorId,
             @PathVariable UUID availabilityId,
             @Valid @RequestBody UpdateAvailabilityRequest request) {
-
-        DoctorAvailability entity = mapper.toEntity(request);
-        entity.setId(availabilityId);
-
-        DoctorAvailability updated = availabilityService.updateForDoctor(doctorId, entity);
-
+        DoctorAvailability updateEntity =
+                mapper.toUpdateEntity(availabilityId, request);
+        DoctorAvailability updated =
+                availabilityService.updateForDoctor(doctorId, updateEntity);
         return ResponseEntity.ok(ApiResponse.of(
                 HttpStatus.OK.value(),
                 "Availability updated successfully",

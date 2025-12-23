@@ -8,14 +8,12 @@ import com.example.demo.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
 public class VisitMapper {
 
-    // ============================
-    // ENTITY → RESPONSE DTO
-    // ============================
     public VisitResponse toResponse(Visit visit) {
         return VisitResponse.builder()
                 .id(visit.getId())
@@ -33,9 +31,6 @@ public class VisitMapper {
                 .collect(Collectors.toList());
     }
 
-    // ============================
-    // CREATE DTO → ENTITY
-    // ============================
     public Visit fromCreateRequest(CreateVisitRequest request) {
         // Ми не звертаємося до БД в мапері — але створюємо легкі об'єкти з id,
         // які сервіс потім резолвить повністю через репозиторії.
@@ -60,21 +55,18 @@ public class VisitMapper {
                 .build();
     }
 
-    // ============================
-    // UPDATE DTO → часткова ENTITY (має id та поля, які треба оновити)
-    // ============================
-    public Visit fromUpdateRequest(java.util.UUID id, UpdateVisitRequest request) {
-        Visit v = new Visit();
-        v.setId(id);
+    public Visit toUpdateEntity(UUID id, UpdateVisitRequest request) {
+        Visit visit = new Visit();
+        visit.setId(id);
 
         if (request.getNewAppointmentTime() != null) {
-            v.setAppointmentTime(request.getNewAppointmentTime());
+            visit.setAppointmentTime(request.getNewAppointmentTime());
         }
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            v.setStatus(VisitStatus.valueOf(request.getStatus().toUpperCase()));
+            visit.setStatus(VisitStatus.valueOf(request.getStatus().toUpperCase()));
         }
 
-        return v;
+        return visit;
     }
 }

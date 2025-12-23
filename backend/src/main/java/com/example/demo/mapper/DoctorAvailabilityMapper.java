@@ -7,43 +7,48 @@ import com.example.demo.model.DoctorAvailability;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Component
 public class DoctorAvailabilityMapper {
 
-    // 🔹 Ентіті → DTO (Response)
-    public DoctorAvailabilityResponse toResponse(DoctorAvailability availability) {
-        if (availability == null) return null;
-        return DoctorAvailabilityResponse.builder()
-                .id(availability.getId())
-                .doctorId(availability.getDoctorId())
-                .availableTime(availability.getAvailableTime())
-                .isActive(availability.isActive())
-                .build();
+    // CREATE
+    public DoctorAvailability toEntity(AddAvailabilityRequest request) {
+        DoctorAvailability availability = new DoctorAvailability();
+        availability.setAvailableTime(request.getAvailableTime());
+        availability.setActive(true);
+        return availability;
+    }
+
+    // UPDATE
+    public DoctorAvailability toUpdateEntity(
+            UUID availabilityId,
+            UpdateAvailabilityRequest request
+    ) {
+        DoctorAvailability availability = new DoctorAvailability();
+        availability.setId(availabilityId);
+
+        if (request.getNewAvailableTime() != null) {
+            availability.setAvailableTime(request.getNewAvailableTime());
+        }
+
+        return availability;
     }
 
     public List<DoctorAvailabilityResponse> toResponseList(List<DoctorAvailability> availabilities) {
         return availabilities.stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    // 🔹 DTO (AddAvailabilityRequest) → Ентіті
-    public DoctorAvailability toEntity(AddAvailabilityRequest request) {
-        if (request == null) return null;
-        return DoctorAvailability.builder()
-                .isActive(true)
-                .availableTime(request.getAvailableTime())
-                .build();
-    }
 
-    // 🔹 DTO (UpdateAvailabilityRequest) → Ентіті (оновлення існуючого слота)
-    public DoctorAvailability toEntity(UpdateAvailabilityRequest request) {
-        if (request == null) return null;
-        return DoctorAvailability.builder()
-                .isActive(request.isActive())
-                .availableTime(request.getNewAvailableTime())
+    // RESPONSE
+    public DoctorAvailabilityResponse toResponse(DoctorAvailability availability) {
+        return DoctorAvailabilityResponse.builder()
+                .id(availability.getId())
+                .doctorId(availability.getDoctorId())
+                .availableTime(availability.getAvailableTime())
+                .isActive(availability.isActive())
                 .build();
     }
 }

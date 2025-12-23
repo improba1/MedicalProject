@@ -67,32 +67,40 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     public Visit updateVisit(Visit visitUpdate) {
-        if (visitUpdate.getId() == null) {
-            throw new EntityNotFoundException("Visit id is required for update");
-        }
         Visit visit = visitRepository.findById(visitUpdate.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
+
         UUID doctorId = visit.getDoctor().getId();
-        LocalDateTime newAppointmentTime = visitUpdate.getAppointmentTime();
-        if (newAppointmentTime != null && !newAppointmentTime.equals(visit.getAppointmentTime())) {
+
+        if (visitUpdate.getAppointmentTime() != null &&
+                !visitUpdate.getAppointmentTime().equals(visit.getAppointmentTime())) {
+
+            LocalDateTime newTime = visitUpdate.getAppointmentTime();
+
             DoctorAvailability newSlot = availabilityRepository
-                    .findByDoctorIdAndAvailableTimeAndIsActiveTrue(doctorId, newAppointmentTime)
+                    .findByDoctorIdAndAvailableTimeAndIsActiveTrue(doctorId, newTime)
                     .orElseThrow(() -> new IllegalStateException(
                             "Doctor does not have an available slot at the new time"
                     ));
 
-            availabilityRepository.findByDoctorIdAndAvailableTime(doctorId, visit.getAppointmentTime())
-                    .ifPresent(slot -> {
-                        slot.setActive(true);
-                        availabilityRepository.save(slot);
-                    });
+            availabilityRepository.findByDoctorIdAndAvailableTime(
+                    doctorId,
+                    visit.getAppointmentTime()
+            ).ifPresent(slot -> {
+                slot.setActive(true);
+                availabilityRepository.save(slot);
+            });
+
             newSlot.setActive(false);
             availabilityRepository.save(newSlot);
-            visit.setAppointmentTime(newAppointmentTime);
+
+            visit.setAppointmentTime(newTime);
         }
+
         if (visitUpdate.getStatus() != null) {
             visit.setStatus(visitUpdate.getStatus());
         }
+
         return visitRepository.save(visit);
     }
 

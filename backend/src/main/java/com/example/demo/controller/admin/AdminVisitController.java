@@ -41,9 +41,9 @@ public class AdminVisitController {
     public ResponseEntity<ApiResponse<VisitResponse>> updateVisit(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateVisitRequest request) {
-        Visit updateEntity = visitMapper.fromUpdateRequest(id, request);
-        Visit updated = visitService.updateVisit(updateEntity);
-        VisitResponse response = visitMapper.toResponse(updated);
+        Visit updateEntity = visitMapper.toUpdateEntity(id, request);
+        Visit saved = visitService.updateVisit(updateEntity);
+        VisitResponse response = visitMapper.toResponse(saved);
         return ResponseEntity.ok(ApiResponse.of(200, "Visit updated successfully", response));
     }
 
