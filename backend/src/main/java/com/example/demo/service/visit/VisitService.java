@@ -10,18 +10,15 @@ public interface VisitService {
 
     Visit getById(UUID id);
 
-    Visit create(Visit visit);
+    Visit createVisit(Visit visit);
 
-    Visit update(Visit visit);
+    Visit updateVisit(Visit visitUpdate);
 
     void delete(UUID id);
 
     List<Visit> getByDoctor(UUID doctorId);
 
     List<Visit> getByPatient(UUID patientId);
-
-    // 🔹 нові методи для пацієнта
-    Visit bookVisit(UUID doctorId, LocalDateTime appointmentTime);
 
     Visit rescheduleVisit(UUID visitId, LocalDateTime newTime);
 

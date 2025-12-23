@@ -19,6 +19,7 @@ public class DoctorAvailabilityMapper {
                 .id(availability.getId())
                 .doctorId(availability.getDoctorId())
                 .availableTime(availability.getAvailableTime())
+                .isActive(availability.isActive())
                 .build();
     }
 
@@ -32,6 +33,7 @@ public class DoctorAvailabilityMapper {
     public DoctorAvailability toEntity(AddAvailabilityRequest request) {
         if (request == null) return null;
         return DoctorAvailability.builder()
+                .isActive(true)
                 .availableTime(request.getAvailableTime())
                 .build();
     }
@@ -40,6 +42,7 @@ public class DoctorAvailabilityMapper {
     public DoctorAvailability toEntity(UpdateAvailabilityRequest request) {
         if (request == null) return null;
         return DoctorAvailability.builder()
+                .isActive(request.isActive())
                 .availableTime(request.getNewAvailableTime())
                 .build();
     }

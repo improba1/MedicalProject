@@ -4,10 +4,7 @@ import com.example.demo.dto.request.visit.CreateVisitRequest;
 import com.example.demo.dto.request.visit.UpdateVisitRequest;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.enums.VisitStatus;
-import com.example.demo.model.Doctor;
-import com.example.demo.model.Patient;
-import com.example.demo.model.Raport;
-import com.example.demo.model.Visit;
+import com.example.demo.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,6 +13,9 @@ import java.util.stream.Collectors;
 @Component
 public class VisitMapper {
 
+    // ============================
+    // ENTITY → RESPONSE DTO
+    // ============================
     public VisitResponse toResponse(Visit visit) {
         return VisitResponse.builder()
                 .id(visit.getId())
@@ -33,8 +33,24 @@ public class VisitMapper {
                 .collect(Collectors.toList());
     }
 
-    // 🔹 Створення Visit з DTO
-    public Visit fromCreateRequest(CreateVisitRequest request, Doctor doctor, Patient patient, Raport raport) {
+    // ============================
+    // CREATE DTO → ENTITY
+    // ============================
+    public Visit fromCreateRequest(CreateVisitRequest request) {
+        // Ми не звертаємося до БД в мапері — але створюємо легкі об'єкти з id,
+        // які сервіс потім резолвить повністю через репозиторії.
+        Doctor doctor = new Doctor();
+        doctor.setId(request.getDoctorId());
+
+        Patient patient = new Patient();
+        patient.setId(request.getPatientId());
+
+        Raport raport = null;
+        if (request.getRaportId() != null) {
+            raport = new Raport();
+            raport.setId(request.getRaportId());
+        }
+
         return Visit.builder()
                 .doctor(doctor)
                 .patient(patient)
@@ -44,14 +60,21 @@ public class VisitMapper {
                 .build();
     }
 
-    // 🔹 Оновлення Visit з DTO
-    public Visit fromUpdateRequest(Visit visit, UpdateVisitRequest request) {
+    // ============================
+    // UPDATE DTO → часткова ENTITY (має id та поля, які треба оновити)
+    // ============================
+    public Visit fromUpdateRequest(java.util.UUID id, UpdateVisitRequest request) {
+        Visit v = new Visit();
+        v.setId(id);
+
         if (request.getNewAppointmentTime() != null) {
-            visit.setAppointmentTime(request.getNewAppointmentTime());
+            v.setAppointmentTime(request.getNewAppointmentTime());
         }
-        if (request.getStatus() != null) {
-            visit.setStatus(VisitStatus.valueOf(request.getStatus().toUpperCase()));
+
+        if (request.getStatus() != null && !request.getStatus().isBlank()) {
+            v.setStatus(VisitStatus.valueOf(request.getStatus().toUpperCase()));
         }
-        return visit;
+
+        return v;
     }
 }

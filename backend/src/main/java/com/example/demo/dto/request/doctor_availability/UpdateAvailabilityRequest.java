@@ -12,4 +12,7 @@ public class UpdateAvailabilityRequest {
     @NotNull
     @Future(message = "Availability time must be in the future")
     private LocalDateTime newAvailableTime;
+
+    @NotNull
+    private boolean isActive;
 }
