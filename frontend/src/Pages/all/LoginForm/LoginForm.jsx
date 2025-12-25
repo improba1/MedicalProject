@@ -25,6 +25,8 @@ const LoginForm = () => {
             const data = await authApi.login(login, password);
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('refresh_token', data.refresh_token);
+            // localStorage.setItem('role', data.refresh_token);
+            // localStorage.setItem('userId', data.refresh_token);
 
             if (data.role === 'DOCTOR') {
                 navigate('/doc-home-page'); 

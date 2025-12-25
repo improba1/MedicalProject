@@ -51,7 +51,7 @@ const ManageSchedule = () => {
     // Сохранить расписание
     const saveSchedule = async () => {
         const doctorId = localStorage.getItem('userId');
-        // const doctorId = ''
+        // const doctorId = '2ca03f0a-fb14-47d6-b8e0-180c9d9ab2f3'
         if (!doctorId) {
             alert("Ошибка: ID врача не найден. Попробуйте перелогиниться.");
             return;
@@ -70,7 +70,6 @@ const ManageSchedule = () => {
 
             await Promise.all(requests);
 
-            alert('Schedule saved successfully!');
             
             setTimeSlots([]); 
             
