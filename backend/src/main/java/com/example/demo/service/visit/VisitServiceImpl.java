@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,7 @@ public class VisitServiceImpl implements VisitService {
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
     }
 
+    @Transactional
     @Override
     public Visit createVisit(Visit visit) {
         if (visit.getDoctor() == null || visit.getDoctor().getId() == null) {
@@ -65,6 +67,7 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.save(visit);
     }
 
+    @Transactional
     @Override
     public Visit updateVisit(Visit visitUpdate) {
         Visit visit = visitRepository.findById(visitUpdate.getId())
@@ -104,6 +107,7 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.save(visit);
     }
 
+    @Transactional
     @Override
     public void delete(UUID id) {
         Visit visit = visitRepository.findById(id)
@@ -128,6 +132,7 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.findByPatientId(patientId);
     }
 
+    @Transactional
     @Override
     public Visit rescheduleVisit(UUID visitId, LocalDateTime newTime) {
         UUID currentUserId = getCurrentUserId();
@@ -142,6 +147,7 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.save(visit);
     }
 
+    @Transactional
     @Override
     public Visit cancelVisit(UUID visitId) {
         UUID currentUserId = getCurrentUserId();

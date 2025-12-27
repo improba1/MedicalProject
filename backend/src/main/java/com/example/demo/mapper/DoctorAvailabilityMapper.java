@@ -12,7 +12,7 @@ import java.util.UUID;
 @Component
 public class DoctorAvailabilityMapper {
 
-    // CREATE
+    // ------------------ CREATE ------------------
     public DoctorAvailability toEntity(AddAvailabilityRequest request) {
         DoctorAvailability availability = new DoctorAvailability();
         availability.setAvailableTime(request.getAvailableTime());
@@ -20,7 +20,7 @@ public class DoctorAvailabilityMapper {
         return availability;
     }
 
-    // UPDATE
+    // ------------------ UPDATE ------------------
     public DoctorAvailability toUpdateEntity(
             UUID availabilityId,
             UpdateAvailabilityRequest request
@@ -35,14 +35,7 @@ public class DoctorAvailabilityMapper {
         return availability;
     }
 
-    public List<DoctorAvailabilityResponse> toResponseList(List<DoctorAvailability> availabilities) {
-        return availabilities.stream()
-                .map(this::toResponse)
-                .toList();
-    }
-
-
-    // RESPONSE
+    // ------------------ RESPONSE ------------------
     public DoctorAvailabilityResponse toResponse(DoctorAvailability availability) {
         return DoctorAvailabilityResponse.builder()
                 .id(availability.getId())
@@ -50,5 +43,13 @@ public class DoctorAvailabilityMapper {
                 .availableTime(availability.getAvailableTime())
                 .isActive(availability.isActive())
                 .build();
+    }
+
+    public List<DoctorAvailabilityResponse> toResponseList(
+            List<DoctorAvailability> availabilities
+    ) {
+        return availabilities.stream()
+                .map(this::toResponse)
+                .toList();
     }
 }

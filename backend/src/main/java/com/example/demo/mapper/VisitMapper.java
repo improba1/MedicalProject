@@ -63,8 +63,8 @@ public class VisitMapper {
             visit.setAppointmentTime(request.getNewAppointmentTime());
         }
 
-        if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            visit.setStatus(VisitStatus.valueOf(request.getStatus().toUpperCase()));
+        if (request.getVisitStatus() != null && !request.getVisitStatus().isBlank()) {
+            visit.setStatus(VisitStatus.valueOf(request.getVisitStatus().toUpperCase()));
         }
 
         return visit;

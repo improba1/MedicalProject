@@ -6,6 +6,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class UpdateVisitRequest {
-    private String status;
+    private String visitStatus;
     private LocalDateTime newAppointmentTime;
 }
