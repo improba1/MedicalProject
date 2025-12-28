@@ -10,13 +10,8 @@ import java.util.UUID;
 @Data
 public class UpdateAvailabilityRequest {
 
-    @NotNull
-    private UUID availabilityId;
-
-    @NotNull
     @Future(message = "Availability time must be in the future")
     private LocalDateTime newAvailableTime;
 
-    @NotNull
     private boolean isActive;
 }

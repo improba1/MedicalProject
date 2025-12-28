@@ -1,11 +1,14 @@
 package com.example.demo.service.visit;
 
+import com.example.demo.enums.Role;
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
+import com.example.demo.service.slot.SlotService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +22,8 @@ public class VisitServiceImpl implements VisitService {
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
     private final RaportRepository raportRepository;
-    private final DoctorAvailabilityRepository availabilityRepository;
+    private final SlotService slotService;
+    private final VisitStatusService visitStatusService;
 
     @Override
     public Visit getById(UUID id) {
@@ -27,95 +31,62 @@ public class VisitServiceImpl implements VisitService {
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
     }
 
+    @Transactional
     @Override
     public Visit createVisit(Visit visit) {
-        if (visit.getDoctor() == null || visit.getDoctor().getId() == null) {
-            throw new EntityNotFoundException("Doctor id is required in visit entity");
-        }
-        if (visit.getPatient() == null || visit.getPatient().getId() == null) {
-            throw new EntityNotFoundException("Patient id is required in visit entity");
-        }
+
         UUID doctorId = visit.getDoctor().getId();
         UUID patientId = visit.getPatient().getId();
+
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
+
         Patient patient = (Patient) userRepository.findById(patientId)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
+
         Raport raport = null;
         if (visit.getRaport() != null && visit.getRaport().getId() != null) {
             raport = raportRepository.findById(visit.getRaport().getId())
                     .orElseThrow(() -> new EntityNotFoundException("Raport not found"));
         }
-        DoctorAvailability availability = availabilityRepository
-                .findByDoctorIdAndAvailableTimeAndIsActiveTrue(
-                        doctorId,
-                        visit.getAppointmentTime()
-                )
-                .orElseThrow(() -> new IllegalStateException(
-                        "Doctor does not have an available slot at this time"
-                ));
-        availability.setActive(false);
-        availabilityRepository.save(availability);
+
+        slotService.occupy(doctorId, visit.getAppointmentTime());
+
         visit.setDoctor(doctor);
         visit.setPatient(patient);
         visit.setRaport(raport);
-        if (visit.getStatus() == null) {
-            throw new IllegalStateException("Visit status must be set");
-        }
+
         return visitRepository.save(visit);
     }
 
+    @Transactional
     @Override
     public Visit updateVisit(Visit visitUpdate) {
-        Visit visit = visitRepository.findById(visitUpdate.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
-
-        UUID doctorId = visit.getDoctor().getId();
+        Visit visit = getById(visitUpdate.getId());
 
         if (visitUpdate.getAppointmentTime() != null &&
                 !visitUpdate.getAppointmentTime().equals(visit.getAppointmentTime())) {
 
-            LocalDateTime newTime = visitUpdate.getAppointmentTime();
-
-            DoctorAvailability newSlot = availabilityRepository
-                    .findByDoctorIdAndAvailableTimeAndIsActiveTrue(doctorId, newTime)
-                    .orElseThrow(() -> new IllegalStateException(
-                            "Doctor does not have an available slot at the new time"
-                    ));
-
-            availabilityRepository.findByDoctorIdAndAvailableTime(
-                    doctorId,
-                    visit.getAppointmentTime()
-            ).ifPresent(slot -> {
-                slot.setActive(true);
-                availabilityRepository.save(slot);
-            });
-
-            newSlot.setActive(false);
-            availabilityRepository.save(newSlot);
-
-            visit.setAppointmentTime(newTime);
+            visitStatusService.reschedule(visit, visitUpdate.getAppointmentTime(), Role.ADMIN);
         }
 
         if (visitUpdate.getStatus() != null) {
-            visit.setStatus(visitUpdate.getStatus());
+            switch (visitUpdate.getStatus()) {
+                case CANCELED -> visitStatusService.cancel(visit, Role.ADMIN);
+                case COMPLETED -> visitStatusService.complete(visit, Role.ADMIN);
+                case PAID -> visitStatusService.pay(visit, Role.ADMIN);
+            }
         }
 
         return visitRepository.save(visit);
     }
 
+    @Transactional
     @Override
     public void delete(UUID id) {
-        Visit visit = visitRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
-        availabilityRepository.findByDoctorIdAndAvailableTime(
-                visit.getDoctor().getId(),
-                visit.getAppointmentTime()
-        ).ifPresent(slot -> {
-            slot.setActive(true);
-            availabilityRepository.save(slot);
-        });
-        visitRepository.deleteById(id);
+        Visit visit = getById(id);
+        slotService.free(visit.getDoctor().getId(), visit.getAppointmentTime());
+        visitRepository.delete(visit);
     }
 
     @Override
@@ -128,76 +99,51 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.findByPatientId(patientId);
     }
 
+    @Transactional
     @Override
     public Visit rescheduleVisit(UUID visitId, LocalDateTime newTime) {
+        Visit visit = getById(visitId);
         UUID currentUserId = getCurrentUserId();
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
+
         if (!visit.getPatient().getId().equals(currentUserId)) {
             throw new EntityNotFoundException("Visit not found for this user");
         }
-        UUID doctorId = visit.getDoctor().getId();
-        availabilityHelper(newTime, visit, doctorId);
-        visit.setStatus(com.example.demo.enums.VisitStatus.RESCHEDULED);
+
+        visitStatusService.reschedule(visit, newTime, Role.PATIENT);
         return visitRepository.save(visit);
     }
 
+    @Transactional
     @Override
     public Visit cancelVisit(UUID visitId) {
+        Visit visit = getById(visitId);
         UUID currentUserId = getCurrentUserId();
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
 
         if (!visit.getPatient().getId().equals(currentUserId)) {
             throw new EntityNotFoundException("Visit not found for this user");
         }
-        availabilityRepository.findByDoctorIdAndAvailableTime(
-                visit.getDoctor().getId(),
-                visit.getAppointmentTime()
-        ).ifPresent(slot -> {
-            slot.setActive(true);
-            availabilityRepository.save(slot);
-        });
-        visit.setStatus(com.example.demo.enums.VisitStatus.CANCELED);
+
+        visitStatusService.cancel(visit, Role.PATIENT);
         return visitRepository.save(visit);
     }
 
     @Override
     public List<Visit> getUserVisits() {
-        UUID currentUserId = getCurrentUserId();
-        return visitRepository.findByPatientId(currentUserId);
+        return visitRepository.findByPatientId(getCurrentUserId());
     }
 
     @Override
     public List<Visit> getUpcomingUserVisits() {
-        UUID currentUserId = getCurrentUserId();
-        return visitRepository.findByPatientId(currentUserId)
+        return visitRepository.findByPatientId(getCurrentUserId())
                 .stream()
                 .filter(v -> v.getAppointmentTime().isAfter(LocalDateTime.now()))
                 .toList();
     }
 
     private UUID getCurrentUserId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"))
                 .getId();
-    }
-
-    private void availabilityHelper(LocalDateTime newTime, Visit visit, UUID doctorId) {
-        availabilityRepository.findByDoctorIdAndAvailableTime(doctorId, visit.getAppointmentTime())
-                .ifPresent(slot -> {
-                    slot.setActive(true);
-                    availabilityRepository.save(slot);
-                });
-
-        DoctorAvailability newSlot = availabilityRepository
-                .findByDoctorIdAndAvailableTimeAndIsActiveTrue(doctorId, newTime)
-                .orElseThrow(() -> new IllegalStateException("Doctor is not available at this time"));
-
-        newSlot.setActive(false);
-        availabilityRepository.save(newSlot);
-        visit.setAppointmentTime(newTime);
     }
 }

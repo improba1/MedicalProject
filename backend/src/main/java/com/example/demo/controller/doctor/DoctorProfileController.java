@@ -23,7 +23,7 @@ public class DoctorProfileController {
     private final DoctorMapper doctorMapper;
 
     // 🔹 Подивитись свій профіль
-    @GetMapping
+    @GetMapping("/get")
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<ApiResponse<DoctorResponse>> getProfile() {
         Doctor doctor = doctorService.getCurrentDoctor();
@@ -38,13 +38,12 @@ public class DoctorProfileController {
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ApiResponse<DoctorResponse>> updateProfile(
-            @RequestBody UpdateDoctorRequest request
+            @ModelAttribute UpdateDoctorRequest request
     ) {
-        Doctor current = doctorService.getCurrentDoctor();              // 1️⃣ get
-        Doctor mapped = doctorMapper.toUpdatedEntity(current, request); // 2️⃣ map
-        Doctor saved = doctorService.updateCurrentDoctor(mapped);       // 3️⃣ save
-        DoctorResponse response = doctorMapper.toResponse(saved);       // 4️⃣ response
-
+        Doctor current = doctorService.getCurrentDoctor();
+        Doctor mapped = doctorMapper.toUpdatedEntity(current, request);
+        Doctor saved = doctorService.updateOwnProfileWithImage(mapped, request.getImage());
+        DoctorResponse response = doctorMapper.toResponse(saved);
         return ResponseEntity.ok(
                 ApiResponse.of(
                         HttpStatus.OK.value(),
