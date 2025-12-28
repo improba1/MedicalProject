@@ -28,9 +28,13 @@ public class DoctorAvailabilityMapper {
         DoctorAvailability availability = new DoctorAvailability();
         availability.setId(availabilityId);
 
+        // 🔹 Оновлення часу
         if (request.getNewAvailableTime() != null) {
             availability.setAvailableTime(request.getNewAvailableTime());
         }
+
+        // 🔹 Оновлення статусу (активний/неактивний)
+        availability.setActive(request.isActive());
 
         return availability;
     }

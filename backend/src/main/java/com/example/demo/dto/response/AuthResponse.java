@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,5 +19,6 @@ public class AuthResponse {
     @JsonProperty("refresh_token")
     private String refreshToken;
 
+    private UUID id;
     private String role;
 }

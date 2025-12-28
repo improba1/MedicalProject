@@ -3,10 +3,8 @@ package com.example.demo.controller.patient;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.mapper.VisitMapper;
-import com.example.demo.model.Visit;
 import com.example.demo.service.visit.VisitService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,36 +22,46 @@ public class PatientVisitController {
     private final VisitService visitService;
     private final VisitMapper visitMapper;
 
-    // 🔹 Змінити запис
+    // 🔹 Перенести запис
     @PutMapping("/reschedule/{visitId}")
-    public ResponseEntity<ApiResponse<VisitResponse>> rescheduleVisit(@PathVariable UUID visitId,
-                                                                      @RequestParam String newTime) {
-        Visit updated = visitService.rescheduleVisit(visitId, LocalDateTime.parse(newTime)); // сервіс → ентіті
-        VisitResponse response = visitMapper.toResponse(updated);                            // ентіті → DTO
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Visit rescheduled successfully", response));
+    public ResponseEntity<ApiResponse<VisitResponse>> rescheduleVisit(
+            @PathVariable UUID visitId,
+            @RequestParam String newTime) {
+
+        var updated = visitService.rescheduleVisit(visitId, LocalDateTime.parse(newTime));
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Visit rescheduled successfully",
+                        visitMapper.toResponse(updated))
+        );
     }
 
     // 🔹 Відмовитись від запису
     @DeleteMapping("/cancel/{visitId}")
     public ResponseEntity<ApiResponse<VisitResponse>> cancelVisit(@PathVariable UUID visitId) {
-        Visit canceled = visitService.cancelVisit(visitId);                 // сервіс → ентіті
-        VisitResponse response = visitMapper.toResponse(canceled);          // ентіті → DTO
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Visit cancelled successfully", response));
+        var canceled = visitService.cancelVisit(visitId);
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Visit cancelled successfully",
+                        visitMapper.toResponse(canceled))
+        );
     }
 
     // 🔹 Отримати всі свої візити
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<VisitResponse>>> getAllVisits() {
-        List<Visit> visits = visitService.getUserVisits();                  // сервіс → ентіті
-        List<VisitResponse> responses = visitMapper.toResponseList(visits); // ентіті → DTO
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User visits fetched successfully", responses));
+        var visits = visitService.getUserVisits();
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "User visits fetched successfully",
+                        visitMapper.toResponseList(visits))
+        );
     }
 
     // 🔹 Отримати всі майбутні візити
     @GetMapping("/upcoming")
     public ResponseEntity<ApiResponse<List<VisitResponse>>> getUpcomingVisits() {
-        List<Visit> visits = visitService.getUpcomingUserVisits();          // сервіс → ентіті
-        List<VisitResponse> responses = visitMapper.toResponseList(visits); // ентіті → DTO
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Upcoming visits fetched successfully", responses));
+        var visits = visitService.getUpcomingUserVisits();
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Upcoming visits fetched successfully",
+                        visitMapper.toResponseList(visits))
+        );
     }
 }

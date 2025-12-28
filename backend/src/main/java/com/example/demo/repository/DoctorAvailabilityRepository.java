@@ -12,18 +12,18 @@ import java.util.UUID;
 @Repository
 public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvailability, UUID> {
 
+    // 🔹 Усі слоти лікаря
     List<DoctorAvailability> findByDoctorId(UUID doctorId);
 
-    List<DoctorAvailability> findByDoctorIdAndAvailableTimeAfter(UUID doctorId, LocalDateTime date);
-
-    boolean existsByDoctorIdAndAvailableTime(UUID doctorId, LocalDateTime time);
-
+    // 🔹 Знайти конкретний слот
     Optional<DoctorAvailability> findByDoctorIdAndAvailableTime(UUID doctorId, LocalDateTime time);
 
+    // 🔹 Знайти активний слот у конкретний час
     Optional<DoctorAvailability> findByDoctorIdAndAvailableTimeAndIsActiveTrue(UUID doctorId, LocalDateTime availableTime);
 
     // 🔹 Пошук у діапазоні дат
-    List<DoctorAvailability> findByDoctorIdAndAvailableTimeBetween(UUID doctorId,
-                                                                   LocalDateTime start,
-                                                                   LocalDateTime end);
+    List<DoctorAvailability> findByDoctorIdAndAvailableTimeBetween(UUID doctorId, LocalDateTime start, LocalDateTime end);
+
+    // 🔥 Отримати тільки активні слоти лікаря
+    List<DoctorAvailability> findByDoctorIdAndIsActiveTrue(UUID doctorId);
 }

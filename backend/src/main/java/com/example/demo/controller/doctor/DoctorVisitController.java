@@ -7,7 +7,6 @@ import com.example.demo.mapper.VisitMapper;
 import com.example.demo.service.doctor.DoctorVisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +27,9 @@ public class DoctorVisitController {
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<ApiResponse<List<VisitResponse>>> getMyVisits() {
         var visits = doctorVisitService.getOwnVisits();
-        var responses = visitMapper.toResponseList(visits);
-
         return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Doctor visits fetched successfully",
-                        responses)
+                ApiResponse.of(200, "Doctor visits fetched successfully",
+                        visitMapper.toResponseList(visits))
         );
     }
 
@@ -42,10 +38,8 @@ public class DoctorVisitController {
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ApiResponse<VisitResponse>> cancelMyVisit(@PathVariable UUID visitId) {
         var visit = doctorVisitService.cancelOwnVisit(visitId);
-
         return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Visit cancelled successfully",
+                ApiResponse.of(200, "Visit cancelled successfully",
                         visitMapper.toResponse(visit))
         );
     }
@@ -56,22 +50,21 @@ public class DoctorVisitController {
     public ResponseEntity<ApiResponse<VisitResponse>> rescheduleMyVisit(
             @PathVariable UUID visitId,
             @Valid @RequestBody UpdateVisitRequest request) {
+
         var visit = doctorVisitService.rescheduleOwnVisit(visitId, request.getNewAppointmentTime());
         return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Visit rescheduled successfully",
+                ApiResponse.of(200, "Visit rescheduled successfully",
                         visitMapper.toResponse(visit))
         );
     }
 
     // 🔹 Отримати конкретний свій візит
-    @GetMapping("/get{visitId}")
+    @GetMapping("/get/{visitId}")
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<ApiResponse<VisitResponse>> getMyVisitById(@PathVariable UUID visitId) {
         var visit = doctorVisitService.getOwnVisitById(visitId);
         return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Doctor visit fetched successfully",
+                ApiResponse.of(200, "Doctor visit fetched successfully",
                         visitMapper.toResponse(visit))
         );
     }
