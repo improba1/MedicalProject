@@ -23,6 +23,8 @@ import EditProfile from './Pages/all/EditProfile/EditProfile';
 
 import AdminHomePage from './Pages/admin/AdminHomePage/AdminHomePage';
 import RemoveDoctor from './Pages/admin/RemoveDoctor/RemoveDoctor';
+import AddDoctor from './Pages/admin/AddDoctor/AddDoctor';
+import PatientHomePage from './Pages/patient/PatientHomePage/PatientHomePage';
 
 function App() {
   const location = useLocation();
@@ -54,6 +56,13 @@ function App() {
 
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/admin/remove-doctor" element={<RemoveDoctor />} />
+        <Route path="/admin/add-doctor" element={<AddDoctor />} />
+
+
+
+        <Route path="/patient" element={<PatientHomePage />} />
+
+
         
         
       </Routes>
