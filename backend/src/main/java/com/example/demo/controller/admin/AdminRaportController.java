@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,76 +24,152 @@ public class AdminRaportController {
     private final RaportService raportService;
     private final RaportMapper raportMapper;
 
-    // CREATE raport
+    // ------------------ HELPERS ------------------
+
+    private ResponseEntity<ApiResponse<List<RaportResponse>>> okList(List<Raport> list, String message) {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                message,
+                raportMapper.toResponseList(list)
+        ));
+    }
+
+    private ResponseEntity<ApiResponse<RaportResponse>> okOne(Raport raport, String message) {
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                message,
+                raportMapper.toResponse(raport)
+        ));
+    }
+
+    // ------------------ CREATE ------------------
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<RaportResponse>> createRaport(@Valid @RequestBody Raport raport) {
         Raport created = raportService.create(raport);
-        RaportResponse response = raportMapper.toResponse(created);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(HttpStatus.CREATED.value(), "Raport created successfully", response));
+                .body(ApiResponse.of(HttpStatus.CREATED.value(), "Raport created successfully",
+                        raportMapper.toResponse(created)));
     }
 
-    // UPDATE raport
+    // ------------------ UPDATE ------------------
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<RaportResponse>> updateRaport(@PathVariable UUID id,
-                                                                    @Valid @RequestBody Raport raport) {
+    public ResponseEntity<ApiResponse<RaportResponse>> updateRaport(
+            @PathVariable UUID id,
+            @Valid @RequestBody Raport raport) {
+
         Raport updated = raportService.update(id, raport);
-        RaportResponse response = raportMapper.toResponse(updated);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Raport updated successfully", response));
+        return okOne(updated, "Raport updated successfully");
     }
 
-    // GET raport by id
+    // ------------------ GET BY ID ------------------
     @GetMapping("/get/{id}")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<RaportResponse>> getRaportById(@PathVariable UUID id) {
-        Raport raport = raportService.getById(id);
-        RaportResponse response = raportMapper.toResponse(raport);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Raport fetched successfully", response));
+        return okOne(raportService.getById(id), "Raport fetched successfully");
     }
 
-    // GET all raports
+    // ------------------ GET ALL ------------------
     @GetMapping("/get-all")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<RaportResponse>>> getAllRaports() {
-        List<Raport> raports = raportService.getAll();
-        List<RaportResponse> responses = raportMapper.toResponseList(raports);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "All raports fetched successfully", responses));
+        return okList(raportService.getAll(), "All raports fetched successfully");
     }
 
-    // GET raports by doctor id
+    // ------------------ GET BY DOCTOR ------------------
     @GetMapping("/doctor/{doctorId}")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<RaportResponse>>> getRaportsByDoctor(@PathVariable UUID doctorId) {
-        List<Raport> raports = raportService.getByDoctorId(doctorId);
-        List<RaportResponse> responses = raportMapper.toResponseList(raports);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Raports fetched successfully by doctor", responses));
+        return okList(raportService.getByDoctorId(doctorId), "Raports fetched successfully by doctor");
     }
 
-    // GET raports by patient id
+    // ------------------ GET BY PATIENT ------------------
     @GetMapping("/patient/{patientId}")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<List<RaportResponse>>> getRaportsByPatient(@PathVariable UUID patientId) {
-        List<Raport> raports = raportService.getByPatientId(patientId);
-        List<RaportResponse> responses = raportMapper.toResponseList(raports);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Raports fetched successfully by patient", responses));
+        return okList(raportService.getByPatientId(patientId), "Raports fetched successfully by patient");
     }
 
-    // GET raport by visit id
+    // ------------------ GET BY VISIT ------------------
     @GetMapping("/visit/{visitId}")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<RaportResponse>> getRaportByVisit(@PathVariable UUID visitId) {
-        Raport raport = raportService.getByVisitId(visitId);
-        RaportResponse response = raportMapper.toResponse(raport);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Raport fetched successfully by visit", response));
+        return okOne(raportService.getByVisitId(visitId), "Raport fetched successfully by visit");
     }
 
-    // DELETE raport
+    // ------------------ DELETE ------------------
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ApiResponse<Void>> deleteRaport(@PathVariable UUID id) {
         raportService.delete(id);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Raport deleted successfully", null));
+    }
+
+    // ------------------ GET BY DATE RANGE ------------------
+    @GetMapping("/date-range/{start}/{end}")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<List<RaportResponse>>> getByDateRange(
+            @PathVariable String start,
+            @PathVariable String end) {
+
+        return okList(
+                raportService.getByDateRange(LocalDateTime.parse(start), LocalDateTime.parse(end)),
+                "Raports fetched successfully by date range"
+        );
+    }
+
+    // ------------------ GET BY DOCTOR + DATE RANGE ------------------
+    @GetMapping("/doctor/{doctorId}/date-range/{start}/{end}")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<List<RaportResponse>>> getByDoctorAndDate(
+            @PathVariable UUID doctorId,
+            @PathVariable String start,
+            @PathVariable String end) {
+
+        return okList(
+                raportService.getByDoctorAndDate(doctorId, LocalDateTime.parse(start), LocalDateTime.parse(end)),
+                "Raports fetched successfully by doctor and date range"
+        );
+    }
+
+    // ------------------ GET BY PATIENT + DATE RANGE ------------------
+    @GetMapping("/patient/{patientId}/date-range/{start}/{end}")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<List<RaportResponse>>> getByPatientAndDate(
+            @PathVariable UUID patientId,
+            @PathVariable String start,
+            @PathVariable String end) {
+
+        return okList(
+                raportService.getByPatientAndDate(patientId, LocalDateTime.parse(start), LocalDateTime.parse(end)),
+                "Raports fetched successfully by patient and date range"
+        );
+    }
+
+    // ------------------ GET BY VISIT + DOCTOR ------------------
+    @GetMapping("/visit/{visitId}/doctor/{doctorId}")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<List<RaportResponse>>> getByVisitAndDoctor(
+            @PathVariable UUID visitId,
+            @PathVariable UUID doctorId) {
+
+        return okList(
+                raportService.getByVisitAndDoctor(visitId, doctorId),
+                "Raports fetched successfully by visit and doctor"
+        );
+    }
+
+    // ------------------ GET BY VISIT + PATIENT ------------------
+    @GetMapping("/visit/{visitId}/patient/{patientId}")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<List<RaportResponse>>> getByVisitAndPatient(
+            @PathVariable UUID visitId,
+            @PathVariable UUID patientId) {
+
+        return okList(
+                raportService.getByVisitAndPatient(visitId, patientId),
+                "Raports fetched successfully by visit and patient"
+        );
     }
 }

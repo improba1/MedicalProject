@@ -18,32 +18,32 @@ public class VisitStatusServiceImpl implements VisitStatusService {
     @Override
     public Visit cancel(Visit visit, Role role) {
 
-        // 🔥 Перевірки ролей
+        // Пацієнт не може скасувати минулий візит
         if (role == Role.PATIENT && visit.getAppointmentTime().isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("Patient cannot cancel past visits");
         }
 
-        // 🔥 Перевірки переходів
-        if (visit.getStatus() == VisitStatus.COMPLETED || visit.getStatus() == VisitStatus.PAID) {
-            throw new IllegalStateException("Cannot cancel completed or paid visits");
+        // Не можна скасувати оплачений або завершений візит
+        if (visit.getStatus() == VisitStatus.PAID || visit.getStatus() == VisitStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot cancel paid or completed visits");
         }
 
-        // 🔥 Побічні ефекти
         slotService.free(visit.getDoctor().getId(), visit.getAppointmentTime());
-
         visit.setStatus(VisitStatus.CANCELED);
         return visit;
     }
 
     @Override
     public Visit complete(Visit visit, Role role) {
-        if (role != Role.DOCTOR && role != Role.ADMIN) {
-            throw new IllegalStateException("Only doctor or admin can complete visits");
+
+        // Пацієнт не може завершити візит
+        if (role == Role.PATIENT) {
+            throw new IllegalStateException("Patient cannot complete visits");
         }
 
-        if (visit.getStatus() != VisitStatus.SCHEDULED &&
-                visit.getStatus() != VisitStatus.RESCHEDULED) {
-            throw new IllegalStateException("Only scheduled visits can be completed");
+        // Завершити можна тільки оплачений візит
+        if (visit.getStatus() != VisitStatus.PAID) {
+            throw new IllegalStateException("Only paid visits can be completed");
         }
 
         visit.setStatus(VisitStatus.COMPLETED);
@@ -52,12 +52,20 @@ public class VisitStatusServiceImpl implements VisitStatusService {
 
     @Override
     public Visit pay(Visit visit, Role role) {
-        if (role != Role.ADMIN) {
-            throw new IllegalStateException("Only admin can mark visit as paid");
+
+        // Пацієнт може платити сам
+        if (role != Role.PATIENT && role != Role.ADMIN) {
+            throw new IllegalStateException("Only patient or admin can pay for a visit");
         }
 
-        if (visit.getStatus() != VisitStatus.COMPLETED) {
-            throw new IllegalStateException("Only completed visits can be paid");
+        // Платити можна тільки за SCHEDULED візит
+        if (visit.getStatus() != VisitStatus.SCHEDULED) {
+            throw new IllegalStateException("Only scheduled visits can be paid");
+        }
+
+        // Не можна платити після дати візиту
+        if (visit.getAppointmentTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Cannot pay for past visits");
         }
 
         visit.setStatus(VisitStatus.PAID);
@@ -67,8 +75,14 @@ public class VisitStatusServiceImpl implements VisitStatusService {
     @Override
     public Visit reschedule(Visit visit, LocalDateTime newTime, Role role) {
 
+        // Пацієнт не може переносити минулий візит
         if (role == Role.PATIENT && visit.getAppointmentTime().isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("Patient cannot reschedule past visits");
+        }
+
+        // Не можна переносити оплачений візит
+        if (visit.getStatus() == VisitStatus.PAID) {
+            throw new IllegalStateException("Cannot reschedule a paid visit");
         }
 
         slotService.reschedule(
