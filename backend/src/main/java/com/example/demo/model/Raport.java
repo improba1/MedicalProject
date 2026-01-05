@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.example.demo.enums.VisitStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,4 +45,8 @@ public class Raport {
     private LocalDateTime createdAt;
 
     private String notes;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visit_status", nullable = false)
+    private VisitStatus visitStatus;
 }

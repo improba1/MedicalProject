@@ -22,45 +22,46 @@ public class PatientVisitController {
     private final VisitService visitService;
     private final VisitMapper visitMapper;
 
-    // 🔹 Перенести запис
     @PutMapping("/reschedule/{visitId}")
     public ResponseEntity<ApiResponse<VisitResponse>> rescheduleVisit(
             @PathVariable UUID visitId,
             @RequestParam String newTime) {
 
-        var updated = visitService.rescheduleVisit(visitId, LocalDateTime.parse(newTime));
+        var visit = visitService.rescheduleVisit(
+                visitId,
+                LocalDateTime.parse(newTime)
+        );
+
         return ResponseEntity.ok(
                 ApiResponse.of(200, "Visit rescheduled successfully",
-                        visitMapper.toResponse(updated))
+                        visitMapper.toResponse(visit))
         );
     }
 
-    // 🔹 Відмовитись від запису
     @DeleteMapping("/cancel/{visitId}")
-    public ResponseEntity<ApiResponse<VisitResponse>> cancelVisit(@PathVariable UUID visitId) {
-        var canceled = visitService.cancelVisit(visitId);
+    public ResponseEntity<ApiResponse<VisitResponse>> cancelVisit(
+            @PathVariable UUID visitId) {
+
+        var visit = visitService.cancelVisit(visitId);
+
         return ResponseEntity.ok(
                 ApiResponse.of(200, "Visit cancelled successfully",
-                        visitMapper.toResponse(canceled))
+                        visitMapper.toResponse(visit))
         );
     }
 
-    // 🔹 Отримати всі свої візити
-    @GetMapping("/all")
-    public ResponseEntity<ApiResponse<List<VisitResponse>>> getAllVisits() {
-        var visits = visitService.getUserVisits();
-        return ResponseEntity.ok(
-                ApiResponse.of(200, "User visits fetched successfully",
-                        visitMapper.toResponseList(visits))
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchMyVisits(
+            @RequestParam(required = false) UUID doctorId,
+            @RequestParam(required = false) LocalDateTime start,
+            @RequestParam(required = false) LocalDateTime end
+    ) {
+        var visits = visitService.searchVisitsForAuthenticatedPatient(
+                doctorId, start, end
         );
-    }
 
-    // 🔹 Отримати всі майбутні візити
-    @GetMapping("/upcoming")
-    public ResponseEntity<ApiResponse<List<VisitResponse>>> getUpcomingVisits() {
-        var visits = visitService.getUpcomingUserVisits();
         return ResponseEntity.ok(
-                ApiResponse.of(200, "Upcoming visits fetched successfully",
+                ApiResponse.of(200, "Patient visits fetched successfully",
                         visitMapper.toResponseList(visits))
         );
     }
