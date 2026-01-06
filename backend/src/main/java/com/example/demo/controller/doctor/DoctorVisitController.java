@@ -3,6 +3,7 @@ package com.example.demo.controller.doctor;
 import com.example.demo.dto.request.visit.UpdateVisitRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
+import com.example.demo.enums.VisitStatus;
 import com.example.demo.mapper.VisitMapper;
 import com.example.demo.service.visit.VisitService;
 import jakarta.validation.Valid;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("${api.prefix}/doctors/me/visits")
+@RequestMapping("${api.prefix}/doctor/me/visits")
 @RequiredArgsConstructor
 public class DoctorVisitController {
 
@@ -54,11 +55,12 @@ public class DoctorVisitController {
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<ApiResponse<List<VisitResponse>>> searchMyVisits(
             @RequestParam(required = false) UUID patientId,
+            @RequestParam(required = false) VisitStatus status,
             @RequestParam(required = false) LocalDateTime start,
             @RequestParam(required = false) LocalDateTime end
     ) {
         var visits = visitService.searchVisitsForAuthenticatedDoctor(
-                patientId, start, end
+                patientId, status, start, end
         );
 
         return ResponseEntity.ok(

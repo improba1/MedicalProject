@@ -4,6 +4,7 @@ import com.example.demo.dto.request.visit.CreateVisitRequest;
 import com.example.demo.dto.request.visit.UpdateVisitRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
+import com.example.demo.enums.VisitStatus;
 import com.example.demo.mapper.VisitMapper;
 import com.example.demo.service.visit.VisitService;
 import jakarta.validation.Valid;
@@ -87,11 +88,12 @@ public class AdminVisitController {
     public ResponseEntity<ApiResponse<List<VisitResponse>>> searchVisits(
             @RequestParam(required = false) UUID doctorId,
             @RequestParam(required = false) UUID patientId,
+            @RequestParam(required = false) VisitStatus status,
             @RequestParam(required = false) LocalDateTime start,
             @RequestParam(required = false) LocalDateTime end
     ) {
         var visits = visitService.searchVisitsForAdmin(
-                doctorId, patientId, start, end
+                doctorId, patientId, status, start, end
         );
 
         return ResponseEntity.ok(

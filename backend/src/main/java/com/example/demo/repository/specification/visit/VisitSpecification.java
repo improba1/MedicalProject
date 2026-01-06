@@ -1,5 +1,6 @@
 package com.example.demo.repository.specification.visit;
 
+import com.example.demo.enums.VisitStatus;
 import com.example.demo.model.Visit;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,6 +15,7 @@ public class VisitSpecification {
     public static Specification<Visit> byFilters(
             UUID doctorId,
             UUID patientId,
+            VisitStatus status,
             LocalDateTime start,
             LocalDateTime end
     ) {
@@ -29,6 +31,12 @@ public class VisitSpecification {
             if (patientId != null) {
                 predicates.add(
                         cb.equal(root.get("patient").get("id"), patientId)
+                );
+            }
+
+            if (status != null) {
+                predicates.add(
+                        cb.equal(root.get("status"), status)
                 );
             }
 

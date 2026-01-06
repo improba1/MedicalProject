@@ -1,9 +1,13 @@
 package com.example.demo.controller.patient;
 
+import com.example.demo.dto.request.visit.CreateVisitRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
+import com.example.demo.enums.VisitStatus;
 import com.example.demo.mapper.VisitMapper;
+import com.example.demo.model.Visit;
 import com.example.demo.service.visit.VisitService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,14 +19,33 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.prefix}/patient/me/visits")
-@PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 public class PatientVisitController {
 
     private final VisitService visitService;
     private final VisitMapper visitMapper;
 
+    @PostMapping("/create")
+    @PreAuthorize("hasAuthority('patient:create')")
+    public ResponseEntity<ApiResponse<VisitResponse>> createVisit(
+            @RequestBody @Valid CreateVisitRequest request
+    ) {
+        Visit visit = visitService.createVisitForAuthenticatedPatient(
+                visitMapper.fromCreateRequest(request)
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        201,
+                        "Visit created successfully",
+                        visitMapper.toResponse(visit)
+                )
+        );
+    }
+
+
     @PutMapping("/reschedule/{visitId}")
+    @PreAuthorize("hasAuthority('patient:update')")
     public ResponseEntity<ApiResponse<VisitResponse>> rescheduleVisit(
             @PathVariable UUID visitId,
             @RequestParam String newTime) {
@@ -38,7 +61,8 @@ public class PatientVisitController {
         );
     }
 
-    @DeleteMapping("/cancel/{visitId}")
+    @PutMapping("/cancel/{visitId}")
+    @PreAuthorize("hasAuthority('patient:update')")
     public ResponseEntity<ApiResponse<VisitResponse>> cancelVisit(
             @PathVariable UUID visitId) {
 
@@ -51,13 +75,15 @@ public class PatientVisitController {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<List<VisitResponse>>> searchMyVisits(
             @RequestParam(required = false) UUID doctorId,
+            @RequestParam(required = false) VisitStatus status,
             @RequestParam(required = false) LocalDateTime start,
             @RequestParam(required = false) LocalDateTime end
     ) {
         var visits = visitService.searchVisitsForAuthenticatedPatient(
-                doctorId, start, end
+                doctorId, status, start, end
         );
 
         return ResponseEntity.ok(

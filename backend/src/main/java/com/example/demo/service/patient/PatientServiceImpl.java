@@ -66,7 +66,7 @@ public class PatientServiceImpl implements PatientService {
             throw new SecurityException("Access denied");
         }
 
-        return visitService.searchVisitsForAuthenticatedPatient(null, null, null);
+        return visitService.searchVisitsForAuthenticatedPatient(null, null, null,null);
     }
 
 

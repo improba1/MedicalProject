@@ -1,6 +1,7 @@
 package com.example.demo.service.visit;
 
 import com.example.demo.enums.Role;
+import com.example.demo.enums.VisitStatus;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Patient;
 import com.example.demo.model.Visit;
@@ -94,6 +95,32 @@ public class VisitServiceImpl implements VisitService {
 
     @Transactional
     @Override
+    public Visit createVisitForAuthenticatedPatient(Visit visit) {
+
+        UUID patientId = authenticatedUserId();
+
+        // 🔒 Захист: пацієнт може створювати ТІЛЬКИ для себе
+        if (!visit.getPatient().getId().equals(patientId)) {
+            throw new EntityNotFoundException("Cannot create visit for another patient");
+        }
+
+        Doctor doctor = doctorRepository.findById(visit.getDoctor().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
+
+        Patient patient = (Patient) userRepository.findById(patientId)
+                .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
+
+        // ⏳ слот
+        slotService.occupy(doctor.getId(), visit.getAppointmentTime());
+
+        visit.setDoctor(doctor);
+        visit.setPatient(patient);
+
+        return visitRepository.save(visit);
+    }
+
+    @Transactional
+    @Override
     public Visit cancelVisit(UUID visitId) {
         Visit visit = getVisit(visitId);
 
@@ -121,6 +148,7 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public List<Visit> searchVisitsForAuthenticatedPatient(
             UUID doctorId,
+            VisitStatus status,
             LocalDateTime start,
             LocalDateTime end
     ) {
@@ -128,6 +156,7 @@ public class VisitServiceImpl implements VisitService {
                 VisitSpecification.byFilters(
                         doctorId,
                         authenticatedUserId(),
+                        status,
                         start,
                         end
                 )
@@ -158,16 +187,21 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.save(visit);
     }
 
+    @Transactional
     @Override
     public List<Visit> searchVisitsForAuthenticatedDoctor(
             UUID patientId,
+            VisitStatus status,
             LocalDateTime start,
             LocalDateTime end
     ) {
+        UUID doctorId = authenticatedDoctorId();
+
         return visitRepository.findAll(
                 VisitSpecification.byFilters(
-                        authenticatedDoctorId(),
+                        doctorId,
                         patientId,
+                        status,
                         start,
                         end
                 )
@@ -199,23 +233,41 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.save(visit);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void delete(UUID id) {
+
         Visit visit = getVisit(id);
-        slotService.free(visit.getDoctor().getId(), visit.getAppointmentTime());
+
+        LocalDateTime appointmentTime = visit.getAppointmentTime();
+        UUID doctorId = visit.getDoctor().getId();
+
+        // 1️⃣ Якщо візит у майбутньому → звільняємо слот
+        if (appointmentTime.isAfter(LocalDateTime.now())) {
+            slotService.free(doctorId, appointmentTime);
+        }
+
+        // 2️⃣ Видаляємо візит
         visitRepository.delete(visit);
     }
 
+    @Transactional
     @Override
     public List<Visit> searchVisitsForAdmin(
             UUID doctorId,
             UUID patientId,
+            VisitStatus status,
             LocalDateTime start,
             LocalDateTime end
     ) {
         return visitRepository.findAll(
-                VisitSpecification.byFilters(doctorId, patientId, start, end)
+                VisitSpecification.byFilters(
+                        doctorId,
+                        patientId,
+                        status,
+                        start,
+                        end
+                )
         );
     }
 }
