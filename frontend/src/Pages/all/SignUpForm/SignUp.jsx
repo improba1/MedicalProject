@@ -5,6 +5,7 @@ import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import BackButton from '../../../Components/BackButton/BackButton';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../../../Api/all/authApi';
+import { profileApi } from '../../../Api/all/profileApi';
 
 
 const SignUpForm = () => {
@@ -41,8 +42,31 @@ const SignUpForm = () => {
         };
 
         try {
-            await authApi.register(userData);
-            navigate('/login'); 
+            const data = await authApi.register(userData);
+
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
+            localStorage.setItem('role', data.role);
+            localStorage.setItem('userId', data.id);
+
+            let profileData;
+                        
+            if (data.role === 'DOCTOR') {
+                const profileRes = await profileApi.getDoctorProfile();
+                profileData = profileRes.data;
+                localStorage.setItem('userName', profileData.firstname);
+                navigate('/doc-home-page')
+            } else if (data.role === 'PATIENT') {
+                const profileRes = await profileApi.getPatientProfile();
+                profileData = profileRes.data;
+                localStorage.setItem('userName', profileData.firstname);
+                navigate('/patient');
+            } else if (data.role === 'ADMIN') {
+                const profileRes = await profileApi.getAdminProfile();
+                profileData = profileRes.data;
+                localStorage.setItem('userName', profileData.firstname);
+                navigate('/admin');
+            }
 
         } catch (err) {
             setError('Wrong input');

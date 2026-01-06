@@ -19,7 +19,7 @@ export const profileApi = {
     },
 
     getDoctorProfile: async () => {
-        const response = await $api.get('/doctor/me/profile'); 
+        const response = await $api.get('/doctor/me/profile/get'); 
         return response.data;
     },
 
