@@ -61,6 +61,8 @@ public class AuthServiceImpl implements AuthService {
         return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .role(savedPatient.getRole().name())
+                .id(savedPatient.getId())
                 .build();
     }
 
@@ -87,6 +89,8 @@ public class AuthServiceImpl implements AuthService {
         return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .role(user.getRole().name())
+                .id(user.getId())
                 .build();
     }
 

@@ -12,4 +12,5 @@ public class DoctorAvailabilityResponse {
     private UUID id;
     private UUID doctorId;
     private LocalDateTime availableTime;
+    private boolean isActive;
 }

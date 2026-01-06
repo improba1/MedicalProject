@@ -1,7 +1,6 @@
 package com.example.demo.service.doctor;
 
 import com.example.demo.dto.request.doctor.DoctorSearchRequest;
-import com.example.demo.dto.request.doctor.UpdateDoctorRequest;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Image;
 import com.example.demo.repository.DoctorRepository;

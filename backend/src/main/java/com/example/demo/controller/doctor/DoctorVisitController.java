@@ -4,14 +4,14 @@ import com.example.demo.dto.request.visit.UpdateVisitRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.mapper.VisitMapper;
-import com.example.demo.service.doctor.DoctorVisitService;
+import com.example.demo.service.visit.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,59 +20,50 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DoctorVisitController {
 
-    private final DoctorVisitService doctorVisitService;
+    private final VisitService visitService;
     private final VisitMapper visitMapper;
 
-    // 🔹 Отримати всі свої візити
-    @GetMapping("/get-all")
-    @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<VisitResponse>>> getMyVisits() {
-        var visits = doctorVisitService.getOwnVisits();
-        var responses = visitMapper.toResponseList(visits);
-
-        return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Doctor visits fetched successfully",
-                        responses)
-        );
-    }
-
-    // 🔹 Скасувати свій візит
-    @PutMapping("/cancel/{visitId}")
+    @PutMapping("/{visitId}/cancel")
     @PreAuthorize("hasAuthority('doctor:update')")
-    public ResponseEntity<ApiResponse<VisitResponse>> cancelMyVisit(@PathVariable UUID visitId) {
-        var visit = doctorVisitService.cancelOwnVisit(visitId);
-
+    public ResponseEntity<ApiResponse<VisitResponse>> cancelVisit(@PathVariable UUID visitId) {
+        var visit = visitService.cancelVisitByDoctor(visitId);
         return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Visit cancelled successfully",
+                ApiResponse.of(200, "Visit cancelled successfully",
                         visitMapper.toResponse(visit))
         );
     }
 
-    // 🔹 Перенести свій візит
-    @PutMapping("/reschedule/{visitId}")
+    @PutMapping("/{visitId}/reschedule")
     @PreAuthorize("hasAuthority('doctor:update')")
-    public ResponseEntity<ApiResponse<VisitResponse>> rescheduleMyVisit(
+    public ResponseEntity<ApiResponse<VisitResponse>> rescheduleVisit(
             @PathVariable UUID visitId,
             @Valid @RequestBody UpdateVisitRequest request) {
-        var visit = doctorVisitService.rescheduleOwnVisit(visitId, request.getNewAppointmentTime());
+
+        var visit = visitService.rescheduleVisitByDoctor(
+                visitId,
+                request.getNewAppointmentTime()
+        );
+
         return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Visit rescheduled successfully",
+                ApiResponse.of(200, "Visit rescheduled successfully",
                         visitMapper.toResponse(visit))
         );
     }
 
-    // 🔹 Отримати конкретний свій візит
-    @GetMapping("/get{visitId}")
+    @GetMapping("/search")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<VisitResponse>> getMyVisitById(@PathVariable UUID visitId) {
-        var visit = doctorVisitService.getOwnVisitById(visitId);
+    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchMyVisits(
+            @RequestParam(required = false) UUID patientId,
+            @RequestParam(required = false) LocalDateTime start,
+            @RequestParam(required = false) LocalDateTime end
+    ) {
+        var visits = visitService.searchVisitsForAuthenticatedDoctor(
+                patientId, start, end
+        );
+
         return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Doctor visit fetched successfully",
-                        visitMapper.toResponse(visit))
+                ApiResponse.of(200, "Doctor visits fetched successfully",
+                        visitMapper.toResponseList(visits))
         );
     }
 }

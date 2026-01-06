@@ -14,6 +14,8 @@ public class RaportResponse {
     private UUID doctorId;
     private UUID patientId;
     private String disease;
+    private String visitStatus;
+    private LocalDateTime appointmentTime;
     private String symptoms;
     private Double price;
     private LocalDateTime createdAt;

@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -25,4 +26,7 @@ public class DoctorAvailability {
 
     @Column(name = "available_time")
     private LocalDateTime availableTime;
+
+    @Column(name = "is_active")
+    private boolean isActive;
 }

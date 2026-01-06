@@ -9,17 +9,15 @@ import java.util.UUID;
 
 @Data
 public class CreateRaportRequest {
+
     @NotNull
     private UUID visitId;
 
-    @NotNull
-    private UUID doctorId;
-
-    @NotNull
-    private UUID patientId;
-
     @NotBlank
     private String disease;
+
+    @NotBlank(message = "Visit status is required")
+    private String visitStatus;
 
     @NotBlank
     private String symptoms;

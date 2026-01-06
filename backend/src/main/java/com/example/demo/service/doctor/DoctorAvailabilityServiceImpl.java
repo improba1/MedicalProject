@@ -1,14 +1,21 @@
 package com.example.demo.service.doctor;
 
+import com.example.demo.enums.Role;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.DoctorAvailability;
 import com.example.demo.repository.DoctorAvailabilityRepository;
 import com.example.demo.repository.DoctorRepository;
+import com.example.demo.repository.VisitRepository;
+import com.example.demo.service.slot.SlotService;
+import com.example.demo.service.visit.VisitStatusService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -19,41 +26,57 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
     private final DoctorAvailabilityRepository availabilityRepository;
     private final DoctorRepository doctorRepository;
+    private final VisitRepository visitRepository;
+    private final VisitStatusService visitStatusService;
+    private final SlotService slotService;
 
-    @Override
-    public DoctorAvailability createForDoctor(UUID doctorId, DoctorAvailability availability) {
-        availability.setDoctorId(doctorId);
-        return availabilityRepository.save(availability);
-    }
-
-    @Override
-    public DoctorAvailability updateForDoctor(UUID doctorId, DoctorAvailability availability) {
-        DoctorAvailability existing = getById(availability.getId());
-
-        if (!existing.getDoctorId().equals(doctorId)) {
-            throw new EntityNotFoundException("This availability does not belong to the specified doctor");
-        }
-
-        existing.setAvailableTime(availability.getAvailableTime());
-        return availabilityRepository.save(existing);
-    }
-
-    @Override
-    public void deleteForDoctor(UUID doctorId, UUID availabilityId) {
-        DoctorAvailability availability = getById(availabilityId);
-
-        if (!availability.getDoctorId().equals(doctorId)) {
-            throw new EntityNotFoundException("Availability not found for this doctor");
-        }
-
-        availabilityRepository.delete(availability);
-    }
+    // ==========================
+    // 🔹 Хелпери
+    // ==========================
 
     private Doctor getAuthenticatedDoctor() {
-        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"));
     }
+
+    private void ensureNotPast(DoctorAvailability slot) {
+        if (slot.getAvailableTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Cannot modify past availability. Create a new slot instead.");
+        }
+    }
+
+    private void ensureNoVisit(DoctorAvailability slot) {
+        boolean hasVisit = visitRepository.existsByDoctorIdAndAppointmentTime(
+                slot.getDoctorId(),
+                slot.getAvailableTime()
+        );
+
+        if (hasVisit) {
+            throw new IllegalStateException("Cannot delete availability with an active visit.");
+        }
+    }
+
+    private void updateActiveStatus(DoctorAvailability slot) {
+        slot.setActive(slot.getAvailableTime().isAfter(LocalDateTime.now()));
+    }
+
+    private LocalDateTime startOfDay(int year, int month, int day) {
+        return LocalDateTime.of(year, month, day, 0, 0);
+    }
+
+    private LocalDateTime startOfToday() {
+        return LocalDate.now().atStartOfDay();
+    }
+
+    private LocalDateTime startOfWeek(LocalDate date) {
+        LocalDate monday = date.with(DayOfWeek.MONDAY);
+        return monday.atStartOfDay();
+    }
+
+    // ==========================
+    // 🔹 Отримання по id
+    // ==========================
 
     @Override
     public DoctorAvailability getById(UUID id) {
@@ -61,37 +84,122 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
                 .orElseThrow(() -> new EntityNotFoundException("Availability not found"));
     }
 
+    // ==========================
+    // 🔹 CRUD для адміна (по doctorId)
+    // ==========================
+
     @Override
-    public DoctorAvailability create(DoctorAvailability availability) {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        availability.setDoctorId(currentDoctor.getId());
+    public DoctorAvailability createForDoctor(UUID doctorId, DoctorAvailability availability) {
+        availability.setDoctorId(doctorId);
+        updateActiveStatus(availability);
         return availabilityRepository.save(availability);
     }
 
     @Override
-    public DoctorAvailability updateExisting(DoctorAvailability availability) {
-        Doctor currentDoctor = getAuthenticatedDoctor();
+    @Transactional
+    public DoctorAvailability updateForDoctor(UUID doctorId, DoctorAvailability availability) {
         DoctorAvailability existing = getById(availability.getId());
 
-        if (!existing.getDoctorId().equals(currentDoctor.getId())) {
-            throw new EntityNotFoundException("This availability does not belong to the authenticated doctor");
+        if (!existing.getDoctorId().equals(doctorId)) {
+            throw new EntityNotFoundException("This availability does not belong to the specified doctor");
         }
 
-        existing.setAvailableTime(availability.getAvailableTime());
+        ensureNotPast(existing);
+
+        LocalDateTime oldTime = existing.getAvailableTime();
+        LocalDateTime newTime = availability.getAvailableTime();
+
+        if (!oldTime.equals(newTime)) {
+
+            visitRepository.findByDoctorIdAndAppointmentTime(
+                    doctorId,
+                    oldTime
+            ).ifPresent(visit -> visitStatusService.reschedule(visit, newTime, Role.ADMIN));
+
+            slotService.reschedule(doctorId, oldTime, newTime);
+        }
+
+        existing.setAvailableTime(newTime);
+        updateActiveStatus(existing);
+
         return availabilityRepository.save(existing);
     }
 
     @Override
-    public void deleteOwn(UUID availabilityId) {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        DoctorAvailability availability = getById(availabilityId);
+    @Transactional
+    public void deleteForDoctor(UUID doctorId, UUID availabilityId) {
+        DoctorAvailability slot = getById(availabilityId);
 
-        if (!availability.getDoctorId().equals(currentDoctor.getId())) {
+        if (!slot.getDoctorId().equals(doctorId)) {
             throw new EntityNotFoundException("Availability not found for this doctor");
         }
 
-        availabilityRepository.delete(availability);
+        ensureNoVisit(slot);
+
+        availabilityRepository.delete(slot);
     }
+
+    // ==========================
+    // 🔹 CRUD для залогованого лікаря
+    // ==========================
+
+    @Override
+    public DoctorAvailability create(DoctorAvailability availability) {
+        Doctor doctor = getAuthenticatedDoctor();
+        availability.setDoctorId(doctor.getId());
+        updateActiveStatus(availability);
+        return availabilityRepository.save(availability);
+    }
+
+    @Override
+    @Transactional
+    public DoctorAvailability updateExisting(DoctorAvailability availability) {
+        Doctor doctor = getAuthenticatedDoctor();
+        DoctorAvailability existing = getById(availability.getId());
+
+        if (!existing.getDoctorId().equals(doctor.getId())) {
+            throw new EntityNotFoundException("This availability does not belong to the authenticated doctor");
+        }
+
+        ensureNotPast(existing);
+
+        LocalDateTime oldTime = existing.getAvailableTime();
+        LocalDateTime newTime = availability.getAvailableTime();
+
+        if (!oldTime.equals(newTime)) {
+
+            visitRepository.findByDoctorIdAndAppointmentTime(
+                    existing.getDoctorId(),
+                    oldTime
+            ).ifPresent(visit -> visitStatusService.reschedule(visit, newTime, Role.DOCTOR));
+
+            slotService.reschedule(existing.getDoctorId(), oldTime, newTime);
+        }
+
+        existing.setAvailableTime(newTime);
+        updateActiveStatus(existing);
+
+        return availabilityRepository.save(existing);
+    }
+
+    @Override
+    @Transactional
+    public void deleteOwn(UUID availabilityId) {
+        Doctor doctor = getAuthenticatedDoctor();
+        DoctorAvailability slot = getById(availabilityId);
+
+        if (!slot.getDoctorId().equals(doctor.getId())) {
+            throw new EntityNotFoundException("Availability not found for this doctor");
+        }
+
+        ensureNoVisit(slot);
+
+        availabilityRepository.delete(slot);
+    }
+
+    // ==========================
+    // 🔹 Отримання слотів (адмін)
+    // ==========================
 
     @Override
     public List<DoctorAvailability> getByDoctor(UUID doctorId) {
@@ -99,104 +207,114 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
     }
 
     @Override
+    public List<DoctorAvailability> getActiveSlots(UUID doctorId) {
+        return availabilityRepository.findByDoctorIdAndIsActiveTrue(doctorId);
+    }
+
+    @Override
     public List<DoctorAvailability> getByDay(UUID doctorId, int year, int month, int day) {
-        LocalDateTime start = LocalDateTime.of(year, month, day, 0, 0);
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, start.plusDays(1));
+        LocalDateTime start = startOfDay(year, month, day);
+        LocalDateTime end = start.plusDays(1);
+        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, end);
     }
 
     @Override
     public List<DoctorAvailability> getByMonth(UUID doctorId, int year, int month) {
         LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, start.plusMonths(1));
+        LocalDateTime end = start.plusMonths(1);
+        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, end);
     }
 
     @Override
     public List<DoctorAvailability> getByYear(UUID doctorId, int year) {
         LocalDateTime start = LocalDateTime.of(year, 1, 1, 0, 0);
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, start.plusYears(1));
+        LocalDateTime end = start.plusYears(1);
+        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, end);
     }
 
     @Override
     public List<DoctorAvailability> getToday(UUID doctorId) {
-        LocalDateTime start = LocalDateTime.now().toLocalDate().atStartOfDay();
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, start.plusDays(1));
+        LocalDateTime start = startOfToday();
+        LocalDateTime end = start.plusDays(1);
+        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, end);
     }
 
     @Override
     public List<DoctorAvailability> getNextHour(UUID doctorId) {
         LocalDateTime start = LocalDateTime.now();
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, start.plusHours(1));
+        LocalDateTime end = start.plusHours(1);
+        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, end);
     }
 
     @Override
     public List<DoctorAvailability> getThisWeek(UUID doctorId) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime start = now.with(java.time.DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, start.plusWeeks(1));
+        LocalDateTime start = startOfWeek(LocalDate.now());
+        LocalDateTime end = start.plusWeeks(1);
+        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, end);
     }
 
     @Override
     public List<DoctorAvailability> getNextWeek(UUID doctorId) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime start = now.with(java.time.DayOfWeek.MONDAY).plusWeeks(1).toLocalDate().atStartOfDay();
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, start.plusWeeks(1));
+        LocalDateTime start = startOfWeek(LocalDate.now()).plusWeeks(1);
+        LocalDateTime end = start.plusWeeks(1);
+        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(doctorId, start, end);
     }
+
+    // ==========================
+    // 🔹 Отримання для залогованого лікаря
+    // ==========================
 
     @Override
     public List<DoctorAvailability> getOwnAvailabilities() {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        return availabilityRepository.findByDoctorId(currentDoctor.getId());
+        Doctor doctor = getAuthenticatedDoctor();
+        return getByDoctor(doctor.getId());
     }
 
-    // 🔹 Date filters для залогованого лікаря
+    @Override
+    public List<DoctorAvailability> getOwnActiveSlots() {
+        Doctor doctor = getAuthenticatedDoctor();
+        return getActiveSlots(doctor.getId());
+    }
+
     @Override
     public List<DoctorAvailability> getOwnByDay(int year, int month, int day) {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        LocalDateTime start = LocalDateTime.of(year, month, day, 0, 0);
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(currentDoctor.getId(), start, start.plusDays(1));
+        Doctor doctor = getAuthenticatedDoctor();
+        return getByDay(doctor.getId(), year, month, day);
     }
 
     @Override
     public List<DoctorAvailability> getOwnByMonth(int year, int month) {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(currentDoctor.getId(), start, start.plusMonths(1));
+        Doctor doctor = getAuthenticatedDoctor();
+        return getByMonth(doctor.getId(), year, month);
     }
 
     @Override
     public List<DoctorAvailability> getOwnByYear(int year) {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        LocalDateTime start = LocalDateTime.of(year, 1, 1, 0, 0);
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(currentDoctor.getId(), start, start.plusYears(1));
+        Doctor doctor = getAuthenticatedDoctor();
+        return getByYear(doctor.getId(), year);
     }
 
     @Override
     public List<DoctorAvailability> getOwnToday() {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        LocalDateTime start = LocalDateTime.now().toLocalDate().atStartOfDay();
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(currentDoctor.getId(), start, start.plusDays(1));
+        Doctor doctor = getAuthenticatedDoctor();
+        return getToday(doctor.getId());
     }
 
     @Override
     public List<DoctorAvailability> getOwnNextHour() {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        LocalDateTime start = LocalDateTime.now();
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(currentDoctor.getId(), start, start.plusHours(1));
+        Doctor doctor = getAuthenticatedDoctor();
+        return getNextHour(doctor.getId());
     }
 
     @Override
     public List<DoctorAvailability> getOwnThisWeek() {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime start = now.with(java.time.DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(currentDoctor.getId(), start, start.plusWeeks(1));
+        Doctor doctor = getAuthenticatedDoctor();
+        return getThisWeek(doctor.getId());
     }
 
     @Override
     public List<DoctorAvailability> getOwnNextWeek() {
-        Doctor currentDoctor = getAuthenticatedDoctor();
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime start = now.with(java.time.DayOfWeek.MONDAY).plusWeeks(1).toLocalDate().atStartOfDay();
-        return availabilityRepository.findByDoctorIdAndAvailableTimeBetween(currentDoctor.getId(), start, start.plusWeeks(1));
+        Doctor doctor = getAuthenticatedDoctor();
+        return getNextWeek(doctor.getId());
     }
 }

@@ -1,9 +1,10 @@
 package com.example.demo.controller.admin;
 
+import com.example.demo.dto.request.visit.CreateVisitRequest;
+import com.example.demo.dto.request.visit.UpdateVisitRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.mapper.VisitMapper;
-import com.example.demo.model.Visit;
 import com.example.demo.service.visit.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,59 +25,81 @@ public class AdminVisitController {
     private final VisitService visitService;
     private final VisitMapper visitMapper;
 
-    // CREATE visit
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('admin:create')")
-    public ResponseEntity<ApiResponse<VisitResponse>> createVisit(@Valid @RequestBody Visit visit) {
-        Visit created = visitService.create(visit);
-        VisitResponse response = visitMapper.toResponse(created);
+    public ResponseEntity<ApiResponse<VisitResponse>> createVisit(
+            @Valid @RequestBody CreateVisitRequest request) {
+
+        var created = visitService.createVisit(
+                visitMapper.fromCreateRequest(request)
+        );
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(HttpStatus.CREATED.value(), "Visit created successfully", response));
+                .body(ApiResponse.of(
+                        201,
+                        "Visit created successfully",
+                        visitMapper.toResponse(created)
+                ));
     }
 
-    // UPDATE visit
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<VisitResponse>> updateVisit(@PathVariable UUID id,
-                                                                  @Valid @RequestBody Visit visit) {
-        visit.setId(id);
-        Visit updated = visitService.update(visit);
-        VisitResponse response = visitMapper.toResponse(updated);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Visit updated successfully", response));
+    public ResponseEntity<ApiResponse<VisitResponse>> updateVisit(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateVisitRequest request) {
+
+        var updated = visitService.updateVisit(
+                visitMapper.toUpdateEntity(id, request)
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Visit updated successfully",
+                        visitMapper.toResponse(updated)
+                )
+        );
     }
 
-    // GET visit by id
     @GetMapping("/get/{id}")
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<VisitResponse>> getVisitById(@PathVariable UUID id) {
-        Visit visit = visitService.getById(id);
-        VisitResponse response = visitMapper.toResponse(visit);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Visit fetched successfully", response));
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Visit fetched successfully",
+                        visitMapper.toResponse(visitService.getById(id))
+                )
+        );
     }
 
-    // GET visits by doctor id
-    @GetMapping("/doctor/{doctorId}")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<VisitResponse>>> getVisitsByDoctor(@PathVariable UUID doctorId) {
-        List<Visit> visits = visitService.getByDoctor(doctorId);
-        List<VisitResponse> responses = visitMapper.toResponseList(visits);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Visits fetched successfully by doctor", responses));
-    }
-
-    // GET visits by patient id
-    @GetMapping("/patient/{patientId}")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<VisitResponse>>> getVisitsByPatient(@PathVariable UUID patientId) {
-        List<Visit> visits = visitService.getByPatient(patientId);
-        List<VisitResponse> responses = visitMapper.toResponseList(visits);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Visits fetched successfully by patient", responses));
-    }
-
-    // DELETE visit
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ApiResponse<Void>> deleteVisit(@PathVariable UUID id) {
         visitService.delete(id);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Visit deleted successfully", null));
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Visit deleted successfully", null)
+        );
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchVisits(
+            @RequestParam(required = false) UUID doctorId,
+            @RequestParam(required = false) UUID patientId,
+            @RequestParam(required = false) LocalDateTime start,
+            @RequestParam(required = false) LocalDateTime end
+    ) {
+        var visits = visitService.searchVisitsForAdmin(
+                doctorId, patientId, start, end
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Visits fetched successfully",
+                        visitMapper.toResponseList(visits)
+                )
+        );
     }
 }
