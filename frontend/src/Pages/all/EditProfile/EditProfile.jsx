@@ -49,8 +49,7 @@ const EditProfile = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                // const userRole = localStorage.getItem('role');
-                const userRole = 'ADMIN';
+                const userRole = localStorage.getItem('role');
 
                 setRole(userRole);
 
@@ -68,8 +67,8 @@ const EditProfile = () => {
                 }
 
                 setFormData({
-                    firstname: data.firstname || data.firstName || '',
-                    lastname: data.lastname || data.lastName || '',
+                    firstname: data.firstname || '',
+                    lastname: data.lastname ||  '',
                     birthDate: data.birthDate || '',
                     sex: data.sex || '',
                     qualification: data.qualification || '',

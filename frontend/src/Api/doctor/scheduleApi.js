@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const $api = axios.create({
-    baseURL: '/api/v1/doctor/me' // Или твой полный адрес
+    baseURL: '/api/v1/doctors/me' // Или твой полный адрес
 });
 
 $api.interceptors.request.use((config) => {

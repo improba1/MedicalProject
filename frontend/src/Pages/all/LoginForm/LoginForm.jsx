@@ -7,6 +7,7 @@ import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import BackButton from '../../../Components/SecondBackButton/SecondBackButton';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../../../Api/all/authApi';
+import { profileApi } from '../../../Api/all/profileApi';
 
 
 const LoginForm = () => {
@@ -25,20 +26,36 @@ const LoginForm = () => {
             const data = await authApi.login(login, password);
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('refresh_token', data.refresh_token);
+            localStorage.setItem('role', data.role);
+            localStorage.setItem('userId', data.id);
 
+
+            let profileData;
+            
             if (data.role === 'DOCTOR') {
-                navigate('/doc-home-page'); 
-            } else if(data.role === 'PATIENT'){
-                // navigate('/patient-home-page');
-            }else if(data.role ==='ADMIN'){
+                const profileRes = await profileApi.getDoctorProfile();
+                profileData = profileRes.data;
+                localStorage.setItem('userName', profileData.firstname);
+                navigate('/doc-home-page')
+            } else if (data.role === 'PATIENT') {
+                const profileRes = await profileApi.getPatientProfile();
+                profileData = profileRes.data;
+                localStorage.setItem('userName', profileData.firstname);
+                navigate('/patient');
+            } else if (data.role === 'ADMIN') {
+                const profileRes = await profileApi.getAdminProfile();
+                profileData = profileRes.data;
+                localStorage.setItem('userName', profileData.firstname);
                 navigate('/admin');
             }
+           
 
         } catch (err) {
             console.error("Login error:", err);
             setError('Wrong password or login');
         }
-    };
+    }
+    
 
     return(
             <AnimatedPage>

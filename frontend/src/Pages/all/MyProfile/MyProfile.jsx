@@ -17,8 +17,7 @@ const MyProfile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                // const userRole = localStorage.getItem('role');
-                const userRole = 'ADMIN'; 
+                const userRole = localStorage.getItem('role');
                 setRole(userRole);
                 
                 let data;

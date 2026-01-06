@@ -1,0 +1,127 @@
+import React, { useState } from 'react';
+import styles from './AddDoctor.module.css';
+import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
+import HeaderWithoutProfile from '../../../Components/HeaderWithoutProfile/HeaderWithoutProfile';
+import { useNavigate } from 'react-router-dom';
+import { addDoctorApi } from '../../../Api/admin/addDoctorApi';
+
+const AddDoctor = () => {
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
+    const [email, setEmail] = useState('');
+    const [nickname, setNickname] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const [birthDate, setBirthDate] = useState('');
+    const [sex, setSex] = useState('MALE');
+    const [address, setAddress] = useState('');
+    const [specialization, setSpecialization] = useState('');
+    const [qualification, setQualification] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [rating, setRating] = useState(5);
+    const [image, setImage] = useState('');
+
+    const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
+
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setErrorMsg('');
+        
+        const newDoctor = {
+            email,
+            nickname,
+            phone,
+            password,
+            firstname,
+            lastname,
+            birthDate,
+            sex,
+            address,
+            specialization,
+            qualification,
+            startDate,
+            rating: Number(rating),
+            image
+        };
+        
+        try {
+            const response = await addDoctorApi.createDoctor(newDoctor);
+            
+            if (response.data) {
+                console.log("Доктор успешно создан:", response.data);
+                navigate('/admin'); 
+            }
+        } catch (err) {
+            console.error("Ошибка при добавлении доктора:", err);
+            const message = err.response?.data?.message || "Server error. Please try again.";
+            setErrorMsg(message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <AnimatedPage>
+            <div className={styles.pageContainer}>
+                <HeaderWithoutProfile />
+
+                <main className={styles.mainContent}>
+                    <h1 className={styles.title}>New doctor</h1>
+
+                    <form onSubmit={handleSubmit} className={styles.formWrapper}>
+                        <div className={styles.inputsContainer}>
+                            <div className={styles.column}>
+                                <input className={styles.input} type="text" placeholder="first name" value={firstname} onChange={(e) => setFirstname(e.target.value)} required />
+                                <input className={styles.input} type="text" placeholder="last name" value={lastname} onChange={(e) => setLastname(e.target.value)} required />
+                                
+                                <div className={styles.inputGroup}>
+                                    <label className={styles.label}>Birth date</label>
+                                    <input className={styles.input} type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required />
+                                </div>
+                                                                
+                                <select className={styles.input} value={sex} onChange={(e) => setSex(e.target.value)}>
+                                    <option value="MALE">MALE</option>
+                                    <option value="FEMALE">FEMALE</option>
+                                </select>
+                                <input className={styles.input} type="text" placeholder="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
+                                <input className={styles.input} type="text" placeholder="image URL" value={image} onChange={(e) => setImage(e.target.value)} required />
+                                <input className={styles.input} type="number" placeholder="rating (1-5)" min="1" max="5" value={rating} onChange={(e) => setRating(e.target.value)} required />
+                            </div>
+
+                            <div className={styles.column}>
+                                <input className={styles.input} type="text" placeholder="specialization" value={specialization} onChange={(e) => setSpecialization(e.target.value)} required />
+                                <input className={styles.input} type="text" placeholder="qualification" value={qualification} onChange={(e) => setQualification(e.target.value)} required />
+                                
+                                <div className={styles.inputGroup}>
+                                    <label className={styles.label}>Start date</label>
+                                    <input className={styles.input} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
+                                </div>    
+
+                                <input className={styles.input} type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                <input className={styles.input} type="tel" placeholder="phone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                                <input className={styles.input} type="text" placeholder="nickname (login)" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
+                                <input className={styles.input} type="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                            </div>
+                        </div>
+
+                        {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
+
+                        <button 
+                            type="submit" 
+                            className={styles.createBtn} 
+                            disabled={loading}
+                        >
+                            {loading ? "Creating..." : "Create"}
+                        </button>
+                    </form>
+                </main>
+            </div>
+        </AnimatedPage>
+    );
+};
+
+export default AddDoctor;

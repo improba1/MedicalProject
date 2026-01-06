@@ -1,18 +1,29 @@
 .pageTitle {
-    position: fixed;
-    top: 15%;
-    left: 8%;
     color: white;
-    font-size: 50px;
-    font-weight: 700;
+    text-align: center;
+    margin-top: 20px;
 }
 
 .pageSubtitle {
-    position: fixed;
-    top: 23%;
-    left: 8%;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 18px;
+    color: white;
+    text-align: center;
+    opacity: 0.8;
+    margin-bottom: 30px;
+}
+
+.subText {
+    font-size: 14px;
+    color: #c7c7c7;
+    font-family: monospace;
+}
+
+.contentContainer {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 50px;
 }
 
 .filters {
@@ -26,14 +37,90 @@
 }
 
 .searchInput {
-    padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    color: white;
+    width: 100%;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);  
+    outline: none;
     font-size: 16px;
+    background: rgba(56, 56, 56, 0.6);  
+    color: white;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .searchInput::placeholder {
     color: rgba(255, 255, 255, 0.5);
+}
+
+.card {
+    background: rgba(56, 56, 56, 0.4); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); 
+    border: 1px solid rgba(66, 59, 59, 0.15); 
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.statusNormal {
+    border-left: 6px solid #29b710; 
+    border-left-color: rgba(0, 255, 30, 0.647);
+}
+
+.statusRed {
+    border-left: 6px solid #c52626;
+}
+
+.infoColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.diseaseTitle {
+    font-weight: bold;
+    font-size: 18px;
+    color: #e0e0e0;  
+}
+
+.patientId {
+    font-size: 14px;
+    color: #c7c7c7;
+}
+
+.dateText {
+    font-size: 14px;
+    color: #c7c7c7;
+}
+
+.statusTag {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);  
+    color: #ddd;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.listWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mainTitle {
+    font-weight: 700;
+    font-size: 18px;
+    color: #e0e0e0;
 }
