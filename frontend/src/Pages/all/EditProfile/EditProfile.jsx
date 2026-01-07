@@ -73,7 +73,7 @@ const EditProfile = () => {
                     sex: data.sex || '',
                     qualification: data.qualification || '',
                     rating: data.rating || '',
-                    image: data.image || '',
+                    image:  '',
                     nickname: data.nickname || data.username || data.login || '',
                     email: data.email || '',
                     phone: data.phone || data.phoneNumber || '',

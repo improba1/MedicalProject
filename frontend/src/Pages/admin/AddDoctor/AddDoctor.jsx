@@ -88,7 +88,7 @@ const AddDoctor = () => {
                                     <option value="FEMALE">FEMALE</option>
                                 </select>
                                 <input className={styles.input} type="text" placeholder="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
-                                <input className={styles.input} type="text" placeholder="image URL" value={image} onChange={(e) => setImage(e.target.value)} required />
+                                <input className={styles.input} type="text" placeholder="image URL" value={image} onChange={(e) => setImage(e.target.value)}  />
                                 <input className={styles.input} type="number" placeholder="rating (1-5)" min="1" max="5" value={rating} onChange={(e) => setRating(e.target.value)} required />
                             </div>
 

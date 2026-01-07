@@ -50,7 +50,7 @@ const PatientHomePage = () => {
 
                 <main className={styles.mainContent}>
                     <section className={styles.hero}>
-                        <h1 className={styles.welcome}>Hello, <span className={styles.orange}>Name!</span></h1>
+                        <h1 className={styles.welcome}>Hello, <span className={styles.orange}>{localStorage.userName}</span></h1>
                         <p className={styles.subtext}>
                             Take charge of your health. Book an appointment with a specialist at your convenience!
                         </p>

@@ -9,17 +9,17 @@ import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 import { profileApi } from '../../../Api/all/profileApi';
 
 const MyProfile = () => {
+
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [role, setRole] = useState('');
 
-
     useEffect(() => {
+
         const fetchProfile = async () => {
             try {
                 const userRole = localStorage.getItem('role');
                 setRole(userRole);
-                
                 let data;
 
                 if (userRole === 'PATIENT') {
@@ -32,16 +32,16 @@ const MyProfile = () => {
                     const response = await profileApi.getAdminProfile();
                     data = response.data;
                 }
-                setProfile(data); 
-
+                setProfile(data);
             } catch (error) {
                 console.error("Error loading profile:", error);
             } finally {
-                setLoading(false); 
+                setLoading(false);
             }
         };
 
         fetchProfile();
+
     }, []);
 
     if (loading) {
@@ -52,7 +52,10 @@ const MyProfile = () => {
         return <Background><div style={{color: 'white'}}>Error loading profile</div></Background>;
     }
 
+    const imageUrl = profile.image?.downloadUrl;
+
     return(
+
             <Background>
                  <LogOutBtn/>
                  <BackBtn/>
@@ -60,11 +63,11 @@ const MyProfile = () => {
                  <MyProfileBtn></MyProfileBtn>
                  <span className={styles.yourprofile}>Your profile</span>
                  <div className={styles.container}>
-                                 
+
                                  <div className={styles.contentRow}>
-                                     
+
                                      <div className={styles.infoCard}>
-                                    
+
                                         <InfoRow value={profile.firstname} label="First name" />
                                         <InfoRow value={profile.lastname} label="Last name" />
                                         <InfoRow value={profile.nickname} label="Login" />
@@ -84,30 +87,49 @@ const MyProfile = () => {
                                                 <InfoRow value={profile.rating} label="Rating" />
                                             </>
                                         )}
-                                        {/* "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                                        "fileName": "string",
-                                        "fileType": "string",
-                                        "downloadUrl": "string",
-                                        "doctorId": "3fa85f64-5717-4562-b3fc-2c963f66afa6" */}
                                      </div>
+
+                                     {role === 'DOCTOR' && (
+                                        <div className={styles.photoContainer}>
+                                            {imageUrl ? (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt="Profile"
+                                                    className={styles.profileImage}
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200?text=No+Photo'; }}
+                                                />
+
+                                            ) : (
+                                                <div className={styles.placeholderImage}>No Photo</div>
+                                            )}
+                                        </div>
+                                    )}
+
                                  </div>
+
                              </div>
+
                 <Link to="/edit-profile">
+
                     <button className={styles.button}>
                         Edit profile
                     </button>
-                </Link>
-            </Background>
-            
 
-           
+                </Link>
+
+            </Background>
     )
 
+
 }
+
 const InfoRow = ({ label, value }) => (
     <div className={styles.infoRow}>
+
         <span className={styles.label}>{label}: </span>
+
         <span className={styles.value}>{value || '-'}</span>
+
     </div>
 );
 
