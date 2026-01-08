@@ -25,6 +25,7 @@ import AdminHomePage from './Pages/admin/AdminHomePage/AdminHomePage';
 import RemoveDoctor from './Pages/admin/RemoveDoctor/RemoveDoctor';
 import AddDoctor from './Pages/admin/AddDoctor/AddDoctor';
 import PatientHomePage from './Pages/patient/PatientHomePage/PatientHomePage';
+import BookAppointment from './Pages/patient/BookAppointment/BookAppointment';
 
 function App() {
   const location = useLocation();
@@ -61,6 +62,9 @@ function App() {
 
 
         <Route path="/patient" element={<PatientHomePage />} />
+        <Route path="/book-appointment" element={<BookAppointment />} />
+
+
 
 
         

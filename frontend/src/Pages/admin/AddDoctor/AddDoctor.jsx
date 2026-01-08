@@ -31,33 +31,40 @@ const AddDoctor = () => {
         setLoading(true);
         setErrorMsg('');
         
+        // Формируем объект: заменяем пустые строки на null для дат и картинки
         const newDoctor = {
-            email,
-            nickname,
-            phone,
-            password,
-            firstname,
-            lastname,
-            birthDate,
-            sex,
-            address,
-            specialization,
-            qualification,
-            startDate,
+            email: email,
+            nickname: nickname,
+            phone: phone,
+            password: password,
+            firstname: firstname,
+            lastname: lastname,
+            birthDate: birthDate === '' ? null : birthDate,
+            sex: sex,
+            address: address,
+            specialization: specialization,
+            qualification: qualification,
+            startDate: startDate === '' ? null : startDate,
             rating: Number(rating),
-            image
+            image: image === '' ? null : image
         };
         
         try {
+            console.log("Sending to server:", newDoctor); 
             const response = await addDoctorApi.createDoctor(newDoctor);
             
-            if (response.data) {
-                console.log("Доктор успешно создан:", response.data);
+            // Если в ответе есть поле data (согласно вашей схеме), значит успех
+            if (response && response.data) {
+                console.log("Success:", response.data);
                 navigate('/admin'); 
+            } else if (response && response.status === 0) {
+                // Если статус 0 тоже считается успехом
+                navigate('/admin');
             }
         } catch (err) {
-            console.error("Ошибка при добавлении доктора:", err);
-            const message = err.response?.data?.message || "Server error. Please try again.";
+            console.error("Full error object:", err);
+            // Берем сообщение из ответа бэкенда, если оно есть
+            const message = err.response?.data?.message || "Server error (500). Please check your data.";
             setErrorMsg(message);
         } finally {
             setLoading(false);
@@ -89,7 +96,7 @@ const AddDoctor = () => {
                                 </select>
                                 <input className={styles.input} type="text" placeholder="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
                                 <input className={styles.input} type="text" placeholder="image URL" value={image} onChange={(e) => setImage(e.target.value)}  />
-                                <input className={styles.input} type="number" placeholder="rating (1-5)" min="1" max="5" value={rating} onChange={(e) => setRating(e.target.value)} required />
+                                <input className={styles.input} type="number" placeholder="rating (1-5)" min="1" max="5" step="0.1" value={rating} onChange={(e) => setRating(e.target.value)} required />
                             </div>
 
                             <div className={styles.column}>
