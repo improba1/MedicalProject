@@ -3,9 +3,6 @@ package com.example.demo.mapper;
 import com.example.demo.dto.request.raport.CreateRaportRequest;
 import com.example.demo.dto.request.raport.UpdateRaportRequest;
 import com.example.demo.dto.response.RaportResponse;
-import com.example.demo.enums.VisitStatus;
-import com.example.demo.model.Doctor;
-import com.example.demo.model.Patient;
 import com.example.demo.model.Raport;
 import com.example.demo.model.Visit;
 import org.springframework.stereotype.Component;
@@ -17,18 +14,19 @@ import java.util.List;
 public class RaportMapper {
 
     public RaportResponse toResponse(Raport raport) {
+        Visit visit = raport.getVisit();
+
         return RaportResponse.builder()
                 .id(raport.getId())
+                .visitId(visit.getId())
                 .disease(raport.getDisease())
                 .symptoms(raport.getSymptoms())
-                .price(raport.getPrice())
-                .notes(raport.getNotes())
+                .treatmentPlan(raport.getTreatmentPlan())
+                .doctorNotes(raport.getDoctorNotes())
+                .totalPrice(raport.getTotalPrice())
+                .servicesSnapshot(raport.getServicesSnapshot())
+                .paymentReceipt(raport.getPaymentReceipt())
                 .createdAt(raport.getCreatedAt())
-                .doctorId(raport.getDoctor().getId())
-                .patientId(raport.getPatient().getId())
-                .visitId(raport.getVisit().getId())
-                .visitStatus(raport.getVisitStatus().name())
-                .appointmentTime(raport.getVisit().getAppointmentTime())
                 .build();
     }
 
@@ -38,34 +36,32 @@ public class RaportMapper {
                 .toList();
     }
 
-    public Raport toEntity(CreateRaportRequest request, Doctor doctor, Patient patient, Visit visit) {
+    public Raport toEntity(CreateRaportRequest request, Visit visit, String servicesSnapshot, String paymentReceipt) {
+
         return Raport.builder()
-                .doctor(doctor)
-                .patient(patient)
                 .visit(visit)
                 .disease(request.getDisease())
-                .symptoms(request.getSymptoms())
-                .price(request.getPrice())
-                .notes(request.getNotes())
+                .symptoms(visit.getPatientSymptoms())
+                .treatmentPlan(request.getTreatmentPlan())
+                .doctorNotes(request.getDoctorNotes())
+                .totalPrice(visit.getTotalPrice())
+                .servicesSnapshot(servicesSnapshot)
+                .paymentReceipt(paymentReceipt)
                 .createdAt(LocalDateTime.now())
-                .visitStatus(VisitStatus.valueOf(request.getVisitStatus()))
                 .build();
     }
 
-    public Raport updateEntity(Raport raport, UpdateRaportRequest request, Doctor doctor, Patient patient, Visit visit) {
-        raport.setDoctor(doctor);
-        raport.setPatient(patient);
-        raport.setVisit(visit);
+    public Raport updateEntity(Raport raport, UpdateRaportRequest request) {
+
         if (request.getDisease() != null)
             raport.setDisease(request.getDisease());
-        if (request.getSymptoms() != null)
-            raport.setSymptoms(request.getSymptoms());
-        if (request.getPrice() != null)
-            raport.setPrice(request.getPrice());
-        if (request.getNotes() != null)
-            raport.setNotes(request.getNotes());
-        if (request.getVisitStatus() != null)
-            raport.setVisitStatus(VisitStatus.valueOf(request.getVisitStatus()));
+
+        if (request.getTreatmentPlan() != null)
+            raport.setTreatmentPlan(request.getTreatmentPlan());
+
+        if (request.getDoctorNotes() != null)
+            raport.setDoctorNotes(request.getDoctorNotes());
+
         return raport;
     }
 }

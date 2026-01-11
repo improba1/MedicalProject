@@ -1,6 +1,7 @@
 package com.example.demo.controller.doctor;
 
 import com.example.demo.dto.request.visit.UpdateVisitRequest;
+import com.example.demo.dto.request.visit.VisitSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.mapper.VisitMapper;
@@ -11,12 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("${api.prefix}/doctors/me/visits")
+@RequestMapping("${api.prefix}/doctor/me/visits")
 @RequiredArgsConstructor
 public class DoctorVisitController {
 
@@ -50,20 +50,24 @@ public class DoctorVisitController {
         );
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<ApiResponse<List<VisitResponse>>> searchMyVisits(
-            @RequestParam(required = false) UUID patientId,
-            @RequestParam(required = false) LocalDateTime start,
-            @RequestParam(required = false) LocalDateTime end
+            @RequestBody VisitSearchRequest request
     ) {
         var visits = visitService.searchVisitsForAuthenticatedDoctor(
-                patientId, start, end
+                request.getPatientId(),
+                request.getStatus(),
+                request.getStart(),
+                request.getEnd()
         );
 
         return ResponseEntity.ok(
-                ApiResponse.of(200, "Doctor visits fetched successfully",
-                        visitMapper.toResponseList(visits))
+                ApiResponse.of(
+                        200,
+                        "Doctor visits fetched successfully",
+                        visitMapper.toResponseList(visits)
+                )
         );
     }
 }

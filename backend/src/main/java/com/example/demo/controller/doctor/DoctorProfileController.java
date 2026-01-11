@@ -9,7 +9,6 @@ import com.example.demo.service.doctor.DoctorService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,44 +21,39 @@ public class DoctorProfileController {
     private final DoctorService doctorService;
     private final DoctorMapper doctorMapper;
 
-    // 🔹 Подивитись свій профіль
-    @GetMapping("/get")
+    @GetMapping
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<ApiResponse<DoctorResponse>> getProfile() {
         Doctor doctor = doctorService.getCurrentDoctor();
-        DoctorResponse response = doctorMapper.toResponse(doctor);
-        return ResponseEntity.ok(
-                ApiResponse.of(HttpStatus.OK.value(),
-                        "Doctor profile fetched successfully", response)
-        );
+        return ResponseEntity.ok(ApiResponse.of(
+                200, "Profile fetched",
+                doctorMapper.toResponse(doctor)
+        ));
     }
 
-    // 🔹 Оновити профіль
-    @PutMapping("/update")
+    @PutMapping(consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ApiResponse<DoctorResponse>> updateProfile(
             @ModelAttribute UpdateDoctorRequest request
     ) {
-        Doctor current = doctorService.getCurrentDoctor();
-        Doctor mapped = doctorMapper.toUpdatedEntity(current, request);
-        Doctor saved = doctorService.updateOwnProfileWithImage(mapped, request.getImage());
-        DoctorResponse response = doctorMapper.toResponse(saved);
-        return ResponseEntity.ok(
-                ApiResponse.of(
-                        HttpStatus.OK.value(),
-                        "Doctor profile updated successfully",
-                        response
-                )
-        );
+        Doctor updated = doctorMapper.toUpdatedEntity(new Doctor(), request);
+        Doctor saved = doctorService.updateCurrentDoctor(updated, request.getImage());
+
+        return ResponseEntity.ok(ApiResponse.of(
+                200, "Profile updated",
+                doctorMapper.toResponse(saved)
+        ));
     }
 
-    // 🔹 Видалити профіль (soft delete + logout)
-    @DeleteMapping("/delete")
+    @DeleteMapping
     @PreAuthorize("hasAuthority('doctor:delete')")
-    public ResponseEntity<ApiResponse<Void>> deleteProfile(HttpServletRequest request, HttpServletResponse response) {
-        doctorService.deactivateDoctorProfile(request, response);
-        return ResponseEntity
-                .ok(ApiResponse.of(HttpStatus.OK.value(),
-                        "Doctor profile deleted and logged out successfully", null));
+    public ResponseEntity<ApiResponse<Void>> deleteProfile(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        doctorService.deactivateCurrentDoctor(request, response);
+        return ResponseEntity.ok(ApiResponse.of(
+                200, "Profile deactivated", null
+        ));
     }
 }

@@ -1,6 +1,5 @@
 package com.example.demo.dto.request.raport;
 
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -16,15 +15,8 @@ public class CreateRaportRequest {
     @NotBlank
     private String disease;
 
-    @NotBlank(message = "Visit status is required")
-    private String visitStatus;
-
     @NotBlank
-    private String symptoms;
+    private String treatmentPlan;
 
-    @NotNull
-    @DecimalMin("0.0")
-    private Double price;
-
-    private String notes;
+    private String doctorNotes;
 }

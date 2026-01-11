@@ -6,7 +6,6 @@ import com.example.demo.dto.response.DoctorResponse;
 import com.example.demo.mapper.DoctorMapper;
 import com.example.demo.model.Doctor;
 import com.example.demo.service.doctor.DoctorService;
-import com.example.demo.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +20,14 @@ public class PublicDoctorController {
 
     private final DoctorService doctorService;
     private final DoctorMapper doctorMapper;
-    private final ImageService imageService;
 
-    // Отримати всіх лікарів
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
     public ResponseEntity<ApiResponse<List<DoctorResponse>>> getAllDoctors() {
         List<Doctor> doctors = doctorService.getAll();
         List<DoctorResponse> responses = doctorMapper.toResponseList(doctors);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Doctors fetched successfully", responses));
     }
 
-    // 🔹 Новий ендпоінт: пошук лікарів
     @PostMapping("/search")
     public ResponseEntity<ApiResponse<List<DoctorResponse>>> searchDoctors(@RequestBody DoctorSearchRequest request) {
         List<Doctor> doctors = doctorService.searchDoctors(request);

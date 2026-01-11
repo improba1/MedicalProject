@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.example.demo.enums.VisitStatus.SCHEDULED;
+
 @Component
 public class VisitMapper {
 
@@ -32,8 +34,6 @@ public class VisitMapper {
     }
 
     public Visit fromCreateRequest(CreateVisitRequest request) {
-        // Ми не звертаємося до БД в мапері — але створюємо легкі об'єкти з id,
-        // які сервіс потім резолвить повністю через репозиторії.
         Doctor doctor = new Doctor();
         doctor.setId(request.getDoctorId());
 
@@ -51,7 +51,7 @@ public class VisitMapper {
                 .patient(patient)
                 .raport(raport)
                 .appointmentTime(request.getAppointmentTime())
-                .status(VisitStatus.valueOf(request.getVisitStatus().toUpperCase()))
+                .status(SCHEDULED)
                 .build();
     }
 
