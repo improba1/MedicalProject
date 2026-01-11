@@ -2,5 +2,7 @@ package com.example.demo.enums;
 
 public enum PaymentStatus {
     PENDING,
-    PAID
+    PAID,
+    FAILED,
+    REFUNDED
 }

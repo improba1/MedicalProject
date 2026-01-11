@@ -1,9 +1,9 @@
 package com.example.demo.controller.patient;
 
 import com.example.demo.dto.request.visit.CreateVisitRequest;
+import com.example.demo.dto.request.visit.VisitSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
-import com.example.demo.enums.VisitStatus;
 import com.example.demo.mapper.VisitMapper;
 import com.example.demo.model.Visit;
 import com.example.demo.service.visit.VisitService;
@@ -74,21 +74,25 @@ public class PatientVisitController {
         );
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<List<VisitResponse>>> searchMyVisits(
-            @RequestParam(required = false) UUID doctorId,
-            @RequestParam(required = false) VisitStatus status,
-            @RequestParam(required = false) LocalDateTime start,
-            @RequestParam(required = false) LocalDateTime end
+            @RequestBody VisitSearchRequest request
     ) {
         var visits = visitService.searchVisitsForAuthenticatedPatient(
-                doctorId, status, start, end
+                request.getDoctorId(),
+                request.getStatus(),
+                request.getStart(),
+                request.getEnd()
         );
 
         return ResponseEntity.ok(
-                ApiResponse.of(200, "Patient visits fetched successfully",
-                        visitMapper.toResponseList(visits))
+                ApiResponse.of(
+                        200,
+                        "Patient visits fetched successfully",
+                        visitMapper.toResponseList(visits)
+                )
         );
     }
+
 }

@@ -23,20 +23,29 @@ public class PatientRaportController {
     private final RaportMapper raportMapper;
 
     // 🔹 Отримати рапорт за візитом (тільки свій)
-    @GetMapping("/get-by-visit-id/{visitId}")
+    @GetMapping("/get/visit/{visitId}")
     @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<RaportResponse>> getRaportByVisit(@PathVariable UUID visitId) {
         Raport raport = raportService.getRaportByVisitForUser(visitId);
-        RaportResponse response = raportMapper.toResponse(raport);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Raport fetched successfully", response));
+
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Raport fetched successfully",
+                raportMapper.toResponse(raport)
+        ));
     }
 
     // 🔹 Отримати всі свої рапорти
     @GetMapping("/get-all")
     @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<List<RaportResponse>>> getAllRaports() {
-        List<Raport> raports = raportService.getUserRaports();
-        List<RaportResponse> responses = raportMapper.toResponseList(raports);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User raports fetched successfully", responses));
+        List<RaportResponse> responses =
+                raportMapper.toResponseList(raportService.getUserRaports());
+
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "User raports fetched successfully",
+                responses
+        ));
     }
 }

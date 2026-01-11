@@ -9,10 +9,10 @@ import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VisitRepository;
 import com.example.demo.repository.specification.visit.VisitSpecification;
+import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.slot.SlotService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,24 +30,11 @@ public class VisitServiceImpl implements VisitService {
     private final UserRepository userRepository;
     private final SlotService slotService;
     private final VisitStatusService visitStatusService;
+    private final CurrentUserService currentUserService;
 
     // ============================================================
-    // 🔹 AUTH HELPERS
+    // 🔹 HELPERS
     // ============================================================
-
-    private UUID authenticatedUserId() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"))
-                .getId();
-    }
-
-    private UUID authenticatedDoctorId() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"))
-                .getId();
-    }
 
     private Visit getVisit(UUID id) {
         return visitRepository.findById(id)
@@ -55,26 +42,31 @@ public class VisitServiceImpl implements VisitService {
     }
 
     private void assertDoctorOwnsVisit(Visit visit) {
-        if (!visit.getDoctor().getId().equals(authenticatedDoctorId())) {
+        if (!visit.getDoctor().getId().equals(currentUserService.getDoctorId())) {
             throw new EntityNotFoundException("Visit not found for this doctor");
         }
     }
 
+    // ============================================================
+    // 🔹 READ
+    // ============================================================
+
     @Override
     public Visit getById(UUID id) {
         return visitRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Visit not found with id: " + id
-                ));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Visit not found with id: " + id)
+                );
     }
 
     // ============================================================
-    // 🔹 CREATE
+    // 🔹 CREATE (ADMIN)
     // ============================================================
 
     @Transactional
     @Override
     public Visit createVisit(Visit visit) {
+
         Doctor doctor = doctorRepository.findById(visit.getDoctor().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
 
@@ -97,9 +89,8 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public Visit createVisitForAuthenticatedPatient(Visit visit) {
 
-        UUID patientId = authenticatedUserId();
+        UUID patientId = currentUserService.getPatientId();
 
-        // 🔒 Захист: пацієнт може створювати ТІЛЬКИ для себе
         if (!visit.getPatient().getId().equals(patientId)) {
             throw new EntityNotFoundException("Cannot create visit for another patient");
         }
@@ -110,7 +101,6 @@ public class VisitServiceImpl implements VisitService {
         Patient patient = (Patient) userRepository.findById(patientId)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
 
-        // ⏳ слот
         slotService.occupy(doctor.getId(), visit.getAppointmentTime());
 
         visit.setDoctor(doctor);
@@ -124,7 +114,7 @@ public class VisitServiceImpl implements VisitService {
     public Visit cancelVisit(UUID visitId) {
         Visit visit = getVisit(visitId);
 
-        if (!visit.getPatient().getId().equals(authenticatedUserId())) {
+        if (!visit.getPatient().getId().equals(currentUserService.getPatientId())) {
             throw new EntityNotFoundException("Visit not found for this patient");
         }
 
@@ -137,7 +127,7 @@ public class VisitServiceImpl implements VisitService {
     public Visit rescheduleVisit(UUID visitId, LocalDateTime newTime) {
         Visit visit = getVisit(visitId);
 
-        if (!visit.getPatient().getId().equals(authenticatedUserId())) {
+        if (!visit.getPatient().getId().equals(currentUserService.getPatientId())) {
             throw new EntityNotFoundException("Visit not found for this patient");
         }
 
@@ -155,7 +145,7 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.findAll(
                 VisitSpecification.byFilters(
                         doctorId,
-                        authenticatedUserId(),
+                        currentUserService.getPatientId(),
                         status,
                         start,
                         end
@@ -187,7 +177,6 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.save(visit);
     }
 
-    @Transactional
     @Override
     public List<Visit> searchVisitsForAuthenticatedDoctor(
             UUID patientId,
@@ -195,11 +184,9 @@ public class VisitServiceImpl implements VisitService {
             LocalDateTime start,
             LocalDateTime end
     ) {
-        UUID doctorId = authenticatedDoctorId();
-
         return visitRepository.findAll(
                 VisitSpecification.byFilters(
-                        doctorId,
+                        currentUserService.getDoctorId(),
                         patientId,
                         status,
                         start,
@@ -215,11 +202,16 @@ public class VisitServiceImpl implements VisitService {
     @Transactional
     @Override
     public Visit updateVisit(Visit update) {
+
         Visit visit = getVisit(update.getId());
 
         if (update.getAppointmentTime() != null &&
                 !update.getAppointmentTime().equals(visit.getAppointmentTime())) {
-            visitStatusService.reschedule(visit, update.getAppointmentTime(), Role.ADMIN);
+            visitStatusService.reschedule(
+                    visit,
+                    update.getAppointmentTime(),
+                    Role.ADMIN
+            );
         }
 
         if (update.getStatus() != null) {
@@ -233,8 +225,8 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.save(visit);
     }
 
-    @Override
     @Transactional
+    @Override
     public void delete(UUID id) {
 
         Visit visit = getVisit(id);
@@ -242,16 +234,13 @@ public class VisitServiceImpl implements VisitService {
         LocalDateTime appointmentTime = visit.getAppointmentTime();
         UUID doctorId = visit.getDoctor().getId();
 
-        // 1️⃣ Якщо візит у майбутньому → звільняємо слот
         if (appointmentTime.isAfter(LocalDateTime.now())) {
             slotService.free(doctorId, appointmentTime);
         }
 
-        // 2️⃣ Видаляємо візит
         visitRepository.delete(visit);
     }
 
-    @Transactional
     @Override
     public List<Visit> searchVisitsForAdmin(
             UUID doctorId,

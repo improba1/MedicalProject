@@ -3,6 +3,8 @@ package com.example.demo.service.patient;
 import com.example.demo.model.Patient;
 import com.example.demo.model.Visit;
 import com.example.demo.repository.PatientRepository;
+import com.example.demo.repository.specification.patient.PatientSpecificationBuilder;
+import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.logout.LogoutService;
 import com.example.demo.service.visit.VisitService;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +26,7 @@ public class PatientServiceImpl implements PatientService {
     private final VisitService visitService;
     private final LogoutService logoutService;
     private final PasswordEncoder passwordEncoder;
+    private final CurrentUserService currentUserService;
 
     @Override
     public Patient getById(UUID id) {
@@ -48,6 +51,23 @@ public class PatientServiceImpl implements PatientService {
         patientRepository.delete(patient);
         logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
     }
+
+    @Override
+    public List<Patient> searchPatientsForCurrentDoctor(String name) {
+        UUID doctorId = currentUserService.getAuthenticatedDoctor().getId();
+
+        return patientRepository.findAll(
+                PatientSpecificationBuilder.forDoctor(doctorId, name)
+        );
+    }
+
+    @Override
+        public List<Patient> searchPatientsForAdmin(String name) {
+        return patientRepository.findAll(
+                PatientSpecificationBuilder.forAdmin(name)
+        );
+    }
+
 
     @Override
     public Patient deactivatePatientById(UUID id, HttpServletRequest request, HttpServletResponse response) {

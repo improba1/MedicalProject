@@ -5,10 +5,10 @@ import com.example.demo.model.Doctor;
 import com.example.demo.model.Image;
 import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.ImageRepository;
+import com.example.demo.service.auth.CurrentUserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,16 +21,7 @@ public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
     private final DoctorRepository doctorRepository;
-
-    // ==========================
-    // 🔹 Хелпер для отримання поточного лікаря
-    // ==========================
-    private Doctor getAuthenticatedDoctor() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        return doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"));
-    }
+    private final CurrentUserService currentUserService;
 
     @Override
     public Image getImageById(UUID id) {
@@ -40,7 +31,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteOwnImage() {
-        var doctor = getAuthenticatedDoctor();
+        var doctor = currentUserService.getAuthenticatedDoctor();
         Image image = doctor.getImage();
         if (image == null) {
             throw new ResourceNotFoundException("Doctor has no image to delete");
@@ -52,7 +43,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image saveOwnImage(MultipartFile file) {
-        var doctor = getAuthenticatedDoctor();
+        var doctor = currentUserService.getAuthenticatedDoctor();
         try {
             Image image = new Image();
             image.setFileName(file.getOriginalFilename());
@@ -75,7 +66,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image updateOwnImage(MultipartFile file) {
-        var doctor = getAuthenticatedDoctor();
+        var doctor = currentUserService.getAuthenticatedDoctor();
         Image image = doctor.getImage();
         if (image == null) {
             throw new ResourceNotFoundException("Doctor has no image to update");
@@ -92,7 +83,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public ResponseEntity<byte[]> downloadOwnImage() {
-        var doctor = getAuthenticatedDoctor();
+        var doctor = currentUserService.getAuthenticatedDoctor();
         Image image = doctor.getImage();
         if (image == null) {
             throw new ResourceNotFoundException("Doctor has no image to download");
