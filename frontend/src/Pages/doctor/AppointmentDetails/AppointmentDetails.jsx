@@ -8,6 +8,8 @@ import styles from './AppointmentDetails.module.css';
 import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 import { reportApi } from '../../../Api/doctor/raportApi';  
 
+//  РАПОРТА НЕ СУЩЕСТВУЕТ ЕСЛИ НЕ БЫЛО ВИЗИТА
+
 const AppointmentDetails = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -23,6 +25,7 @@ const AppointmentDetails = () => {
 
             try {
                 const targetId = visit.id ; 
+                console.log(targetId);
                 
                 const response = await reportApi.getReportDetails(targetId);
                 setReportData(response.data);  

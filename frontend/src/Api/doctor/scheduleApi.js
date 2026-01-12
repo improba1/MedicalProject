@@ -14,7 +14,7 @@ $api.interceptors.request.use((config) => {
 
 export const scheduleApi = {
     addAvailability: async (doctorId, dateTimeString) => {
-        const response = await $api.post('/availability', { 
+        const response = await $api.post('/availability/create', { 
             doctorId: doctorId,
             availableTime: dateTimeString
         });

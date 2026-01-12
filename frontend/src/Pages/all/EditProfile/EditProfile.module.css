@@ -97,3 +97,65 @@
     margin-left: 15px; 
     letter-spacing: 1px;
 }
+
+.fileInputHidden {
+    display: none;
+}
+
+.dragDropZone {
+    width: 55%;
+    height: 240px;
+    border: 2px dashed rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.dragActive {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #F5782D; 
+    transform: scale(1.02);
+}
+
+.uploadPlaceholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+.uploadIcon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.previewContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.imagePreview {
+    height: 100%;
+    width: 100%;
+    object-fit: cover; 
+    opacity: 0.8;
+}
+
+.changeText {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+}
