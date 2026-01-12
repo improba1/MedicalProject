@@ -129,3 +129,40 @@ select.input {
     text-align: center;
 }
 
+
+.fileUploadContainer {
+    width: 100%;
+    position: relative;
+}
+
+.hiddenFileInput {
+    display: none; /* Полностью скрываем стандартный инпут */
+}
+
+.fileUploadBtn {
+    display: block;
+    width: 100%;
+    padding: 15px 25px;
+    border-radius: 50px;
+    background-color: #222224;
+    border: 1px dashed #444; /* Пунктирная рамка подчеркивает, что это зона загрузки */
+    color: #888;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.fileUploadBtn:hover {
+    border-color: #F5782D;
+    color: white;
+    background-color: #2a2a2c;
+}
+
+/* Если фото выбрано, можно немного изменить стиль кнопки */
+.fileUploadBtn:has(+ .hiddenFileInput:valid),
+.fileUploadBtn:active {
+    border-style: solid;
+}
+

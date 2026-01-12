@@ -19,19 +19,31 @@ const AddDoctor = () => {
     const [qualification, setQualification] = useState('');
     const [startDate, setStartDate] = useState('');
     const [rating, setRating] = useState(5);
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState(''); // Здесь будет храниться Base64 строка
 
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
     const navigate = useNavigate();
 
+    // Функция для обработки выбора файла
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                // Сохраняем результат (Base64 строку) в состояние
+                setImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setErrorMsg('');
         
-        // Формируем объект: заменяем пустые строки на null для дат и картинки
         const newDoctor = {
             email: email,
             nickname: nickname,
@@ -50,20 +62,11 @@ const AddDoctor = () => {
         };
         
         try {
-            console.log("Sending to server:", newDoctor); 
             const response = await addDoctorApi.createDoctor(newDoctor);
-            
-            // Если в ответе есть поле data (согласно вашей схеме), значит успех
-            if (response && response.data) {
-                console.log("Success:", response.data);
+            if (response && (response.data || response.status === 0)) {
                 navigate('/admin'); 
-            } else if (response && response.status === 0) {
-                // Если статус 0 тоже считается успехом
-                navigate('/admin');
             }
         } catch (err) {
-            console.error("Full error object:", err);
-            // Берем сообщение из ответа бэкенда, если оно есть
             const message = err.response?.data?.message || "Server error (500). Please check your data.";
             setErrorMsg(message);
         } finally {
@@ -95,7 +98,21 @@ const AddDoctor = () => {
                                     <option value="FEMALE">FEMALE</option>
                                 </select>
                                 <input className={styles.input} type="text" placeholder="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
-                                <input className={styles.input} type="text" placeholder="image URL" value={image} onChange={(e) => setImage(e.target.value)}  />
+                                
+                                {/* Кнопка выбора фото вместо текстового поля */}
+                                <div className={styles.fileUploadContainer}>
+                                    <label htmlFor="file-upload" className={styles.fileUploadBtn}>
+                                        {image ? "Photo attached ✓" : "Choose doctor photo"}
+                                    </label>
+                                    <input 
+                                        id="file-upload" 
+                                        type="file" 
+                                        accept="image/*" 
+                                        onChange={handleFileChange} 
+                                        className={styles.hiddenFileInput}
+                                    />
+                                </div>
+
                                 <input className={styles.input} type="number" placeholder="rating (1-5)" min="1" max="5" step="0.1" value={rating} onChange={(e) => setRating(e.target.value)} required />
                             </div>
 
@@ -117,11 +134,7 @@ const AddDoctor = () => {
 
                         {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
 
-                        <button 
-                            type="submit" 
-                            className={styles.createBtn} 
-                            disabled={loading}
-                        >
+                        <button type="submit" className={styles.createBtn} disabled={loading}>
                             {loading ? "Creating..." : "Create"}
                         </button>
                     </form>

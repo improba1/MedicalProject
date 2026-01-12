@@ -10,7 +10,7 @@ import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import HeaderWithProfile from '../../../Components/HeaderWithProfile/HeaderWithProfile';
 import HeartBackground from '../../../Components/HeartBackground/HeartBackground';
 
-import { profileApi } from '../../../Api/patient/profileApi';
+// API только для визитов и врачей
 import { visitApi } from '../../../Api/patient/visitApi';
 import { doctorApi } from '../../../Api/doctor/doctorApi';
 
@@ -38,19 +38,17 @@ const Card = ({ data, onClick }) => (
 
 const PatientHomePage = () => {
     const navigate = useNavigate();
-    const [patientName, setPatientName] = useState('');
     const [upcomingVisits, setUpcomingVisits] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const profileRes = await profileApi.getPatientProfile();
-                setPatientName(profileRes.data.firstname); 
-
+                // Загружаем только предстоящие визиты
                 const visitsRes = await visitApi.getUpcomingVisits();
                 const visitsData = visitsRes.data;
 
+                // Подтягиваем данные врачей для карточек
                 const fullVisits = await Promise.all(
                     visitsData.map(async (visit) => {
                         try {
@@ -91,7 +89,8 @@ const PatientHomePage = () => {
                 <main className={styles.mainContent}>
                     <section className={styles.hero}>
                         <h1 className={styles.welcome}>
-                            Hello, <span className={styles.orange}>{patientName || 'Patient'}</span>
+                            {/* Приветствие через localStorage, так как API удалено */}
+                            Hello, <span className={styles.orange}>{localStorage.getItem('userName') || 'Patient'}</span>
                         </h1>
                         <p className={styles.subtext}>
                             Take charge of your health. Book an appointment with a specialist at your convenience!
@@ -132,6 +131,7 @@ const PatientHomePage = () => {
                                         ))}
                                     </Swiper>
                                 ) : (
+                                    /* Пустая область, если визитов нет */
                                     <div className={styles.emptyLine} />
                                 )}
                             </div>
