@@ -13,10 +13,10 @@
 
 .backgroundBlack{
     position: absolute; 
-    left: 2%;
-    right: 2%;
-    top: 2%;
-    bottom: 2%;
+    left: 25px;
+    right: 25px;
+    top: 15px;
+    bottom: 15px;
     border-radius: 50px;
     background-color: black;
     /* z-index: 2;  */

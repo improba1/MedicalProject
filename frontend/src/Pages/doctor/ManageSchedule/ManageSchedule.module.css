@@ -11,7 +11,7 @@
 
 .pageSubtitle {
     position: fixed;
-    top: 23%;
+    top: 25%;
     left: 8%;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.7);
@@ -19,7 +19,6 @@
     margin: 0;
 }
 
-/* Контейнеры с фиксированными позициями */
 .calendarSection {
     position: fixed;
     top: 30%;
@@ -44,7 +43,6 @@
     z-index: 10;
 }
 
-/* Заголовки внутри секций */
 .sectionTitle {
     font-size: 28px;
     font-weight: 600;
@@ -52,7 +50,6 @@
     color: white;
 }
 
-/* Календарь/выбор даты */
 .dateInputContainer {
     margin-bottom: 30px;
 }
@@ -69,7 +66,6 @@
     margin-top: 10px;
 }
 
-/* Быстрые даты */
 .quickDates {
     margin-bottom: 25px;
 }
@@ -120,7 +116,6 @@
     font-weight: 600;
 }
 
-/* Выбранная дата */
 .selectedDate {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 15px;
@@ -141,7 +136,6 @@
     font-weight: 600;
 }
 
-/* Сетка времени */
 .timeGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -173,7 +167,6 @@
     font-weight: 600;
 }
 
-/* Кнопки */
 .addSelectedBtn {
     width: 100%;
     padding: 15px;
@@ -198,7 +191,6 @@
     cursor: not-allowed;
 }
 
-/* Кастомное время */
 .customTime {
     margin-bottom: 30px;
 }
@@ -242,7 +234,6 @@
     cursor: not-allowed;
 }
 
-/* Выбранные слоты */
 .selectedSlots {
     margin-bottom: 30px;
 }
@@ -317,7 +308,6 @@
     transform: scale(1.1);
 }
 
-/* Кнопка сохранения */
 .saveBtn {
     width: 100%;
     padding: 20px;
@@ -343,7 +333,6 @@
     cursor: not-allowed;
 }
 
-/* Для скроллбара в timeSection */
 .timeSection::-webkit-scrollbar {
     width: 8px;
 }

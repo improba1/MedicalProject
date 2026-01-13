@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const $api = axios.create({
-    baseURL: '/api/v1/doctors/me' 
+    baseURL: '/api/v1' 
 });
 
 $api.interceptors.request.use((config) => {
@@ -12,12 +12,9 @@ $api.interceptors.request.use((config) => {
     return config;
 });
 
-export const scheduleApi = {
-    addAvailability: async (doctorId, dateTimeString) => {
-        const response = await $api.post('/availability/create', { 
-            doctorId: doctorId,
-            availableTime: dateTimeString
-        });
+export const visitApi = {
+    getUpcomingVisits: async () => {
+        const response = await $api.get('/patient/me/visits/upcoming');
         return response.data;
     }
 };
