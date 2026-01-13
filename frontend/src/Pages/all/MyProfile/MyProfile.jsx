@@ -9,30 +9,28 @@ import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 import { profileApi } from '../../../Api/all/profileApi';
 
 const MyProfile = () => {
-
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [role, setRole] = useState('');
 
     useEffect(() => {
-
         const fetchProfile = async () => {
             try {
                 const userRole = localStorage.getItem('role');
                 setRole(userRole);
-                let data;
+                let response;
 
                 if (userRole === 'PATIENT') {
-                    const response = await profileApi.getPatientProfile();
-                    data = response.data;
+                    response = await profileApi.getPatientProfile();
                 } else if (userRole === 'DOCTOR') {
-                    const response = await profileApi.getDoctorProfile();
-                    data = response.data;
+                    response = await profileApi.getDoctorProfile();
                 } else if (userRole === 'ADMIN') {
-                    const response = await profileApi.getAdminProfile();
-                    data = response.data;
+                    response = await profileApi.getAdminProfile();
                 }
-                setProfile(data);
+                
+                if (response) {
+                    setProfile(response.data);
+                }
             } catch (error) {
                 console.error("Error loading profile:", error);
             } finally {
@@ -41,96 +39,105 @@ const MyProfile = () => {
         };
 
         fetchProfile();
-
     }, []);
 
-    if (loading) {
-        return <Background><div style={{color: 'white', textAlign: 'center', marginTop: '20%'}}>Loading...</div></Background>;
-    }
-
-    if (!profile) {
-        return <Background><div style={{color: 'white'}}>Error loading profile</div></Background>;
-    }
+    if (loading) return <Background><div className={styles.loading}>Loading...</div></Background>;
+    if (!profile) return <Background><div className={styles.error}>Error loading profile</div></Background>;
 
     const imageUrl = profile.image?.downloadUrl;
 
-    return(
+    return (
+        <Background>
+            <div className={styles.topNav}>
+                <div className={styles.navLeft}>
+                    <BackBtn />
+                    <HealthcareTxt />
+                    <MyProfileBtn />
+                </div>
+                <LogOutBtn />
+            </div>
 
-            <Background>
-                 <LogOutBtn/>
-                 <BackBtn/>
-                 <HealthcareTxt/>
-                 <MyProfileBtn></MyProfileBtn>
-                 <span className={styles.yourprofile}>Your profile</span>
-                 <div className={styles.container}>
+            <div className={styles.wrapper}>
+                
+                <div className={styles.contentCard}>
+                    <div className={styles.visualColumn}>
+                        {role === 'DOCTOR' ? (
+                            <div className={styles.photoContainer}>
+                                {imageUrl ? (
+                                    <img 
+                                        src={imageUrl} 
+                                        alt="Profile" 
+                                        className={styles.profileImage}
+                                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200?text=No+Photo'; }}
+                                    />
+                                ) : (
+                                    <div className={styles.placeholderImage}>No Photo</div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className={styles.avatarPlaceholder}>
+                                {profile.firstname?.[0]}{profile.lastname?.[0]}
+                            </div>
+                        )}
+                        
+                        <h2 className={styles.userName}>{profile.firstname} {profile.lastname}</h2>
+                        <span className={styles.userRole}>{role}</span>
+                        
+                        {role === 'DOCTOR' && (
+                            <div className={styles.ratingBadge}>
+                                <span>⭐ {profile.rating || 0}</span>
+                            </div>
+                        )}
+                    </div>
 
-                                 <div className={styles.contentRow}>
+                    <div className={styles.detailsColumn}>
+                        <div className={styles.detailsScrollArea}>
+                            <SectionTitle title="Personal Information" />
+                            <div className={styles.infoGrid}>
+                                <InfoRow label="Login" value={profile.nickname} />
+                                <InfoRow label="Email" value={profile.email} />
+                                <InfoRow label="Phone" value={profile.phone} />
+                                <InfoRow label="Address" value={profile.address} />
+                                <InfoRow label="Birth Date" value={profile.birthDate} />
+                                <InfoRow label="Age" value={profile.age} />
+                                <InfoRow label="Sex" value={profile.sex} />
+                            </div>
 
-                                     <div className={styles.infoCard}>
+                            {role === 'DOCTOR' && profile.specialization && (
+                                <>
+                                    <div className={styles.divider} />
+                                    <SectionTitle title="Professional Details" />
+                                    <div className={styles.infoGrid}>
+                                        <InfoRow label="Specialization" value={profile.specialization} />
+                                        <InfoRow label="Qualification" value={profile.qualification} />
+                                        <InfoRow label="Experience" value={`${profile.experienceYears} years`} />
+                                        <InfoRow label="Works here from" value={profile.startDate} />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                        
+                        <div className={styles.actionArea}>
+                            <Link to="/edit-profile">
+                                <button className={styles.editButton}>Edit Profile</button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Background>
+    );
+};
 
-                                        <InfoRow value={profile.firstname} label="First name" />
-                                        <InfoRow value={profile.lastname} label="Last name" />
-                                        <InfoRow value={profile.nickname} label="Login" />
-                                        <InfoRow value={profile.email} label="Email" />
-                                        <InfoRow value={profile.phone} label="Phone" />
-                                        <InfoRow value={profile.address} label="Address" />
-                                        <InfoRow value={profile.birthDate} label="Birth day" />
-                                        <InfoRow value={profile.age} label="Age" />
-                                        <InfoRow value={profile.sex} label="Sex" />
-
-                                        {role === 'DOCTOR' && profile.specialization && (
-                                            <>
-                                                <InfoRow value={profile.specialization} label="Specialization" />
-                                                <InfoRow value={profile.qualification} label="Qualification" />
-                                                <InfoRow value={profile.startDate} label="Start date" />
-                                                <InfoRow value={profile.experienceYears} label="Experience years" />
-                                                <InfoRow value={profile.rating} label="Rating" />
-                                            </>
-                                        )}
-                                     </div>
-
-                                     {role === 'DOCTOR' && (
-                                        <div className={styles.photoContainer}>
-                                            {imageUrl ? (
-                                                <img
-                                                    src={imageUrl}
-                                                    alt="Profile"
-                                                    className={styles.profileImage}
-                                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200?text=No+Photo'; }}
-                                                />
-
-                                            ) : (
-                                                <div className={styles.placeholderImage}>No Photo</div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                 </div>
-
-                             </div>
-
-                <Link to="/edit-profile">
-
-                    <button className={styles.button}>
-                        Edit profile
-                    </button>
-
-                </Link>
-
-            </Background>
-    )
-
-
-}
+const SectionTitle = ({ title }) => (
+    <h3 className={styles.sectionTitle}>{title}</h3>
+);
 
 const InfoRow = ({ label, value }) => (
     <div className={styles.infoRow}>
-
-        <span className={styles.label}>{label}: </span>
-
+        <span className={styles.label}>{label}:</span>
         <span className={styles.value}>{value || '-'}</span>
-
     </div>
 );
 
-export default MyProfile
+export default MyProfile;

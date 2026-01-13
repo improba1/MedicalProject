@@ -1,0 +1,319 @@
+/* Основной контейнер со скроллом */
+.pageContainer {
+    background-color: #000000; /* Чисто черный */
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden; /* Запрещаем скролл всей страницы */
+    color: white;
+    font-family: 'Arial', sans-serif; /* Или твой шрифт */
+}
+
+
+.scrollWrapper {
+    position: absolute; /* Позиционируем поверх фона */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh; /* Ровно высота экрана */
+    overflow-y: auto; /* Включаем скролл внутри этого блока */
+    padding-top: 100px; /* Место под шапку */
+    padding-bottom: 50px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    /* Скрываем скроллбар */
+    scrollbar-width: none; 
+}
+.scrollWrapper::-webkit-scrollbar { display: none; }
+
+/* --- NAVBAR --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 50px;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    z-index: 100;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    box-sizing: border-box;
+}
+
+
+.authButtons {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.loginLink {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+.loginLink:hover { color: #6C5BD4; }
+
+.signupBtn {
+    padding: 10px 25px;
+    border-radius: 30px;
+    background: #6C5BD4;
+    color: white;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.signupBtn:hover { transform: scale(1.05); background: #5a4bba; }
+
+/* --- HERO SECTION --- */
+.heroSection {
+    text-align: center;
+    margin-bottom: 60px;
+    width: 90%;
+    max-width: 800px;
+    animation: fadeIn 1s ease-out;
+}
+
+.heroTitle {
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.highlight {
+    background: linear-gradient(90deg, #6C5BD4, #8E2DE2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.heroSubtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+/* --- SEARCH BAR --- */
+.searchContainer {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.inputWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+}
+
+.searchIcon {
+    /* font-size и opacity убираем, так как это теперь SVG */
+    margin-right: 15px;
+    min-width: 20px; /* Чтобы не сжималась */
+    stroke: rgba(255, 255, 255, 0.7); /* Цвет линий */
+}
+
+.heroInput {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    width: 100%;
+    outline: none;
+}
+.heroInput::placeholder { color: rgba(255, 255, 255, 0.5); }
+
+.heroSearchBtn {
+    background: #6C5BD4;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.heroSearchBtn:hover { background: #5849b0; }
+
+/* --- DOCTORS GRID --- */
+.doctorsSection {
+    width: 90%;
+    max-width: 1200px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+    padding: 0 10px;
+}
+
+.sectionHeader h2 {
+    color: white;
+    font-size: 28px;
+    margin: 0;
+}
+
+.seeAll {
+    color: #6C5BD4;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+.seeAll:hover { color: #8E2DE2; margin-right: -5px; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+    padding-bottom: 50px;
+}
+
+.noData {
+    color: white;
+    width: 100%;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+/* --- CARD STYLE --- */
+.card {
+    background: rgba(30, 30, 30, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    border-color: rgba(108, 91, 212, 0.4);
+}
+
+.imageWrapper {
+    height: 220px;
+    width: 100%;
+    position: relative;
+    background: #2a2a2a;
+}
+
+.docImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholderImage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: #555;
+    background: #1a1a1a;
+}
+
+.ratingBadge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    color: #FFD700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.cardContent {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.docName {
+    color: white;
+    font-size: 18px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.specialization {
+    color: #6C5BD4;
+    font-size: 13px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.tags {
+    margin-top: 5px;
+}
+
+.tag {
+    font-size: 12px;
+    color: #ccc;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 10px;
+}
+
+.bookBtn {
+    margin-top: 15px;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid rgba(108, 91, 212, 0.5);
+    color: white;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 600;
+}
+
+.bookBtn:hover {
+    background: #6C5BD4;
+    border-color: #6C5BD4;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .heroTitle { font-size: 40px; }
+    .searchContainer { flex-direction: column; padding: 15px; border-radius: 25px;}
+    .heroSearchBtn { width: 100%; margin-top: 10px; }
+    .grid { grid-template-columns: 1fr; }
+}

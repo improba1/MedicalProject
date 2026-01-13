@@ -26,6 +26,8 @@ import RemoveDoctor from './Pages/admin/RemoveDoctor/RemoveDoctor';
 import AddDoctor from './Pages/admin/AddDoctor/AddDoctor';
 import PatientHomePage from './Pages/patient/PatientHomePage/PatientHomePage';
 import BookAppointment from './Pages/patient/BookAppointment/BookAppointment';
+import Start from './Pages/all/PublicFindDoctors/PublicFindDoctors';
+import DoctorProfilePublic from './Pages/all/DoctorProfilePublic/DoctorProfilePublic';
 
 function App() {
   const location = useLocation();
@@ -34,8 +36,8 @@ function App() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         
-        <Route path="/" element={<WelcomeScreen />} />
-        
+        <Route path="/" element={<Start />} />
+        <Route path="/welcome" element={<WelcomeScreen/>}/>
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signUpForm" element={<SignUpForm />} />
         <Route path="/my-profile" element={<MyProfile />} />
@@ -52,7 +54,7 @@ function App() {
         <Route path="/appointment-details" element={<AppointmentDetails />} />
         <Route path="/edit-raport" element={<EditRaport />} />
         <Route path="/edit-profile" element={<EditProfile />} />
-        
+        <Route path="/doctor-profile-public" element={<DoctorProfilePublic />} />
 
 
         <Route path="/admin" element={<AdminHomePage />} />

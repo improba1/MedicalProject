@@ -199,7 +199,6 @@ const EditProfile = () => {
                          {role === 'DOCTOR' && (
                             <>
                                 <FormInput label="Qualification" name="qualification" value={formData.qualification} onChange={handleChange} />
-                                <FormInput label="Rating" type="number" name="rating" value={formData.rating} onChange={handleChange} />
                                 <FormInput label="Address" name="address" value={formData.address} onChange={handleChange} />
                             </>
                          )}
