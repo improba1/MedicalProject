@@ -10,6 +10,21 @@ const DoctorProfilePublic = () => {
     const navigate = useNavigate();
     const { id } = useParams(); 
 
+    const checkIsLoggedIn = () => {
+        return !!localStorage.getItem('acces_token'); 
+    };
+
+    const handleBookClick = (e) => {
+        e.stopPropagation();
+
+        if (!checkIsLoggedIn()) {
+            navigate('/signUpForm');
+        } else {
+            console.log("User is logged in, proceed to booking");
+            // navigate(`/booking/${doctor.id}`); 
+        }
+    };
+
     const doctorData = location.state?.doctorData;
 
     
@@ -83,7 +98,7 @@ const DoctorProfilePublic = () => {
                         <div className={styles.actionArea}>
                             <button 
                                 className={styles.editButton} 
-                                onClick={() => alert("Booking functionality coming soon!")}
+                                onClick={handleBookClick}
                             >
                                 Book Appointment
                             </button>
