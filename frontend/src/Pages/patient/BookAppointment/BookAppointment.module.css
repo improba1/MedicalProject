@@ -32,6 +32,7 @@
     flex-direction: column;
     gap: 30px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: visible; 
 }
 
 .selectWrapper {
@@ -137,4 +138,18 @@
 .dropdown::-webkit-scrollbar-thumb {
     background: #444;
     border-radius: 10px;
+}
+
+/* Добавьте это в ваш файл стилей */
+
+.noResults {
+    padding: 12px 25px;
+    color: #888;
+    font-size: 0.9rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.inputContainer input {
+    cursor: pointer;
 }
