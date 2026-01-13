@@ -1,7 +1,6 @@
 package com.example.demo.dto.request.visit;
 
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -18,9 +17,6 @@ public class CreateVisitRequest {
     private UUID doctorId;
 
     private UUID raportId;
-
-    @NotBlank
-    private String visitStatus;
 
     @NotNull
     @FutureOrPresent

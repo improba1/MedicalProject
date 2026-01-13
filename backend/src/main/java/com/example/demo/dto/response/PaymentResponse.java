@@ -9,16 +9,14 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class RaportResponse {
+public class PaymentResponse {
 
     private UUID id;
     private UUID visitId;
-    private String disease;
-    private String symptoms;
-    private String treatmentPlan;
-    private String doctorNotes;
-    private BigDecimal totalPrice;
-    private String servicesSnapshot;
+    private BigDecimal amount;
+    private String status;
+    private String stripeSessionId;
+    private String stripePaymentIntentId;
     private LocalDateTime createdAt;
-    private String paymentReceipt;
+    private LocalDateTime paidAt;
 }

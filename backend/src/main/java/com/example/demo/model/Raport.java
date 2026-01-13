@@ -1,9 +1,9 @@
 package com.example.demo.model;
 
-import com.example.demo.enums.VisitStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ public class Raport {
     @GeneratedValue
     private UUID id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "visit_id", nullable = false, unique = true)
     private Visit visit;
 
@@ -35,18 +35,24 @@ public class Raport {
     @Column(nullable = false)
     private String disease;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String symptoms;
 
+    @Lob
+    private String treatmentPlan;
+
+    @Lob
+    private String doctorNotes;
+
     @Column(nullable = false)
-    private Double price;
+    private BigDecimal totalPrice;
+
+    @Lob
+    @Column(nullable = false)
+    private String servicesSnapshot;
 
     @Column(nullable = false, name = "created_at")
     private LocalDateTime createdAt;
 
-    private String notes;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "visit_status", nullable = false)
-    private VisitStatus visitStatus;
+    private String paymentReceipt;
 }

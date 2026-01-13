@@ -14,5 +14,7 @@ public interface VisitRepository extends JpaRepository<Visit, UUID>, JpaSpecific
 
     boolean existsByDoctorIdAndAppointmentTime(UUID doctorId, LocalDateTime appointmentTime);
 
+    boolean existsByDoctorIdAndPatientId(UUID doctorId, UUID patientId);
+
     Optional<Visit> findByDoctorIdAndAppointmentTime(UUID doctorId, LocalDateTime appointmentTime);
 }

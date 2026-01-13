@@ -1,5 +1,6 @@
 package com.example.demo.service.visit;
 
+import com.example.demo.enums.VisitStatus;
 import com.example.demo.model.Visit;
 
 import java.time.LocalDateTime;
@@ -21,11 +22,13 @@ public interface VisitService {
     // 🔹 PATIENT ACTIONS
     // ============================================================
 
+    Visit createVisitForAuthenticatedPatient(Visit visit);
     Visit cancelVisit(UUID visitId);
     Visit rescheduleVisit(UUID visitId, LocalDateTime newTime);
 
     List<Visit> searchVisitsForAuthenticatedPatient(
             UUID doctorId,
+            VisitStatus status,
             LocalDateTime start,
             LocalDateTime end
     );
@@ -39,6 +42,7 @@ public interface VisitService {
 
     List<Visit> searchVisitsForAuthenticatedDoctor(
             UUID patientId,
+            VisitStatus status,
             LocalDateTime start,
             LocalDateTime end
     );
@@ -50,6 +54,7 @@ public interface VisitService {
     List<Visit> searchVisitsForAdmin(
             UUID doctorId,
             UUID patientId,
+            VisitStatus status,
             LocalDateTime start,
             LocalDateTime end
     );

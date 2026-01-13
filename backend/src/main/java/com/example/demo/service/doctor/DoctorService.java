@@ -2,6 +2,7 @@ package com.example.demo.service.doctor;
 
 import com.example.demo.dto.request.doctor.DoctorSearchRequest;
 import com.example.demo.model.Doctor;
+import com.example.demo.model.Patient;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,13 +14,20 @@ public interface DoctorService {
 
     Doctor getById(UUID id);
     List<Doctor> getAll();
-    Doctor create(Doctor doctor);
-    Doctor update(Doctor doctor);
-    void delete(UUID id);
     List<Doctor> searchDoctors(DoctorSearchRequest request);
+
+    // ADMIN
+    Doctor create(Doctor doctor);
+    Doctor updateDoctorByAdmin(UUID doctorId, Doctor updated, MultipartFile image);
+    Doctor activateDoctor(UUID id);
+    Doctor deactivateDoctor(UUID id);
+    void delete(UUID id);
+
+    // DOCTOR (тільки себе)
     Doctor getCurrentDoctor();
-    Doctor updateCurrentDoctor(Doctor doctor);
-    Doctor updateOwnProfileWithImage(Doctor doctor, MultipartFile file);
-    Doctor updateDoctorWithImage(Doctor doctor, MultipartFile imageFile);
-    void deactivateDoctorProfile(HttpServletRequest request, HttpServletResponse response);
+    Doctor updateCurrentDoctor(Doctor updated, MultipartFile image);
+    Doctor updateCurrentDoctorImage(MultipartFile image);
+    void deactivateCurrentDoctor(HttpServletRequest request, HttpServletResponse response);
+
+    Patient getPatientIfDoctorHasAccess(UUID patientId);
 }

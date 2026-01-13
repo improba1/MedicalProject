@@ -7,17 +7,19 @@ import org.springframework.data.jpa.domain.Specification;
 public class DoctorSpecificationBuilder {
 
     public static Specification<Doctor> build(DoctorSearchRequest request) {
-        Specification<Doctor> spec = (root, query, cb) -> cb.conjunction();
+        if (request == null) {
+            return Specification.allOf(
+                    DoctorSpecifications.isActive(),
+                    DoctorSpecifications.orderByLastname()
+            );
+        }
 
-        if (request.getName() != null && !request.getName().isBlank()) {
-            spec = spec.and(DoctorSpecifications.hasNameLike(request.getName()));
-        }
-        if (request.getSpecialization() != null) {
-            spec = spec.and(DoctorSpecifications.hasSpecialization(request.getSpecialization()));
-        }
-        if (request.getRating() != null) {
-            spec = spec.and(DoctorSpecifications.hasRatingGreaterThan(request.getRating()));
-        }
-        return spec;
+        return Specification.allOf(
+                DoctorSpecifications.isActive(),
+                DoctorSpecifications.hasNameLike(request.getName()),
+                DoctorSpecifications.hasSpecialization(request.getSpecialization()),
+                DoctorSpecifications.hasRatingGreaterThan(request.getRating()),
+                DoctorSpecifications.orderByLastname()
+        );
     }
 }

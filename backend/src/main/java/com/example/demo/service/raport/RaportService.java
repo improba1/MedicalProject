@@ -13,16 +13,16 @@ public interface RaportService {
     Raport create(Raport raport);
     Raport update(UUID id, Raport raport);
     void delete(UUID id);
-    List<Raport> getByDoctorId(UUID doctorId);
-    List<Raport> getByPatientId(UUID patientId);
+
     Raport getByVisitId(UUID visitId);
-    List<Raport> getByPatientAndDate(UUID patientId, LocalDateTime start, LocalDateTime end);
-    List<Raport> getByDoctorAndDate(UUID doctorId, LocalDateTime start, LocalDateTime end);
+
     List<Raport> getByDateRange(LocalDateTime start, LocalDateTime end);
-    List<Raport> getByVisitAndDoctor(UUID visitId, UUID doctorId);
-    List<Raport> getByVisitAndPatient(UUID visitId, UUID patientId);
+    List<Raport> getByDoctorAndDate(UUID doctorId, LocalDateTime start, LocalDateTime end);
+    List<Raport> getByPatientAndDate(UUID patientId, LocalDateTime start, LocalDateTime end);
+
     Raport getRaportByVisitForUser(UUID visitId);
     List<Raport> getUserRaports();
+
     Raport getOwnRaportByVisit(UUID visitId);
     List<Raport> getDoctorRaports();
     List<Raport> getOwnRaportsByPatient(UUID patientId);

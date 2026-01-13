@@ -4,13 +4,12 @@ import com.example.demo.enums.Role;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.DoctorAvailability;
 import com.example.demo.repository.DoctorAvailabilityRepository;
-import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.VisitRepository;
+import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.slot.SlotService;
 import com.example.demo.service.visit.VisitStatusService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +24,14 @@ import java.util.UUID;
 public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService {
 
     private final DoctorAvailabilityRepository availabilityRepository;
-    private final DoctorRepository doctorRepository;
     private final VisitRepository visitRepository;
     private final VisitStatusService visitStatusService;
     private final SlotService slotService;
+    private final CurrentUserService currentUserService;
 
     // ==========================
     // 🔹 Хелпери
     // ==========================
-
-    private Doctor getAuthenticatedDoctor() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"));
-    }
 
     private void ensureNotPast(DoctorAvailability slot) {
         if (slot.getAvailableTime().isBefore(LocalDateTime.now())) {
@@ -145,7 +138,7 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
     @Override
     public DoctorAvailability create(DoctorAvailability availability) {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         availability.setDoctorId(doctor.getId());
         updateActiveStatus(availability);
         return availabilityRepository.save(availability);
@@ -154,7 +147,7 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
     @Override
     @Transactional
     public DoctorAvailability updateExisting(DoctorAvailability availability) {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         DoctorAvailability existing = getById(availability.getId());
 
         if (!existing.getDoctorId().equals(doctor.getId())) {
@@ -185,7 +178,7 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
     @Override
     @Transactional
     public void deleteOwn(UUID availabilityId) {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         DoctorAvailability slot = getById(availabilityId);
 
         if (!slot.getDoctorId().equals(doctor.getId())) {
@@ -266,55 +259,55 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
     @Override
     public List<DoctorAvailability> getOwnAvailabilities() {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getByDoctor(doctor.getId());
     }
 
     @Override
     public List<DoctorAvailability> getOwnActiveSlots() {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getActiveSlots(doctor.getId());
     }
 
     @Override
     public List<DoctorAvailability> getOwnByDay(int year, int month, int day) {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getByDay(doctor.getId(), year, month, day);
     }
 
     @Override
     public List<DoctorAvailability> getOwnByMonth(int year, int month) {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getByMonth(doctor.getId(), year, month);
     }
 
     @Override
     public List<DoctorAvailability> getOwnByYear(int year) {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getByYear(doctor.getId(), year);
     }
 
     @Override
     public List<DoctorAvailability> getOwnToday() {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getToday(doctor.getId());
     }
 
     @Override
     public List<DoctorAvailability> getOwnNextHour() {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getNextHour(doctor.getId());
     }
 
     @Override
     public List<DoctorAvailability> getOwnThisWeek() {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getThisWeek(doctor.getId());
     }
 
     @Override
     public List<DoctorAvailability> getOwnNextWeek() {
-        Doctor doctor = getAuthenticatedDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
         return getNextWeek(doctor.getId());
     }
 }
