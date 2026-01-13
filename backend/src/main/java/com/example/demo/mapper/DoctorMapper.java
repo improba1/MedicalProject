@@ -71,6 +71,7 @@ public class DoctorMapper {
                 .phone(doctor.getPhone())
                 .address(doctor.getAddress())
                 .birthDate(doctor.getBirthDate())
+                .age(doctor.getAge())
                 .sex(doctor.getSex() != null ? doctor.getSex().name() : null)
                 .specialization(doctor.getSpecialization() != null ? doctor.getSpecialization().name() : null)
                 .qualification(doctor.getQualification())

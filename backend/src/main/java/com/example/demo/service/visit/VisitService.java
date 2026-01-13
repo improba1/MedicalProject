@@ -3,6 +3,7 @@ package com.example.demo.service.visit;
 import com.example.demo.enums.VisitStatus;
 import com.example.demo.model.Visit;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -58,4 +59,15 @@ public interface VisitService {
             LocalDateTime start,
             LocalDateTime end
     );
+
+    // ============================================================
+    // 🔹 CART ACTIONS
+    // ============================================================
+
+    Visit addItemToVisit(UUID visitId, UUID medicalServiceId, Integer quantity);
+    Visit removeItemFromVisit(UUID visitId, UUID itemId);
+    Visit clearCart(UUID visitId);
+    Visit updateItemQuantity(UUID visitId, UUID itemId, Integer quantity);
+    BigDecimal calculateTotalPrice(UUID visitId);
+    Visit lockCart(UUID visitId);
 }

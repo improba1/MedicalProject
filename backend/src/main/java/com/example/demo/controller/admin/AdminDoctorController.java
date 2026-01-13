@@ -24,7 +24,7 @@ public class AdminDoctorController {
     private final DoctorService doctorService;
     private final DoctorMapper doctorMapper;
 
-    @PostMapping
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<DoctorResponse>> createDoctor(
             @Valid @RequestBody AddDoctorRequest request) {
@@ -37,7 +37,7 @@ public class AdminDoctorController {
                         doctorMapper.toResponse(saved)));
     }
 
-    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    @PutMapping(value = "/update/{id}", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<DoctorResponse>> updateDoctor(
             @PathVariable UUID id,

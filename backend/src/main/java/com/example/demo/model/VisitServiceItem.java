@@ -20,14 +20,25 @@ public class VisitServiceItem {
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
+
     @ManyToOne
     @JoinColumn(name = "visit_id", nullable = false)
     private Visit visit;
+
 
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)
     private MedicalService service;
 
+
+    @Column(nullable = false)
+    private String serviceName;
+
+
     @Column(nullable = false)
     private BigDecimal priceAtMomentOfPurchase;
+
+
+    @Column(nullable = false)
+    private Integer quantity;
 }

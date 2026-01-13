@@ -1,6 +1,6 @@
 package com.example.demo.controller.public_;
 
-import com.example.demo.dto.request.AuthRequest;
+import com.example.demo.dto.request.auth.AuthRequest;
 import com.example.demo.dto.request.patient.RegisterPatientRequest;
 import com.example.demo.dto.response.AuthResponse;
 import com.example.demo.dto.response.ApiResponse;
