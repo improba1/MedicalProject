@@ -24,38 +24,46 @@ public class Visit {
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
+
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
+
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
+
     @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
     private Raport raport;
+
 
     @Column(name = "appointment_time", nullable = false)
     private LocalDateTime appointmentTime;
 
+
     @Enumerated(EnumType.STRING)
     private VisitStatus status;
 
-    // 🔥 Нове: список послуг, обраних для цього візиту
+
     @OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VisitServiceItem> services;
 
-    // 🔥 Нове: симптоми пацієнта (після оплати)
+
     @Lob
     private String patientSymptoms;
 
-    // 🔥 Зручний метод для підрахунку загальної ціни
+
+    private boolean cartLocked = false;
+
+
     public BigDecimal getTotalPrice() {
-        return services == null
-                ? BigDecimal.ZERO
-                : services.stream()
-                .map(VisitServiceItem::getPriceAtMomentOfPurchase)
+        if (services == null || services.isEmpty()) return BigDecimal.ZERO;
+        return services.stream()
                 .filter(Objects::nonNull)
+                .map(i -> i.getPriceAtMomentOfPurchase()
+                        .multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

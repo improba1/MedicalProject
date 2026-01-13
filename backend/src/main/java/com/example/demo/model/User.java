@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Entity
@@ -46,6 +47,12 @@ public class User implements UserDetails {
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
+
+    @Transient
+    public int getAge() {
+        if (birthDate == null) return 0;
+        return (int) ChronoUnit.YEARS.between(birthDate, LocalDate.now());
+    }
 
     @Enumerated(EnumType.STRING)
     private Sex sex;

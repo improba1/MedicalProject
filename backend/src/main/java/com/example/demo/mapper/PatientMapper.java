@@ -43,6 +43,7 @@ public class PatientMapper {
                 .firstname(patient.getFirstname())
                 .lastname(patient.getLastname())
                 .birthDate(patient.getBirthDate())
+                .age(patient.getAge())
                 .sex(patient.getSex() != null ? patient.getSex().name() : null)
                 .email(patient.getEmail())
                 .phone(patient.getPhone())
