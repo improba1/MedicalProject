@@ -20,6 +20,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -52,26 +53,22 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public String createCheckoutSession(UUID visitId) {
-
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
 
-        if (visit.getStatus() != VisitStatus.SCHEDULED) {
+        if (!(visit.getStatus() == VisitStatus.SCHEDULED || visit.getStatus() == VisitStatus.RESCHEDULED)) {
             throw new IllegalStateException("Only scheduled visits can be paid");
         }
-
         if (visit.getServices() == null || visit.getServices().isEmpty()) {
             throw new IllegalStateException("Visit has no services to pay for");
         }
-
         BigDecimal totalPrice = visit.getTotalPrice();
-
         long amountInCents = totalPrice
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(0, RoundingMode.HALF_UP)
                 .longValueExact();
-
         try {
             SessionCreateParams params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
@@ -95,9 +92,7 @@ public class PaymentServiceImpl implements PaymentService {
                     )
                     .putMetadata("visitId", visitId.toString())
                     .build();
-
             Session session = Session.create(params);
-
             Payment payment = Payment.builder()
                     .visit(visit)
                     .amount(totalPrice)
@@ -105,39 +100,38 @@ public class PaymentServiceImpl implements PaymentService {
                     .stripeSessionId(session.getId())
                     .createdAt(LocalDateTime.now())
                     .build();
-
             paymentRepository.save(payment);
-
+            visit.setCartLocked(true);
+            visitRepository.save(visit);
             return session.getUrl();
-
         } catch (StripeException e) {
             throw new RuntimeException("Stripe error: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public void handleWebhook(String payload, String signatureHeader)
-            throws SignatureVerificationException {
-
+    @Transactional
+    public void handleWebhook(String payload, String signatureHeader) throws SignatureVerificationException {
         Event event = Webhook.constructEvent(payload, signatureHeader, webhookSecret);
-
         if (!"checkout.session.completed".equals(event.getType())) {
             return;
         }
-
         Session session = (Session) event.getDataObjectDeserializer()
                 .getObject()
-                .orElseThrow();
-
+                .orElseThrow(() -> new IllegalStateException("Cannot deserialize session"));
         Payment payment = paymentRepository.findByStripeSessionId(session.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Payment not found"));
-
+        Visit visit = payment.getVisit();
+        BigDecimal currentTotal = visit.getTotalPrice();
+        if (payment.getAmount() == null || payment.getAmount().compareTo(currentTotal) != 0) {
+            payment.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(payment);
+            throw new IllegalStateException("Payment amount mismatch with visit total");
+        }
         payment.setStatus(PaymentStatus.PAID);
         payment.setPaidAt(LocalDateTime.now());
         payment.setStripePaymentIntentId(session.getPaymentIntent());
         paymentRepository.save(payment);
-
-        Visit visit = payment.getVisit();
         visitStatusService.pay(visit, Role.PATIENT);
         visitRepository.save(visit);
     }

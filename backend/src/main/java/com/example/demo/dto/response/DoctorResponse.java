@@ -18,6 +18,7 @@ public class DoctorResponse {
     private String phone;
     private String address;
     private LocalDate birthDate;
+    private Integer age;
     private String sex;
 
     private String specialization;

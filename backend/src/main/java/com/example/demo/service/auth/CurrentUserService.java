@@ -6,6 +6,8 @@ import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -15,38 +17,51 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CurrentUserService {
 
+
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
 
+
     public User getAuthenticatedUser() {
-        return userRepository.findByEmail(getEmail())
+        String email = getEmail();
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"));
     }
 
+
     public String getEmail() {
-        return SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getName() == null) {
+            throw new AuthenticationCredentialsNotFoundException("User is not authenticated");
+        }
+        return auth.getName();
     }
 
+
     public UUID getUserId() {
-        return userRepository.findByEmail(getEmail())
+        String email = getEmail();
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"))
                 .getId();
     }
+
 
     public UUID getPatientId() {
         return getUserId(); // якщо Patient = User
     }
 
+
     public UUID getDoctorId() {
-        return doctorRepository.findByEmail(getEmail())
+        String email = getEmail();
+        return doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"))
                 .getId();
     }
 
+
     public Doctor getAuthenticatedDoctor() {
-        return doctorRepository.findByEmail(getEmail())
+        String email = getEmail();
+        return doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"));
     }
 }

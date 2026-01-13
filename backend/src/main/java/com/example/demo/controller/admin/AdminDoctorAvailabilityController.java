@@ -1,6 +1,7 @@
 package com.example.demo.controller.admin;
 
 import com.example.demo.dto.request.doctor_availability.AddAvailabilityRequest;
+import com.example.demo.dto.request.doctor_availability.DoctorAvailabilitySearchRequest;
 import com.example.demo.dto.request.doctor_availability.UpdateAvailabilityRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.DoctorAvailabilityResponse;
@@ -27,30 +28,12 @@ public class AdminDoctorAvailabilityController {
 
     // ------------------ HELPERS ------------------
 
-    private ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> okList(List<DoctorAvailability> list, String message) {
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                message,
-                mapper.toResponseList(list)
-        ));
-    }
-
     private ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> okOne(DoctorAvailability entity) {
         return ResponseEntity.ok(ApiResponse.of(
                 HttpStatus.OK.value(),
                 "Availability updated successfully",
                 mapper.toResponse(entity)
         ));
-    }
-
-    // ------------------ GET ALL BY DOCTOR ------------------
-    @GetMapping("/get/{doctorId}")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getByDoctor(@PathVariable UUID doctorId) {
-        return okList(
-                availabilityService.getByDoctor(doctorId),
-                "Doctor availability fetched successfully"
-        );
     }
 
     // ------------------ CREATE ------------------
@@ -100,92 +83,11 @@ public class AdminDoctorAvailabilityController {
         ));
     }
 
-    // ------------------ FILTERS ------------------
-    // ------------------ GET ACTIVE SLOTS ------------------
-    @GetMapping("/get/{doctorId}/active")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> getActiveSlots(
-            @PathVariable UUID doctorId) {
-
-        return okList(
-                availabilityService.getActiveSlots(doctorId),
-                "Active doctor availability fetched successfully"
-        );
-    }
-
-
-    @GetMapping("/get/{doctorId}/today")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> today(@PathVariable UUID doctorId) {
-        return okList(
-                availabilityService.getToday(doctorId),
-                "Fetched"
-        );
-    }
-
-    @GetMapping("/get/{doctorId}/next-hour")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> nextHour(@PathVariable UUID doctorId) {
-        return okList(
-                availabilityService.getNextHour(doctorId),
-                "Fetched"
-        );
-    }
-
-    @GetMapping("/get/{doctorId}/this-week")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> thisWeek(@PathVariable UUID doctorId) {
-        return okList(
-                availabilityService.getThisWeek(doctorId),
-                "Fetched"
-        );
-    }
-
-    @GetMapping("/get/{doctorId}/next-week")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> nextWeek(@PathVariable UUID doctorId) {
-        return okList(
-                availabilityService.getNextWeek(doctorId),
-                "Fetched"
-        );
-    }
-
-    @GetMapping("/get/{doctorId}/month/{year}/{month}")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byMonth(
-            @PathVariable UUID doctorId,
-            @PathVariable int year,
-            @PathVariable int month) {
-
-        return okList(
-                availabilityService.getByMonth(doctorId, year, month),
-                "Fetched"
-        );
-    }
-
-    @GetMapping("/get/{doctorId}/day/{year}/{month}/{day}")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byDay(
-            @PathVariable UUID doctorId,
-            @PathVariable int year,
-            @PathVariable int month,
-            @PathVariable int day) {
-
-        return okList(
-                availabilityService.getByDay(doctorId, year, month, day),
-                "Fetched"
-        );
-    }
-
-    @GetMapping("/get/{doctorId}/year/{year}")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> byYear(
-            @PathVariable UUID doctorId,
-            @PathVariable int year) {
-
-        return okList(
-                availabilityService.getByYear(doctorId, year),
-                "Fetched"
-        );
+    @GetMapping("/search")
+    public List<DoctorAvailability> search(
+            @RequestParam(required = false) UUID doctorId,
+            DoctorAvailabilitySearchRequest request
+    ) {
+        return availabilityService.searchForAdmin(doctorId, request);
     }
 }

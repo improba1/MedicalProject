@@ -18,5 +18,6 @@ public class PatientResponse{
     private String phone;
     private String address;
     private LocalDate birthDate;
+    private Integer age;
     private String sex;
 }

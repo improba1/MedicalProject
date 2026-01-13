@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.model.DoctorAvailability;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvailability, UUID> {
+public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvailability, UUID>, JpaSpecificationExecutor<DoctorAvailability> {
 
     // 🔹 Усі слоти лікаря
     List<DoctorAvailability> findByDoctorId(UUID doctorId);

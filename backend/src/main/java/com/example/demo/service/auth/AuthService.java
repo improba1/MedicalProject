@@ -1,6 +1,6 @@
 package com.example.demo.service.auth;
 
-import com.example.demo.dto.request.AuthRequest;
+import com.example.demo.dto.request.auth.AuthRequest;
 import com.example.demo.dto.request.patient.RegisterPatientRequest;
 import com.example.demo.dto.response.AuthResponse;
 import jakarta.servlet.http.HttpServletRequest;
