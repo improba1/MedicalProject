@@ -21,7 +21,7 @@ public class DoctorProfileController {
     private final DoctorService doctorService;
     private final DoctorMapper doctorMapper;
 
-    @GetMapping
+    @GetMapping("/get")
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<ApiResponse<DoctorResponse>> getProfile() {
         Doctor doctor = doctorService.getCurrentDoctor();
@@ -31,7 +31,7 @@ public class DoctorProfileController {
         ));
     }
 
-    @PutMapping(consumes = "multipart/form-data")
+    @PutMapping(value = "/update", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ApiResponse<DoctorResponse>> updateProfile(
             @ModelAttribute UpdateDoctorRequest request
@@ -45,7 +45,7 @@ public class DoctorProfileController {
         ));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('doctor:delete')")
     public ResponseEntity<ApiResponse<Void>> deleteProfile(
             HttpServletRequest request,
