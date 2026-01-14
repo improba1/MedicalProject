@@ -23,7 +23,7 @@ public class PatientProfileController {
     private final PatientMapper patientMapper;
 
     // 🔹 Подивитись свій профіль
-    @GetMapping
+    @GetMapping("/get")
     @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<PatientResponse>> getProfile() {
         Patient patient = patientService.getCurrentPatient();
