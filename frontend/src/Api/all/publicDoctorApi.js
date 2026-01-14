@@ -6,7 +6,7 @@ const $api = axios.create({
 
 export const publicDoctorApi = {
     getAllDoctors: async () => {
-        return $api.get('/doctors/getAll');
+        return $api.get('/doctors/get-all');
     },
 
     searchDoctors: async (searchParams) => {
