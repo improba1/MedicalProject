@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -64,6 +65,18 @@ public class AdminPatientController {
         PatientResponse dto = patientMapper.toResponse(patient);
 
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient fetched successfully", dto));
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<List<PatientResponse>> searchPatients(
+            @RequestParam(required = false) String name
+    ) {
+        return ResponseEntity.ok(
+                patientMapper.toResponseList(
+                        patientService.searchPatientsForAdmin(name)
+                )
+        );
     }
 
     // SOFT DELETE patient (deactivate)

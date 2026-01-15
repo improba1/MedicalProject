@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const $api = axios.create({
-    baseURL: '/api/v1/doctors/me' // Или твой полный адрес
+    baseURL: '/api/v1/doctors/me' 
 });
 
 $api.interceptors.request.use((config) => {
@@ -14,8 +14,7 @@ $api.interceptors.request.use((config) => {
 
 export const scheduleApi = {
     addAvailability: async (doctorId, dateTimeString) => {
-        // dateTimeString должен быть формата "2023-12-31T14:30:00"
-        const response = await $api.post('/availability', { 
+        const response = await $api.post('/availability/create', { 
             doctorId: doctorId,
             availableTime: dateTimeString
         });

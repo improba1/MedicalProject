@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
@@ -9,6 +9,10 @@ import styles from './PatientHomePage.module.css';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import HeaderWithProfile from '../../../Components/HeaderWithProfile/HeaderWithProfile';
 import HeartBackground from '../../../Components/HeartBackground/HeartBackground';
+
+// API только для визитов и врачей
+import { visitApi } from '../../../Api/patient/visitApi';
+import { doctorApi } from '../../../Api/doctor/doctorApi';
 
 const Card = ({ data, onClick }) => (
     <button className={styles.card} onClick={onClick} type="button">
@@ -34,13 +38,47 @@ const Card = ({ data, onClick }) => (
 
 const PatientHomePage = () => {
     const navigate = useNavigate();
+    const [upcomingVisits, setUpcomingVisits] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const upcomingVisits = [
-        { id: 1, date: "15/10/2025", title: "Clinic Visit Appointment", time: "10:00", specialization: "Cardiology", doctor: "Dr. House" },
-        { id: 2, date: "22/10/2025", title: "Check-up", time: "14:30", specialization: "Therapy", doctor: "Dr. Wilson" },
-        { id: 3, date: "01/11/2025", title: "Clinic Visit Appointment", time: "09:15", specialization: "Cardiology", doctor: "Dr. House" },
-        { id: 4, date: "10/11/2025", title: "Consultation", time: "12:00", specialization: "Neurology", doctor: "Dr. Grey" },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Загружаем только предстоящие визиты
+                const visitsRes = await visitApi.getUpcomingVisits();
+                const visitsData = visitsRes.data;
+
+                // Подтягиваем данные врачей для карточек
+                const fullVisits = await Promise.all(
+                    visitsData.map(async (visit) => {
+                        try {
+                            const docRes = await doctorApi.getDoctorById(visit.doctorId);
+                            const doc = docRes.data;
+                            const dateObj = new Date(visit.appointmentTime);
+                            
+                            return {
+                                id: visit.id,
+                                date: dateObj.toLocaleDateString('ru-RU'),
+                                time: dateObj.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+                                title: "Clinic Visit",
+                                specialization: doc.specialization,
+                                doctor: `Dr. ${doc.lastname}`
+                            };
+                        } catch (err) {
+                            return null;
+                        }
+                    })
+                );
+
+                setUpcomingVisits(fullVisits.filter(v => v !== null));
+            } catch (error) {
+                console.error("Error loading home page data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     return (
         <AnimatedPage>
@@ -50,7 +88,10 @@ const PatientHomePage = () => {
 
                 <main className={styles.mainContent}>
                     <section className={styles.hero}>
-                        <h1 className={styles.welcome}>Hello, <span className={styles.orange}>Name!</span></h1>
+                        <h1 className={styles.welcome}>
+                            {/* Приветствие через localStorage, так как API удалено */}
+                            Hello, <span className={styles.orange}>{localStorage.getItem('userName') || 'Patient'}</span>
+                        </h1>
                         <p className={styles.subtext}>
                             Take charge of your health. Book an appointment with a specialist at your convenience!
                         </p>
@@ -61,7 +102,7 @@ const PatientHomePage = () => {
 
                     <div className={styles.bottomSection}>
                         <div className={styles.historyCard}>
-                            <p>All of your appointments and consultations will be stored here:</p>
+                            <p className={styles.historyText}>All of your appointments and consultations will be stored here:</p>
                             <button className={styles.historyBtn} onClick={() => navigate('/appointment-history')}>
                                 Appointment history
                             </button>
@@ -70,22 +111,29 @@ const PatientHomePage = () => {
                         <div className={styles.sliderContainer}>
                             <h2 className={styles.sliderTitle}>Upcoming appointments</h2>
                             <div className={styles.swiperWrapper}>
-                                <Swiper
-                                    modules={[Navigation]}
-                                    spaceBetween={15}
-                                    slidesPerView={3.2}
-                                    navigation={true}
-                                    className={styles.mySwiper}
-                                >
-                                    {upcomingVisits.map((visit) => (
-                                        <SwiperSlide key={visit.id}>
-                                            <Card 
-                                                data={visit} 
-                                                onClick={() => navigate(`/visit-details/${visit.id}`)} 
-                                            />
-                                        </SwiperSlide>
-                                    ))}
-                                </Swiper>
+                                {loading ? (
+                                    <div className={styles.emptyLine} /> 
+                                ) : upcomingVisits.length > 0 ? (
+                                    <Swiper
+                                        modules={[Navigation]}
+                                        spaceBetween={15}
+                                        slidesPerView={3.2}
+                                        navigation={true}
+                                        className={styles.mySwiper}
+                                    >
+                                        {upcomingVisits.map((visit) => (
+                                            <SwiperSlide key={visit.id}>
+                                                <Card 
+                                                    data={visit} 
+                                                    onClick={() => navigate(`/visit-details/${visit.id}`)} 
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                ) : (
+                                    /* Пустая область, если визитов нет */
+                                    <div className={styles.emptyLine} />
+                                )}
                             </div>
                         </div>
                     </div>

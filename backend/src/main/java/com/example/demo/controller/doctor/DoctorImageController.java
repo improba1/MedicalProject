@@ -20,28 +20,19 @@ public class DoctorImageController {
     private final ImageMapper imageMapper;
     private final ImageService imageService;
 
-    // 🔹 Завантажити картинку для залогованого лікаря
-    @PostMapping("/upload")
+    @PostMapping
     @PreAuthorize("hasAuthority('doctor:update')")
-    public ResponseEntity<ImageResponse> uploadImage(@RequestParam MultipartFile file) {
-        Doctor currentDoctor = doctorService.getCurrentDoctor();
-        Doctor updated = doctorService.updateOwnProfileWithImage(currentDoctor, file);
-        ImageResponse response = imageMapper.toResponse(updated.getImage());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ImageResponse> uploadImage(
+            @RequestParam MultipartFile file
+    ) {
+        Doctor updated = doctorService.updateCurrentDoctorImage(file);
+        return ResponseEntity.ok(
+                imageMapper.toResponse(updated.getImage())
+        );
     }
 
-    // 🔹 Оновити картинку для залогованого лікаря
-    @PutMapping("/update")
-    @PreAuthorize("hasAuthority('doctor:update')")
-    public ResponseEntity<ImageResponse> updateImage(@RequestParam MultipartFile file) {
-        Doctor currentDoctor = doctorService.getCurrentDoctor();
-        Doctor updated = doctorService.updateOwnProfileWithImage(currentDoctor, file);
-        ImageResponse response = imageMapper.toResponse(updated.getImage());
-        return ResponseEntity.ok(response);
-    }
-
-    // 🔹 Завантажити картинку залогованого лікаря
-    @GetMapping("/download")
+    // 🔹 Download avatar
+    @GetMapping
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<byte[]> downloadOwnImage() {
         return imageService.downloadOwnImage();

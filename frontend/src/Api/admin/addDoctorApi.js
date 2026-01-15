@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const $api = axios.create({
-    baseURL: 'http://localhost:8080/api/v1'
+    baseURL: '/api/v1'
 });
 
 $api.interceptors.request.use((config) => {
@@ -14,7 +14,7 @@ $api.interceptors.request.use((config) => {
 
 export const addDoctorApi = {
     createDoctor: async (doctorData) => {
-        const response = await $api.post('/doctors', doctorData);
+        const response = await $api.post('/admin/doctors/create', doctorData);
         
         return response.data;
     }

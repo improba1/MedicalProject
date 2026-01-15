@@ -22,7 +22,7 @@ import java.util.Set;
 public class Doctor extends User {
 
     private String qualification;
-    private double rating;
+    private Double rating;
 
     @Column(name = "start_date")
     private LocalDate startDate;

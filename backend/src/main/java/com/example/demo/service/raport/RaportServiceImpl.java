@@ -19,6 +19,37 @@ public class RaportServiceImpl implements RaportService {
     private final RaportRepository raportRepository;
     private final UserRepository userRepository;
 
+    // ==========================
+    // 🔹 Helpers
+    // ==========================
+
+    private UUID getCurrentUserId() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"))
+                .getId();
+    }
+
+    private UUID getCurrentDoctorId() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"))
+                .getId();
+    }
+
+    private boolean isAdmin() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("admin:update"));
+    }
+
+
+    // ==========================
+    // 🔹 Basic CRUD
+    // ==========================
+
     @Override
     public Raport getById(UUID id) {
         return raportRepository.findById(id)
@@ -37,19 +68,41 @@ public class RaportServiceImpl implements RaportService {
     }
 
     @Override
-    public Raport update(UUID id, Raport raport) {
-        Raport existing = getById(id);
+    public Raport update(UUID id, Raport raportUpdate) {
+        Raport raport = getById(id);
 
-        existing.setDisease(raport.getDisease());
-        existing.setSymptoms(raport.getSymptoms());
-        existing.setPrice(raport.getPrice());
-        existing.setNotes(raport.getNotes());
-        existing.setDoctor(raport.getDoctor());
-        existing.setPatient(raport.getPatient());
-        existing.setVisit(raport.getVisit());
-        existing.setVisitStatus(raport.getVisitStatus());
+        // 🔥 1. Адмін може редагувати завжди
+        if (!isAdmin()) {
 
-        return raportRepository.save(existing);
+            // 🔥 2. Лікар може редагувати тільки свій рапорт
+            UUID currentDoctorId = getCurrentDoctorId();
+            if (!raport.getVisit().getDoctor().getId().equals(currentDoctorId)) {
+                throw new IllegalStateException("You cannot edit another doctor's raport");
+            }
+
+            // 🔥 3. Заборона редагування після COMPLETED
+            if (raport.getVisit().getStatus().name().equals("COMPLETED")) {
+                throw new IllegalStateException("Cannot edit raport after visit is completed");
+            }
+
+            // 🔥 4. Заборона редагування після 24 годин
+            LocalDateTime limit = raport.getCreatedAt().plusHours(24);
+            if (LocalDateTime.now().isAfter(limit)) {
+                throw new IllegalStateException("Raport can only be edited within 24 hours after creation");
+            }
+        }
+
+        // 🔥 5. Оновлення дозволених полів
+        if (raportUpdate.getDisease() != null)
+            raport.setDisease(raportUpdate.getDisease());
+
+        if (raportUpdate.getTreatmentPlan() != null)
+            raport.setTreatmentPlan(raportUpdate.getTreatmentPlan());
+
+        if (raportUpdate.getDoctorNotes() != null)
+            raport.setDoctorNotes(raportUpdate.getDoctorNotes());
+
+        return raportRepository.save(raport);
     }
 
     @Override
@@ -57,15 +110,9 @@ public class RaportServiceImpl implements RaportService {
         raportRepository.delete(getById(id));
     }
 
-    @Override
-    public List<Raport> getByDoctorId(UUID doctorId) {
-        return raportRepository.findByDoctorId(doctorId);
-    }
-
-    @Override
-    public List<Raport> getByPatientId(UUID patientId) {
-        return raportRepository.findByPatientId(patientId);
-    }
+    // ==========================
+    // 🔹 By visit
+    // ==========================
 
     @Override
     public Raport getByVisitId(UUID visitId) {
@@ -73,18 +120,8 @@ public class RaportServiceImpl implements RaportService {
     }
 
     // ==========================
-    // 🔥 Нові фільтри
+    // 🔹 Filters
     // ==========================
-
-    @Override
-    public List<Raport> getByPatientAndDate(UUID patientId, LocalDateTime start, LocalDateTime end) {
-        return raportRepository.findByPatientIdAndCreatedAtBetween(patientId, start, end);
-    }
-
-    @Override
-    public List<Raport> getByDoctorAndDate(UUID doctorId, LocalDateTime start, LocalDateTime end) {
-        return raportRepository.findByDoctorIdAndCreatedAtBetween(doctorId, start, end);
-    }
 
     @Override
     public List<Raport> getByDateRange(LocalDateTime start, LocalDateTime end) {
@@ -92,17 +129,23 @@ public class RaportServiceImpl implements RaportService {
     }
 
     @Override
-    public List<Raport> getByVisitAndDoctor(UUID visitId, UUID doctorId) {
-        return raportRepository.findByVisitIdAndDoctorId(visitId, doctorId);
+    public List<Raport> getByDoctorAndDate(UUID doctorId, LocalDateTime start, LocalDateTime end) {
+        return raportRepository.findByCreatedAtBetween(start, end)
+                .stream()
+                .filter(r -> r.getVisit().getDoctor().getId().equals(doctorId))
+                .toList();
     }
 
     @Override
-    public List<Raport> getByVisitAndPatient(UUID visitId, UUID patientId) {
-        return raportRepository.findByVisitIdAndPatientId(visitId, patientId);
+    public List<Raport> getByPatientAndDate(UUID patientId, LocalDateTime start, LocalDateTime end) {
+        return raportRepository.findByCreatedAtBetween(start, end)
+                .stream()
+                .filter(r -> r.getVisit().getPatient().getId().equals(patientId))
+                .toList();
     }
 
     // ==========================
-    // 🔹 Методи для користувача
+    // 🔹 For authenticated patient
     // ==========================
 
     @Override
@@ -110,7 +153,7 @@ public class RaportServiceImpl implements RaportService {
         UUID currentUserId = getCurrentUserId();
         Raport raport = raportRepository.findByVisitId(visitId);
 
-        if (raport == null || !raport.getPatient().getId().equals(currentUserId)) {
+        if (raport == null || !raport.getVisit().getPatient().getId().equals(currentUserId)) {
             throw new EntityNotFoundException("Raport not found for this user and visit");
         }
 
@@ -120,11 +163,15 @@ public class RaportServiceImpl implements RaportService {
     @Override
     public List<Raport> getUserRaports() {
         UUID currentUserId = getCurrentUserId();
-        return raportRepository.findByPatientId(currentUserId);
+
+        return raportRepository.findAll()
+                .stream()
+                .filter(r -> r.getVisit().getPatient().getId().equals(currentUserId))
+                .toList();
     }
 
     // ==========================
-    // 🔹 Методи для лікаря
+    // 🔹 For authenticated doctor
     // ==========================
 
     @Override
@@ -132,7 +179,7 @@ public class RaportServiceImpl implements RaportService {
         UUID currentDoctorId = getCurrentDoctorId();
         Raport raport = raportRepository.findByVisitId(visitId);
 
-        if (raport == null || !raport.getDoctor().getId().equals(currentDoctorId)) {
+        if (raport == null || !raport.getVisit().getDoctor().getId().equals(currentDoctorId)) {
             throw new EntityNotFoundException("Raport not found for this doctor and visit");
         }
 
@@ -142,36 +189,21 @@ public class RaportServiceImpl implements RaportService {
     @Override
     public List<Raport> getDoctorRaports() {
         UUID currentDoctorId = getCurrentDoctorId();
-        return raportRepository.findByDoctorId(currentDoctorId);
+
+        return raportRepository.findAll()
+                .stream()
+                .filter(r -> r.getVisit().getDoctor().getId().equals(currentDoctorId))
+                .toList();
     }
 
     @Override
     public List<Raport> getOwnRaportsByPatient(UUID patientId) {
         UUID currentDoctorId = getCurrentDoctorId();
 
-        return raportRepository.findByPatientId(patientId)
+        return raportRepository.findAll()
                 .stream()
-                .filter(r -> r.getDoctor().getId().equals(currentDoctorId))
+                .filter(r -> r.getVisit().getPatient().getId().equals(patientId))
+                .filter(r -> r.getVisit().getDoctor().getId().equals(currentDoctorId))
                 .toList();
-    }
-
-    // ==========================
-    // 🔹 Хелпери
-    // ==========================
-
-    private UUID getCurrentUserId() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"))
-                .getId();
-    }
-
-    private UUID getCurrentDoctorId() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"))
-                .getId();
     }
 }

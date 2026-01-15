@@ -4,6 +4,7 @@ import com.example.demo.dto.request.user.UpdateUserRequest;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.logout.LogoutService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final LogoutService logoutService;
     private final PasswordEncoder passwordEncoder;
+    private final CurrentUserService currentUserService;
 
     @Override
     public User getById(UUID id) {
@@ -74,19 +76,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getCurrentUser() {
-        return getAuthenticatedUser();
+        return currentUserService.getAuthenticatedUser();
     }
 
     @Override
     public User updateCurrentUser(UpdateUserRequest request) {
-        User currentUser = getAuthenticatedUser();
+        User currentUser = currentUserService.getAuthenticatedUser();
         userMapper.updateEntity(currentUser, request);
         return userRepository.save(currentUser);
     }
 
     @Override
     public void deactivateCurrentUser(HttpServletRequest request, HttpServletResponse response) {
-        User currentUser = getAuthenticatedUser();
+        User currentUser = currentUserService.getAuthenticatedUser();
         currentUser.setActive(false);
         userRepository.save(currentUser);
         logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
@@ -99,15 +101,5 @@ public class UserServiceImpl implements UserService {
         user.setActive(false);
         userRepository.save(user);
         logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-    }
-
-    // ==========================
-    // 🔹 Хелпер для отримання поточного користувача
-    // ==========================
-    private User getAuthenticatedUser() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"));
     }
 }

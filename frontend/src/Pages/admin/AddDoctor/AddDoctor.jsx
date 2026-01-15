@@ -19,12 +19,25 @@ const AddDoctor = () => {
     const [qualification, setQualification] = useState('');
     const [startDate, setStartDate] = useState('');
     const [rating, setRating] = useState(5);
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState(''); // Здесь будет храниться Base64 строка
 
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
     const navigate = useNavigate();
+
+    // Функция для обработки выбора файла
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                // Сохраняем результат (Base64 строку) в состояние
+                setImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,32 +45,29 @@ const AddDoctor = () => {
         setErrorMsg('');
         
         const newDoctor = {
-            email,
-            nickname,
-            phone,
-            password,
-            firstname,
-            lastname,
-            birthDate,
-            sex,
-            address,
-            specialization,
-            qualification,
-            startDate,
+            email: email,
+            nickname: nickname,
+            phone: phone,
+            password: password,
+            firstname: firstname,
+            lastname: lastname,
+            birthDate: birthDate === '' ? null : birthDate,
+            sex: sex,
+            address: address,
+            specialization: specialization,
+            qualification: qualification,
+            startDate: startDate === '' ? null : startDate,
             rating: Number(rating),
-            image
+            image: image === '' ? null : image
         };
         
         try {
             const response = await addDoctorApi.createDoctor(newDoctor);
-            
-            if (response.data) {
-                console.log("Доктор успешно создан:", response.data);
+            if (response && (response.data || response.status === 0)) {
                 navigate('/admin'); 
             }
         } catch (err) {
-            console.error("Ошибка при добавлении доктора:", err);
-            const message = err.response?.data?.message || "Server error. Please try again.";
+            const message = err.response?.data?.message || "Server error (500). Please check your data.";
             setErrorMsg(message);
         } finally {
             setLoading(false);
@@ -88,8 +98,22 @@ const AddDoctor = () => {
                                     <option value="FEMALE">FEMALE</option>
                                 </select>
                                 <input className={styles.input} type="text" placeholder="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
-                                <input className={styles.input} type="text" placeholder="image URL" value={image} onChange={(e) => setImage(e.target.value)} required />
-                                <input className={styles.input} type="number" placeholder="rating (1-5)" min="1" max="5" value={rating} onChange={(e) => setRating(e.target.value)} required />
+                                
+                                {/* Кнопка выбора фото вместо текстового поля */}
+                                <div className={styles.fileUploadContainer}>
+                                    <label htmlFor="file-upload" className={styles.fileUploadBtn}>
+                                        {image ? "Photo attached ✓" : "Choose doctor photo"}
+                                    </label>
+                                    <input 
+                                        id="file-upload" 
+                                        type="file" 
+                                        accept="image/*" 
+                                        onChange={handleFileChange} 
+                                        className={styles.hiddenFileInput}
+                                    />
+                                </div>
+
+                                <input className={styles.input} type="number" placeholder="rating (1-5)" min="1" max="5" step="0.1" value={rating} onChange={(e) => setRating(e.target.value)} required />
                             </div>
 
                             <div className={styles.column}>
@@ -110,11 +134,7 @@ const AddDoctor = () => {
 
                         {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
 
-                        <button 
-                            type="submit" 
-                            className={styles.createBtn} 
-                            disabled={loading}
-                        >
+                        <button type="submit" className={styles.createBtn} disabled={loading}>
                             {loading ? "Creating..." : "Create"}
                         </button>
                     </form>
