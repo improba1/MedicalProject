@@ -8,12 +8,24 @@ services:
     networks:
       - app-network
 
+  assistant:
+    image: ghcr.io/bderdz/med_rag_assistant:latest
+    ports:
+      - "8000:8000"
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    networks:
+      - app-network
+
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
+      - assistant
     env_file:
       - .env
     networks:
