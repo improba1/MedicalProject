@@ -1,7 +1,8 @@
 package com.example.demo.controller.admin;
 
-import com.example.demo.dto.request.doctor.AddDoctorRequest;
-import com.example.demo.dto.request.doctor.UpdateDoctorRequest;
+import com.example.demo.dto.request.doctor.DoctorCreateRequest;
+import com.example.demo.dto.request.doctor.DoctorSearchRequest;
+import com.example.demo.dto.request.doctor.DoctorUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.DoctorResponse;
 import com.example.demo.mapper.DoctorMapper;
@@ -14,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,10 +27,29 @@ public class AdminDoctorController {
     private final DoctorService doctorService;
     private final DoctorMapper doctorMapper;
 
+    @PostMapping("/search")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<List<DoctorResponse>>> searchAdmin(
+            @RequestBody DoctorSearchRequest request
+    ) {
+        var doctors = doctorService.searchDoctors(
+                request.getName(),
+                request.getSpecialization(),
+                request.getRating(),
+                request.getIsActive()
+        );
+
+        var response = doctorMapper.toResponseList(doctors);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Doctors fetched successfully", response)
+        );
+    }
+
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<DoctorResponse>> createDoctor(
-            @Valid @RequestBody AddDoctorRequest request) {
+            @Valid @RequestBody DoctorCreateRequest request) {
 
         Doctor doctor = doctorMapper.toEntity(request);
         Doctor saved = doctorService.create(doctor);
@@ -37,24 +59,24 @@ public class AdminDoctorController {
                         doctorMapper.toResponse(saved)));
     }
 
-    @PutMapping(value = "/update/{id}", consumes = "multipart/form-data")
+    @PutMapping(value = "/update/{doctorId}", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<DoctorResponse>> updateDoctor(
-            @PathVariable UUID id,
-            @ModelAttribute UpdateDoctorRequest request
+            @PathVariable UUID doctorId,
+            @ModelAttribute DoctorUpdateRequest request
     ) {
         Doctor updated = doctorMapper.toUpdatedEntity(new Doctor(), request);
-        Doctor saved = doctorService.updateDoctorByAdmin(id, updated, request.getImage());
+        Doctor saved = doctorService.updateDoctorByAdmin(doctorId, updated, request.getImage());
 
         return ResponseEntity.ok(ApiResponse.of(
                 200, "Doctor updated", doctorMapper.toResponse(saved)
         ));
     }
 
-    @PutMapping("/{id}/deactivate")
+    @PutMapping("/{doctorId}/deactivate")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<DoctorResponse>> deactivateDoctor(@PathVariable UUID id) {
-        Doctor doctor = doctorService.deactivateDoctor(id);
+    public ResponseEntity<ApiResponse<DoctorResponse>> deactivateDoctor(@PathVariable UUID doctorId) {
+        Doctor doctor = doctorService.deactivateDoctor(doctorId);
 
         return ResponseEntity.ok(ApiResponse.of(
                 200,
@@ -63,10 +85,10 @@ public class AdminDoctorController {
         ));
     }
 
-    @PutMapping("/{id}/activate")
+    @PutMapping("/{doctorId}/activate")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<DoctorResponse>> activateDoctor(@PathVariable UUID id) {
-        Doctor doctor = doctorService.activateDoctor(id);
+    public ResponseEntity<ApiResponse<DoctorResponse>> activateDoctor(@PathVariable UUID doctorId) {
+        Doctor doctor = doctorService.activateDoctor(doctorId);
 
         return ResponseEntity.ok(ApiResponse.of(
                 200,
@@ -75,22 +97,22 @@ public class AdminDoctorController {
         ));
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/{doctorId}")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<DoctorResponse>> getDoctor(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<DoctorResponse>> getDoctorById(@PathVariable UUID doctorId) {
         return ResponseEntity.ok(
                 ApiResponse.of(
                         HttpStatus.OK.value(),
                         "Doctor fetched successfully",
-                        doctorMapper.toResponse(doctorService.getById(id))
+                        doctorMapper.toResponse(doctorService.getById(doctorId))
                 )
         );
     }
 
-    @DeleteMapping("/hard-delete/{id}")
+    @DeleteMapping("/hard-delete/{doctorId}")
     @PreAuthorize("hasAuthority('admin:delete')")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
-        doctorService.delete(id);
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID doctorId) {
+        doctorService.delete(doctorId);
         return ResponseEntity.ok(ApiResponse.of(200, "Doctor deleted", null));
     }
 }

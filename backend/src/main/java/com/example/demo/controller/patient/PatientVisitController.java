@@ -1,6 +1,6 @@
 package com.example.demo.controller.patient;
 
-import com.example.demo.dto.request.visit.CreateVisitRequest;
+import com.example.demo.dto.request.visit.VisitCreateRequest;
 import com.example.demo.dto.request.visit.VisitSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
@@ -25,10 +25,26 @@ public class PatientVisitController {
     private final VisitService visitService;
     private final VisitMapper visitMapper;
 
+    @GetMapping("/get/{visitId}")
+    @PreAuthorize("hasAuthority('patient:read')")
+    public ResponseEntity<ApiResponse<VisitResponse>> getMyVisitById(
+            @PathVariable UUID visitId
+    ) {
+        var visit = visitService.getByIdForAuthenticatedPatient(visitId);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Visit retrieved successfully",
+                        visitMapper.toResponse(visit)
+                )
+        );
+    }
+
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('patient:create')")
     public ResponseEntity<ApiResponse<VisitResponse>> createVisit(
-            @RequestBody @Valid CreateVisitRequest request
+            @RequestBody @Valid VisitCreateRequest request
     ) {
         Visit visit = visitService.createVisitForAuthenticatedPatient(
                 visitMapper.fromCreateRequest(request)
@@ -76,16 +92,15 @@ public class PatientVisitController {
 
     @PostMapping("/search")
     @PreAuthorize("hasAuthority('patient:read')")
-    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchMyVisits(
+    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchVisitsForPatient(
             @RequestBody VisitSearchRequest request
     ) {
-        var visits = visitService.searchVisitsForAuthenticatedPatient(
+        var visits = visitService.searchForPatient(
                 request.getDoctorId(),
                 request.getStatus(),
                 request.getStart(),
                 request.getEnd()
         );
-
         return ResponseEntity.ok(
                 ApiResponse.of(
                         200,
@@ -94,5 +109,4 @@ public class PatientVisitController {
                 )
         );
     }
-
 }

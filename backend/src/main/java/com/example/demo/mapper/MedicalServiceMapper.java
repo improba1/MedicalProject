@@ -6,6 +6,8 @@ import com.example.demo.dto.response.MedicalServiceResponse;
 import com.example.demo.model.MedicalService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class MedicalServiceMapper {
 
@@ -34,5 +36,11 @@ public class MedicalServiceMapper {
                 .price(service.getPrice())
                 .active(service.isActive())
                 .build();
+    }
+
+    public List<MedicalServiceResponse> toResponseList(List<MedicalService> services) {
+        return services.stream()
+                .map(this::toResponse)
+                .toList();
     }
 }

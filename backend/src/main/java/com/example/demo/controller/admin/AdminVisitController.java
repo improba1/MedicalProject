@@ -1,7 +1,7 @@
 package com.example.demo.controller.admin;
 
-import com.example.demo.dto.request.visit.CreateVisitRequest;
-import com.example.demo.dto.request.visit.UpdateVisitRequest;
+import com.example.demo.dto.request.visit.VisitCreateRequest;
+import com.example.demo.dto.request.visit.VisitUpdateRequest;
 import com.example.demo.dto.request.visit.VisitSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
@@ -28,7 +28,7 @@ public class AdminVisitController {
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<VisitResponse>> createVisit(
-            @Valid @RequestBody CreateVisitRequest request) {
+            @Valid @RequestBody VisitCreateRequest request) {
 
         var created = visitService.createVisit(
                 visitMapper.fromCreateRequest(request)
@@ -42,14 +42,14 @@ public class AdminVisitController {
                 ));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{visitId}")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<VisitResponse>> updateVisit(
-            @PathVariable UUID id,
-            @Valid @RequestBody UpdateVisitRequest request) {
+            @PathVariable UUID visitId,
+            @Valid @RequestBody VisitUpdateRequest request) {
 
         var updated = visitService.updateVisit(
-                visitMapper.toUpdateEntity(id, request)
+                visitMapper.toUpdateEntity(visitId, request)
         );
 
         return ResponseEntity.ok(
@@ -61,22 +61,22 @@ public class AdminVisitController {
         );
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/{visitId}")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<VisitResponse>> getVisitById(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<VisitResponse>> getVisitById(@PathVariable UUID visitId) {
         return ResponseEntity.ok(
                 ApiResponse.of(
                         200,
                         "Visit fetched successfully",
-                        visitMapper.toResponse(visitService.getById(id))
+                        visitMapper.toResponse(visitService.getById(visitId))
                 )
         );
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{visitId}")
     @PreAuthorize("hasAuthority('admin:delete')")
-    public ResponseEntity<ApiResponse<Void>> deleteVisit(@PathVariable UUID id) {
-        visitService.delete(id);
+    public ResponseEntity<ApiResponse<Void>> deleteVisit(@PathVariable UUID visitId) {
+        visitService.delete(visitId);
         return ResponseEntity.ok(
                 ApiResponse.of(200, "Visit deleted successfully", null)
         );
@@ -84,10 +84,10 @@ public class AdminVisitController {
 
     @PostMapping("/search")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchVisits(
+    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchVisitsForAdmin(
             @RequestBody VisitSearchRequest request
     ) {
-        var visits = visitService.searchVisitsForAdmin(
+        var visits = visitService.searchForAdmin(
                 request.getDoctorId(),
                 request.getPatientId(),
                 request.getStatus(),

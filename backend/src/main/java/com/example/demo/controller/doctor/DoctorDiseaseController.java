@@ -22,23 +22,6 @@ public class DoctorDiseaseController {
     private final DiseaseService diseaseService;
     private final DiseaseMapper diseaseMapper;
 
-    // 🔹 Пошук за кодом
-    @GetMapping("/search/code")
-    @PreAuthorize("hasAnyAuthority('doctor:read', 'admin:read')")
-    public ResponseEntity<List<DiseaseResponse>> searchByCode(@RequestParam String code) {
-        List<Disease> diseases = diseaseService.searchByCode(code);
-        return ResponseEntity.ok(diseases.stream().map(diseaseMapper::toResponse).toList());
-    }
-
-    // 🔹 Пошук за назвою
-    @GetMapping("/search/name")
-    @PreAuthorize("hasAnyAuthority('doctor:read', 'admin:read')")
-    public ResponseEntity<List<DiseaseResponse>> searchByName(@RequestParam String name) {
-        List<Disease> diseases = diseaseService.searchByName(name);
-        return ResponseEntity.ok(diseases.stream().map(diseaseMapper::toResponse).toList());
-    }
-
-    // 🔹 Комбінований пошук
     @GetMapping("/search")
     @PreAuthorize("hasAnyAuthority('doctor:read', 'admin:read')")
     public ResponseEntity<List<DiseaseResponse>> search(@RequestParam String query) {

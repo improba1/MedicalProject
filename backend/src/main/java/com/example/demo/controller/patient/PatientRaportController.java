@@ -1,12 +1,11 @@
 package com.example.demo.controller.patient;
 
+import com.example.demo.dto.request.raport.RaportSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.RaportResponse;
 import com.example.demo.mapper.RaportMapper;
-import com.example.demo.model.Raport;
 import com.example.demo.service.raport.RaportService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,30 +21,39 @@ public class PatientRaportController {
     private final RaportService raportService;
     private final RaportMapper raportMapper;
 
-    // 🔹 Отримати рапорт за візитом (тільки свій)
-    @GetMapping("/get/visit/{visitId}")
+    @GetMapping("/get/{raportId}")
     @PreAuthorize("hasAuthority('patient:read')")
-    public ResponseEntity<ApiResponse<RaportResponse>> getRaportByVisit(@PathVariable UUID visitId) {
-        Raport raport = raportService.getRaportByVisitForUser(visitId);
+    public ResponseEntity<ApiResponse<RaportResponse>> getMyRaportById(
+            @PathVariable UUID raportId
+    ) {
+        var raport = raportService.getRaportByIdForAuthenticatedPatient(raportId);
 
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "Raport fetched successfully",
-                raportMapper.toResponse(raport)
-        ));
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Raport retrieved successfully",
+                        raportMapper.toResponse(raport)
+                )
+        );
     }
 
-    // 🔹 Отримати всі свої рапорти
-    @GetMapping("/get-all")
+    @PostMapping("/search")
     @PreAuthorize("hasAuthority('patient:read')")
-    public ResponseEntity<ApiResponse<List<RaportResponse>>> getAllRaports() {
-        List<RaportResponse> responses =
-                raportMapper.toResponseList(raportService.getUserRaports());
-
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "User raports fetched successfully",
-                responses
-        ));
+    public ResponseEntity<ApiResponse<List<RaportResponse>>> searchRaportsPatient(
+            @RequestBody RaportSearchRequest r
+    ) {
+        var raports = raportService.searchForPatient(
+                r.getVisitId(),
+                r.getDoctorId(),
+                r.getDisease(),
+                r.getPaymentReceipt(),
+                r.getMinPrice(),
+                r.getMaxPrice(),
+                r.getFrom(),
+                r.getTo()
+        );
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Raports fetched", raportMapper.toResponseList(raports))
+        );
     }
 }

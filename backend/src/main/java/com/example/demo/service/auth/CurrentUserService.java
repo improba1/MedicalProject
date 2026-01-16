@@ -1,8 +1,10 @@
 package com.example.demo.service.auth;
 
 import com.example.demo.model.Doctor;
+import com.example.demo.model.Patient;
 import com.example.demo.model.User;
 import com.example.demo.repository.DoctorRepository;
+import com.example.demo.repository.PatientRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class CurrentUserService {
 
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
+    private final PatientRepository patientRepository;
 
 
     public User getAuthenticatedUser() {
@@ -63,5 +66,11 @@ public class CurrentUserService {
         String email = getEmail();
         return doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated doctor not found"));
+    }
+
+    public Patient getAuthenticatedPatient() {
+        String email = getEmail();
+        return patientRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Authenticated patient not found"));
     }
 }

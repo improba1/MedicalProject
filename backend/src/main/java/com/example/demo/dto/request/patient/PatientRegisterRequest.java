@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class RegisterPatientRequest {
+public class PatientRegisterRequest {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50)

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class CreateVisitRequest {
+public class VisitCreateRequest {
 
     @NotNull
     private UUID patientId;

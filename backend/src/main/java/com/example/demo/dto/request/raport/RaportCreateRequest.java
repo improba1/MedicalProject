@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class CreateRaportRequest {
+public class RaportCreateRequest {
 
     @NotNull
     private UUID visitId;

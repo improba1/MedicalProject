@@ -1,6 +1,7 @@
 package com.example.demo.controller.doctor;
 
-import com.example.demo.dto.request.raport.UpdateRaportRequest;
+import com.example.demo.dto.request.raport.RaportSearchRequest;
+import com.example.demo.dto.request.raport.RaportUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.RaportResponse;
 import com.example.demo.mapper.RaportMapper;
@@ -24,67 +25,55 @@ public class DoctorRaportController {
     private final RaportService raportService;
     private final RaportMapper raportMapper;
 
+    @GetMapping("/get/{raportId}")
+    @PreAuthorize("hasAuthority('doctor:read')")
+    public ResponseEntity<ApiResponse<RaportResponse>> getMyRaportById(
+            @PathVariable UUID raportId
+    ) {
+        var raport = raportService.getRaportByIdForAuthenticatedDoctor(raportId);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Raport retrieved successfully",
+                        raportMapper.toResponse(raport)
+                )
+        );
+    }
+
     @PutMapping("/update/{raportId}")
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ApiResponse<RaportResponse>> updateRaport(
             @PathVariable UUID raportId,
-            @Valid @RequestBody UpdateRaportRequest request) {
-
-        Raport raport = raportService.getOwnRaportByVisit(raportId);
-
-        Raport updated = raportService.update(raportId,
-                raportMapper.updateEntity(raport, request));
-
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "Raport updated successfully",
-                raportMapper.toResponse(updated)
-        ));
+            @Valid @RequestBody RaportUpdateRequest request) {
+        Raport updated = raportService.update(raportId, raportMapper.updateEntity(raportService.getRaportById(raportId), request));
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Raport updated successfully",
+                        raportMapper.toResponse(updated)
+                )
+        );
     }
 
 
-    // 🔹 Отримати всі свої рапорти
-    @GetMapping("/get-all")
+    @PostMapping("/search")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<RaportResponse>>> getAllMyRaports() {
-        List<RaportResponse> responses =
-                raportMapper.toResponseList(raportService.getDoctorRaports());
-
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "Doctor raports fetched successfully",
-                responses
-        ));
-    }
-
-    // 🔹 Отримати всі рапорти конкретного пацієнта (якого приймав даний лікар)
-    @GetMapping("/get/patient/{patientId}")
-    @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<RaportResponse>>> getRaportsByPatient(
-            @PathVariable UUID patientId) {
-
-        List<RaportResponse> responses =
-                raportMapper.toResponseList(raportService.getOwnRaportsByPatient(patientId));
-
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "Raports for patient fetched successfully",
-                responses
-        ));
-    }
-
-    // 🔹 Отримати рапорт за конкретним візитом
-    @GetMapping("/get/visit/{visitId}")
-    @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<RaportResponse>> getRaportByVisit(
-            @PathVariable UUID visitId) {
-
-        Raport raport = raportService.getOwnRaportByVisit(visitId);
-
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "Raport fetched successfully",
-                raportMapper.toResponse(raport)
-        ));
+    public ResponseEntity<ApiResponse<List<RaportResponse>>> searchRaportsDoctor(
+            @RequestBody RaportSearchRequest r
+    ) {
+        var raports = raportService.searchForDoctor(
+                r.getVisitId(),
+                r.getPatientId(),
+                r.getDisease(),
+                r.getPaymentReceipt(),
+                r.getMinPrice(),
+                r.getMaxPrice(),
+                r.getFrom(),
+                r.getTo()
+        );
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Raports fetched", raportMapper.toResponseList(raports))
+        );
     }
 }

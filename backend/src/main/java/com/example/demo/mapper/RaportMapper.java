@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.request.raport.CreateRaportRequest;
-import com.example.demo.dto.request.raport.UpdateRaportRequest;
+import com.example.demo.dto.request.raport.RaportCreateRequest;
+import com.example.demo.dto.request.raport.RaportUpdateRequest;
 import com.example.demo.dto.response.RaportResponse;
 import com.example.demo.model.Raport;
 import com.example.demo.model.Visit;
@@ -36,7 +36,7 @@ public class RaportMapper {
                 .toList();
     }
 
-    public Raport toEntity(CreateRaportRequest request, Visit visit, String servicesSnapshot, String paymentReceipt) {
+    public Raport toEntity(RaportCreateRequest request, Visit visit, String servicesSnapshot, String paymentReceipt) {
 
         return Raport.builder()
                 .visit(visit)
@@ -51,7 +51,7 @@ public class RaportMapper {
                 .build();
     }
 
-    public Raport updateEntity(Raport raport, UpdateRaportRequest request) {
+    public Raport updateEntity(Raport raport, RaportUpdateRequest request) {
 
         if (request.getDisease() != null)
             raport.setDisease(request.getDisease());

@@ -1,9 +1,11 @@
 package com.example.demo.service.user;
 
-import com.example.demo.dto.request.user.UpdateUserRequest;
+import com.example.demo.dto.request.user.UserUpdateRequest;
+import com.example.demo.dto.request.user.UserSearchRequest;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.specification.user.UserSpecificationBuilder;
 import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.logout.LogoutService;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,25 +36,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public List<User> search(UserSearchRequest request) {
+        return userRepository.findAll(
+                UserSpecificationBuilder.build(request)
+        );
     }
-
-    @Override
-    public Optional<User> getByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    @Override
-    public Optional<User> getByNickname(String nickname) {
-        return userRepository.findByNickname(nickname);
-    }
-
-    @Override
-    public Optional<User> getByPhone(String phone) {
-        return userRepository.findByPhone(phone);
-    }
-
     @Override
     public User create(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -70,17 +57,13 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    // ==========================
-    // 🔹 Профіль залогованого користувача
-    // ==========================
-
     @Override
     public User getCurrentUser() {
         return currentUserService.getAuthenticatedUser();
     }
 
     @Override
-    public User updateCurrentUser(UpdateUserRequest request) {
+    public User updateCurrentUser(UserUpdateRequest request) {
         User currentUser = currentUserService.getAuthenticatedUser();
         userMapper.updateEntity(currentUser, request);
         return userRepository.save(currentUser);

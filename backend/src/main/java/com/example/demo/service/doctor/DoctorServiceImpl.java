@@ -1,6 +1,6 @@
 package com.example.demo.service.doctor;
 
-import com.example.demo.dto.request.doctor.DoctorSearchRequest;
+import com.example.demo.enums.Specialization;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Image;
 import com.example.demo.model.Patient;
@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -34,8 +35,6 @@ public class DoctorServiceImpl implements DoctorService {
     private final CurrentUserService currentUserService;
     private final VisitRepository visitRepository;
     private final PatientService patientService;
-
-    // ---------- HELPERS ----------
 
     private void handleImage(Doctor doctor, MultipartFile imageFile) {
         if (imageFile == null || imageFile.isEmpty()) return;
@@ -66,8 +65,6 @@ public class DoctorServiceImpl implements DoctorService {
             target.setAddress(source.getAddress());
     }
 
-    // ---------- COMMON ----------
-
     @Override
     public Doctor getById(UUID id) {
         return doctorRepository.findById(id)
@@ -75,19 +72,20 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public List<Doctor> getAll() {
-        return doctorRepository.findAll()
-                .stream()
-                .filter(Doctor::isActive)
-                .toList();
+    @Transactional(readOnly = true)
+    public List<Doctor> searchDoctors(String name, Specialization specialization, Double rating, Boolean active) {
+        return doctorRepository.findAll(
+                DoctorSpecificationBuilder.build(name, specialization, rating, active)
+        );
     }
 
     @Override
-    public List<Doctor> searchDoctors(DoctorSearchRequest request) {
-        return doctorRepository.findAll(DoctorSpecificationBuilder.build(request));
+    @Transactional(readOnly = true)
+    public List<Doctor> searchPublicDoctors(String name, Specialization specialization, Double rating) {
+        return doctorRepository.findAll(
+                DoctorSpecificationBuilder.buildForPublic(name, specialization, rating)
+        );
     }
-
-    // ---------- ADMIN ----------
 
     @Override
     public Doctor create(Doctor doctor) {
@@ -125,8 +123,6 @@ public class DoctorServiceImpl implements DoctorService {
         doctorRepository.delete(getById(id));
     }
 
-    // ---------- DOCTOR (SELF) ----------
-
     @Override
     public Doctor getCurrentDoctor() {
         return currentUserService.getAuthenticatedDoctor();
@@ -134,9 +130,9 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Doctor updateCurrentDoctor(Doctor updated, MultipartFile image) {
-        Doctor current = getCurrentDoctor();
+        Doctor current = currentUserService.getAuthenticatedDoctor();
 
-        mergeDoctorForSelf(current, updated); // ⛔ rating ігнорується
+        mergeDoctorForSelf(current, updated);
         handleImage(current, image);
 
         return doctorRepository.save(current);
@@ -144,7 +140,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Doctor updateCurrentDoctorImage(MultipartFile image) {
-        Doctor current = getCurrentDoctor();
+        Doctor current = currentUserService.getAuthenticatedDoctor();
         handleImage(current, image);
         return doctorRepository.save(current);
     }
@@ -152,7 +148,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public void deactivateCurrentDoctor(HttpServletRequest request, HttpServletResponse response) {
-        Doctor current = getCurrentDoctor();
+        Doctor current = currentUserService.getAuthenticatedDoctor();
         current.setActive(false);
         doctorRepository.save(current);
 
@@ -163,11 +159,9 @@ public class DoctorServiceImpl implements DoctorService {
         );
     }
 
-    // ---------- SECURITY ----------
-
     @Override
     public Patient getPatientIfDoctorHasAccess(UUID patientId) {
-        Doctor doctor = getCurrentDoctor();
+        Doctor doctor = currentUserService.getAuthenticatedDoctor();
 
         boolean allowed = visitRepository.existsByDoctorIdAndPatientId(
                 doctor.getId(),

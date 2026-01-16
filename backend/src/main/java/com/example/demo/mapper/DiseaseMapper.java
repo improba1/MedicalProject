@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.request.disease.AddDiseaseRequest;
-import com.example.demo.dto.request.disease.UpdateDiseaseRequest;
+import com.example.demo.dto.request.disease.DiseaseCreateRequest;
+import com.example.demo.dto.request.disease.DiseaseUpdateRequest;
 import com.example.demo.dto.response.DiseaseResponse;
 import com.example.demo.model.Disease;
 import org.springframework.stereotype.Component;
@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class DiseaseMapper {
 
-    public Disease toEntity(AddDiseaseRequest request) {
+    public Disease toEntity(DiseaseCreateRequest request) {
         return Disease.builder()
                 .name(request.getName())
                 .diseaseCode(request.getDiseaseCode())
                 .build();
     }
 
-    public void updateEntity(Disease disease, UpdateDiseaseRequest request) {
+    public void updateEntity(Disease disease, DiseaseUpdateRequest request) {
         if (request.getName() != null) {
             disease.setName(request.getName());
         }

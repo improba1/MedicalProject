@@ -1,5 +1,6 @@
 package com.example.demo.controller.admin;
 
+import com.example.demo.dto.request.user.UserSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.mapper.UserMapper;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,57 +24,22 @@ public class AdminUserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/{userId}")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<UserResponse>> getById(@PathVariable UUID id) {
-        User user = userService.getById(id);
-        System.out.println(user.isActive());
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable UUID userId) {
+        User user = userService.getById(userId);
         UserResponse response = userMapper.toResponse(user);
-        System.out.println(response.isActive());
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User fetched successfully", response));
     }
 
-    // 🔹 Пошук за email
-    @GetMapping("/get/email")
+    @PostMapping("/search")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<UserResponse>> searchByEmail(@RequestParam String email) {
-        User user = userService.getByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
-        UserResponse response = userMapper.toResponse(user);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User fetched successfully by email", response));
+    public ResponseEntity<?> search(@RequestBody UserSearchRequest request) {
+        return ResponseEntity.ok(
+                userService.search(request)
+        );
     }
 
-    // 🔹 Пошук за nickname
-    @GetMapping("/get/nickname")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<UserResponse>> searchByNickname(@RequestParam String nickname) {
-        User user = userService.getByNickname(nickname)
-                .orElseThrow(() -> new RuntimeException("User not found with nickname: " + nickname));
-        UserResponse response = userMapper.toResponse(user);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User fetched successfully by nickname", response));
-    }
-
-    // 🔹 Пошук за phone
-    @GetMapping("/get/phone")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<UserResponse>> searchByPhone(@RequestParam String phone) {
-        User user = userService.getByPhone(phone)
-                .orElseThrow(() -> new RuntimeException("User not found with phone: " + phone));
-        UserResponse response = userMapper.toResponse(user);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User fetched successfully by phone", response));
-    }
-
-
-    // 🔹 Отримати всіх користувачів
-    @GetMapping("/get-all")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
-        List<User> users = userService.getAll();
-        List<UserResponse> responses = userMapper.toResponseList(users);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "All users fetched successfully", responses));
-    }
-
-    // 🔹 Деактивувати профіль за ID (з автоматичним logout)
     @DeleteMapping("/deactivate/{id}")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ApiResponse<Void>> deactivateProfileById(@PathVariable UUID id,
