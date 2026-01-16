@@ -6,7 +6,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
-public class UpdateDoctorRequest {
+public class DoctorUpdateRequest {
     private String address;
     private String qualification;
 

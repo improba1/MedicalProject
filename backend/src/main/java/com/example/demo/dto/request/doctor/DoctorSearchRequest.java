@@ -8,4 +8,5 @@ public class DoctorSearchRequest {
     private String name;
     private Specialization specialization;
     private Double rating;
+    private Boolean isActive;
 }

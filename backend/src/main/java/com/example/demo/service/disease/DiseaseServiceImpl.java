@@ -6,8 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -16,26 +15,16 @@ public class DiseaseServiceImpl implements DiseaseService {
     private final DiseaseRepository diseaseRepository;
 
     @Override
-    public List<Disease> searchByCode(String codePart) {
-        return diseaseRepository.findByDiseaseCodeContainingIgnoreCase(codePart);
-    }
-
-    @Override
-    public List<Disease> searchByName(String namePart) {
-        return diseaseRepository.findByNameContainingIgnoreCase(namePart);
-    }
-
-    @Override
     public List<Disease> search(String query) {
+
         List<Disease> byCode = diseaseRepository.findByDiseaseCodeContainingIgnoreCase(query);
         List<Disease> byName = diseaseRepository.findByNameContainingIgnoreCase(query);
-
-        byName.addAll(byCode.stream()
-                .filter(d -> !byName.contains(d))
-                .toList());
-
-        return byName;
+        Set<Disease> result = new LinkedHashSet<>();
+        result.addAll(byName);
+        result.addAll(byCode);
+        return new ArrayList<>(result);
     }
+
 
     @Override
     public Disease getById(UUID id) {

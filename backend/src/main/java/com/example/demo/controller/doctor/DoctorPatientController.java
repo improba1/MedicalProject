@@ -1,6 +1,5 @@
 package com.example.demo.controller.doctor;
 
-
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.PatientResponse;
 import com.example.demo.mapper.PatientMapper;
@@ -24,11 +23,11 @@ public class DoctorPatientController {
     private final PatientMapper patientMapper;
     private final PatientService patientService;
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/{patientId}")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<PatientResponse>> getPatientById(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<PatientResponse>> getPatientById(@PathVariable UUID patientId) {
 
-        Patient patient = doctorService.getPatientIfDoctorHasAccess(id);
+        Patient patient = doctorService.getPatientIfDoctorHasAccess(patientId);
         PatientResponse dto = patientMapper.toResponse(patient);
 
         return ResponseEntity.ok(
@@ -48,4 +47,3 @@ public class DoctorPatientController {
         );
     }
 }
-

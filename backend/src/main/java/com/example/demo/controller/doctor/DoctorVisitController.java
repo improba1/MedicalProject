@@ -1,6 +1,6 @@
 package com.example.demo.controller.doctor;
 
-import com.example.demo.dto.request.visit.UpdateVisitRequest;
+import com.example.demo.dto.request.visit.VisitUpdateRequest;
 import com.example.demo.dto.request.visit.VisitSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
@@ -23,6 +23,22 @@ public class DoctorVisitController {
     private final VisitService visitService;
     private final VisitMapper visitMapper;
 
+    @GetMapping("/get/{visitId}")
+    @PreAuthorize("hasAuthority('doctor:read')")
+    public ResponseEntity<ApiResponse<VisitResponse>> getMyVisitById(
+            @PathVariable UUID visitId
+    ) {
+        var visit = visitService.getByIdForAuthenticatedDoctor(visitId);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Visit retrieved successfully",
+                        visitMapper.toResponse(visit)
+                )
+        );
+    }
+
     @PutMapping("/{visitId}/cancel")
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ApiResponse<VisitResponse>> cancelVisit(@PathVariable UUID visitId) {
@@ -37,7 +53,7 @@ public class DoctorVisitController {
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ApiResponse<VisitResponse>> rescheduleVisit(
             @PathVariable UUID visitId,
-            @Valid @RequestBody UpdateVisitRequest request) {
+            @Valid @RequestBody VisitUpdateRequest request) {
 
         var visit = visitService.rescheduleVisitByDoctor(
                 visitId,
@@ -52,10 +68,10 @@ public class DoctorVisitController {
 
     @PostMapping("/search")
     @PreAuthorize("hasAuthority('doctor:read')")
-    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchMyVisits(
+    public ResponseEntity<ApiResponse<List<VisitResponse>>> searchVisitsForDoctor(
             @RequestBody VisitSearchRequest request
     ) {
-        var visits = visitService.searchVisitsForAuthenticatedDoctor(
+        var visits = visitService.searchForDoctor(
                 request.getPatientId(),
                 request.getStatus(),
                 request.getStart(),

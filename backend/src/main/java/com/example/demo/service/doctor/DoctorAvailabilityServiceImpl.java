@@ -1,17 +1,17 @@
 package com.example.demo.service.doctor;
 
-import com.example.demo.dto.request.doctor_availability.DoctorAvailabilitySearchRequest;
 import com.example.demo.enums.Role;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.DoctorAvailability;
 import com.example.demo.repository.DoctorAvailabilityRepository;
 import com.example.demo.repository.VisitRepository;
-import com.example.demo.repository.specification.doctor.DoctorAvailabilitySpecification;
+import com.example.demo.repository.specification.doctor.DoctorAvailabilitySpecificationBuilder;
 import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.slot.SlotService;
 import com.example.demo.service.visit.VisitStatusService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +28,6 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
     private final VisitStatusService visitStatusService;
     private final SlotService slotService;
     private final CurrentUserService currentUserService;
-
-    // ==========================
-    // 🔹 Хелпери
-    // ==========================
 
     private void ensureNotPast(DoctorAvailability slot) {
         if (slot.getAvailableTime().isBefore(LocalDateTime.now())) {
@@ -54,19 +50,26 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
         slot.setActive(slot.getAvailableTime().isAfter(LocalDateTime.now()));
     }
 
-    // ==========================
-    // 🔹 Отримання по id
-    // ==========================
-
     @Override
     public DoctorAvailability getById(UUID id) {
         return availabilityRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Availability not found"));
     }
 
-    // ==========================
-    // 🔹 CRUD для адміна (по doctorId)
-    // ==========================
+    @Override
+    @Transactional(readOnly = true)
+    public DoctorAvailability getByIdForAuthenticatedDoctor(UUID id) {
+        UUID doctorId = currentUserService.getAuthenticatedDoctor().getId();
+
+        DoctorAvailability availability = availabilityRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Availability not found"));
+
+        if (!availability.getDoctorId().equals(doctorId)) {
+            throw new AccessDeniedException("You can access only your own availability slots");
+        }
+        return availability;
+    }
+
 
     @Override
     public DoctorAvailability createForDoctor(UUID doctorId, DoctorAvailability availability) {
@@ -118,10 +121,6 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
         availabilityRepository.delete(slot);
     }
-
-    // ==========================
-    // 🔹 CRUD для залогованого лікаря
-    // ==========================
 
     @Override
     public DoctorAvailability create(DoctorAvailability availability) {
@@ -176,48 +175,44 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
         availabilityRepository.delete(slot);
     }
-    @Override
-    public List<DoctorAvailability> getByDoctor(UUID doctorId) {
-        return availabilityRepository.findByDoctorId(doctorId);
-    }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DoctorAvailability> searchForAdmin(UUID doctorId, DoctorAvailabilitySearchRequest req) {
+    public List<DoctorAvailability> searchForAdmin(UUID doctorId, Boolean active, LocalDateTime from, LocalDateTime to) {
         return availabilityRepository.findAll(
-                DoctorAvailabilitySpecification.search(
+                DoctorAvailabilitySpecificationBuilder.build(
                         doctorId,
-                        req.getActive(),
-                        req.getFrom(),
-                        req.getTo()
+                        active,
+                        from,
+                        to
                 )
         );
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DoctorAvailability> searchForAuthenticatedDoctor(DoctorAvailabilitySearchRequest req) {
-        Doctor doctor = currentUserService.getAuthenticatedDoctor();
+    public List<DoctorAvailability> searchForAuthenticatedDoctor(Boolean active, LocalDateTime from, LocalDateTime to) {
+        UUID doctorId = currentUserService.getAuthenticatedDoctor().getId();
 
         return availabilityRepository.findAll(
-                DoctorAvailabilitySpecification.search(
-                        doctor.getId(),
-                        req.getActive(),
-                        req.getFrom(),
-                        req.getTo()
+                DoctorAvailabilitySpecificationBuilder.build(
+                        doctorId,
+                        active,
+                        from,
+                        to
                 )
         );
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DoctorAvailability> searchPublic(DoctorAvailabilitySearchRequest req) {
+    public List<DoctorAvailability> searchForAuthenticatedPatient(UUID doctorId, LocalDateTime from, LocalDateTime to) {
         return availabilityRepository.findAll(
-                DoctorAvailabilitySpecification.search(
-                        null,
-                        true, // 🔒 тільки активні
-                        req.getFrom() != null ? req.getFrom() : LocalDateTime.now(),
-                        req.getTo()
+                DoctorAvailabilitySpecificationBuilder.build(
+                        doctorId,
+                        true,
+                        from != null ? from : LocalDateTime.now(),
+                        to
                 )
         );
     }

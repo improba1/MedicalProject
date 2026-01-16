@@ -8,16 +8,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class AdminPaymentSearchRequest {
-
+public class PaymentSearchRequest {
     private UUID visitId;
-    private UUID doctorId;
     private UUID patientId;
     private PaymentStatus status;
-
     private BigDecimal minAmount;
     private BigDecimal maxAmount;
-
     private LocalDateTime start;
     private LocalDateTime end;
 }

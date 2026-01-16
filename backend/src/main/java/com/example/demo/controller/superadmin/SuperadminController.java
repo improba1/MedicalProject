@@ -1,6 +1,6 @@
 package com.example.demo.controller.superadmin;
 
-import com.example.demo.dto.request.user.AddUserRequest;
+import com.example.demo.dto.request.user.UserCreateRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.mapper.UserMapper;
@@ -23,10 +23,9 @@ public class SuperadminController {
     private final UserService userService;
     private final UserMapper  userMapper;
 
-    // 🔹 Створити профіль адміна
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('superadmin:create')")
-    public ResponseEntity<ApiResponse<UserResponse>> createAdmin(@Valid @RequestBody AddUserRequest request) {
+    public ResponseEntity<ApiResponse<UserResponse>> createAdmin(@Valid @RequestBody UserCreateRequest request) {
         User user = userMapper.toEntity(request);
         User saved = userService.create(user);
         UserResponse response = userMapper.toResponse(saved);
@@ -34,11 +33,10 @@ public class SuperadminController {
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "Admin created successfully", response));
     }
 
-    // 🔹 Жорстке видалення (повністю з БД)
-    @DeleteMapping("/hard-delete/{id}")
+    @DeleteMapping("/hard-delete/{userId}")
     @PreAuthorize("hasAuthority('superadmin:delete')")
-    public ResponseEntity<ApiResponse<Void>> hardDeleteUser(@PathVariable UUID id) {
-        userService.delete(id);
+    public ResponseEntity<ApiResponse<Void>> hardDeleteUser(@PathVariable UUID userId) {
+        userService.delete(userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "User permanently deleted", null));
     }
 }

@@ -1,31 +1,25 @@
 package com.example.demo.service.user;
 
-import com.example.demo.dto.request.user.UpdateUserRequest;
+import com.example.demo.dto.request.user.UserUpdateRequest;
+import com.example.demo.dto.request.user.UserSearchRequest;
 import com.example.demo.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface UserService {
 
     User getById(UUID id);
-    List<User> getAll();
-    Optional<User> getByEmail(String email);
-    Optional<User> getByNickname(String nickname);
-    Optional<User> getByPhone(String phone);
+    List<User> search(UserSearchRequest request);
 
     User create(User user);
     User update(User user);
     void delete(UUID id);
 
-    // ==========================
-    // 🔹 Профіль
-    // ==========================
     User getCurrentUser();
-    User updateCurrentUser(UpdateUserRequest request);
+    User updateCurrentUser(UserUpdateRequest request);
     void deactivateCurrentUser(HttpServletRequest request, HttpServletResponse response);
     void deactivateUserById(UUID id, HttpServletRequest request, HttpServletResponse response);
 }

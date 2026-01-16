@@ -1,7 +1,7 @@
 package com.example.demo.controller.admin;
 
-import com.example.demo.dto.request.patient.RegisterPatientRequest;
-import com.example.demo.dto.request.patient.UpdatePatientRequest;
+import com.example.demo.dto.request.patient.PatientRegisterRequest;
+import com.example.demo.dto.request.patient.PatientUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.PatientResponse;
 import com.example.demo.mapper.PatientMapper;
@@ -27,11 +27,10 @@ public class AdminPatientController {
     private final PatientService patientService;
     private final PatientMapper patientMapper;
 
-    // CREATE patient
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<PatientResponse>> createPatient(
-            @Valid @RequestBody RegisterPatientRequest request
+            @Valid @RequestBody PatientRegisterRequest request
     ) {
         Patient entity = patientMapper.toEntity(request);
         Patient saved = patientService.create(entity);
@@ -42,14 +41,13 @@ public class AdminPatientController {
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "Patient created successfully", dto));
     }
 
-    // UPDATE patient
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{patientId}")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<PatientResponse>> updatePatient(
-            @PathVariable UUID id,
-            @RequestBody UpdatePatientRequest request
+            @PathVariable UUID patientId,
+            @RequestBody PatientUpdateRequest request
     ) {
-        Patient patient = patientService.getById(id);
+        Patient patient = patientService.getById(patientId);
         patientMapper.updateEntity(patient, request);
         Patient updated = patientService.update(patient);
         PatientResponse dto = patientMapper.toResponse(updated);
@@ -57,11 +55,10 @@ public class AdminPatientController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient updated successfully", dto));
     }
 
-    // GET patient by id
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/{patientId}")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<PatientResponse>> getPatientById(@PathVariable UUID id) {
-        Patient patient = patientService.getById(id);
+    public ResponseEntity<ApiResponse<PatientResponse>> getPatientById(@PathVariable UUID patientId) {
+        Patient patient = patientService.getById(patientId);
         PatientResponse dto = patientMapper.toResponse(patient);
 
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient fetched successfully", dto));
@@ -79,29 +76,27 @@ public class AdminPatientController {
         );
     }
 
-    // SOFT DELETE patient (deactivate)
-    @PutMapping("/deactivate/{id}")
+    @PutMapping("/deactivate/{patientId}")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<PatientResponse>> softDeletePatient(
-            @PathVariable UUID id,
+            @PathVariable UUID patientId,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        Patient deactivated = patientService.deactivatePatientById(id, request, response);
+        Patient deactivated = patientService.deactivatePatientById(patientId, request, response);
         PatientResponse dto = patientMapper.toResponse(deactivated);
 
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient deactivated successfully", dto));
     }
 
-    // HARD DELETE patient
-    @DeleteMapping("/hard-delete/{id}")
+    @DeleteMapping("/hard-delete/{patientId}")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ApiResponse<Void>> hardDeletePatient(
-            @PathVariable UUID id,
+            @PathVariable UUID patientId,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        patientService.delete(id, request, response);
+        patientService.delete(patientId, request, response);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient permanently deleted", null));
     }
 }

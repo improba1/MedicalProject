@@ -1,5 +1,6 @@
 package com.example.demo.controller.admin;
 
+import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.ImageResponse;
 import com.example.demo.mapper.ImageMapper;
 import com.example.demo.service.image.ImageService;
@@ -18,6 +19,19 @@ public class AdminImageController {
 
     private final ImageService imageService;
     private final ImageMapper imageMapper;
+
+    @GetMapping("/get/{imageId}")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<ImageResponse>> getImageById(@PathVariable UUID imageId) {
+        var image = imageService.getImageById(imageId);
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Image retrieved successfully",
+                        imageMapper.toResponse(image)
+                )
+        );
+    }
 
     @PostMapping("/upload/{doctorId}")
     @PreAuthorize("hasAuthority('admin:update')")

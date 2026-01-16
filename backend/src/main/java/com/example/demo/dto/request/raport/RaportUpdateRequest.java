@@ -3,7 +3,7 @@ package com.example.demo.dto.request.raport;
 import lombok.Data;
 
 @Data
-public class UpdateRaportRequest {
+public class RaportUpdateRequest {
 
     private String disease;
 
