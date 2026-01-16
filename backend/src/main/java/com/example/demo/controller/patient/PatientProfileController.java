@@ -1,6 +1,6 @@
 package com.example.demo.controller.patient;
 
-import com.example.demo.dto.request.patient.UpdatePatientRequest;
+import com.example.demo.dto.request.patient.PatientUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.PatientResponse;
 import com.example.demo.mapper.PatientMapper;
@@ -22,7 +22,6 @@ public class PatientProfileController {
     private final PatientService patientService;
     private final PatientMapper patientMapper;
 
-    // 🔹 Подивитись свій профіль
     @GetMapping("/get")
     @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<PatientResponse>> getProfile() {
@@ -32,10 +31,9 @@ public class PatientProfileController {
                 "Patient profile fetched successfully", response));
     }
 
-    // 🔹 Оновити профіль
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('patient:update')")
-    public ResponseEntity<ApiResponse<PatientResponse>> updateProfile(@RequestBody UpdatePatientRequest request) {
+    public ResponseEntity<ApiResponse<PatientResponse>> updateProfile(@RequestBody PatientUpdateRequest request) {
         Patient currentPatient = patientService.getAuthenticatedPatient();
         patientMapper.updateEntity(currentPatient, request);
         Patient updated = patientService.updateCurrentPatient(currentPatient);
@@ -44,7 +42,6 @@ public class PatientProfileController {
                 "Patient profile updated successfully", response));
     }
 
-    // 🔹 Видалити профіль (з автоматичним logout)
     @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('patient:delete')")
     public ResponseEntity<ApiResponse<Void>> deleteProfile(HttpServletRequest request, HttpServletResponse response) {

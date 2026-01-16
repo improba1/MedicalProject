@@ -1,7 +1,7 @@
 package com.example.demo.service.auth;
 
 import com.example.demo.dto.request.auth.AuthRequest;
-import com.example.demo.dto.request.patient.RegisterPatientRequest;
+import com.example.demo.dto.request.patient.PatientRegisterRequest;
 import com.example.demo.dto.response.AuthResponse;
 import com.example.demo.enums.Role;
 import com.example.demo.enums.TokenType;
@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AuthResponse registerPatient(RegisterPatientRequest request) {
+    public AuthResponse registerPatient(PatientRegisterRequest request) {
         var patient = Patient.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())

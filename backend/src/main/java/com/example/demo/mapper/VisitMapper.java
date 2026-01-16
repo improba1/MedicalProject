@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.request.visit.CreateVisitRequest;
-import com.example.demo.dto.request.visit.UpdateVisitRequest;
+import com.example.demo.dto.request.visit.VisitCreateRequest;
+import com.example.demo.dto.request.visit.VisitUpdateRequest;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.enums.VisitStatus;
 import com.example.demo.model.*;
@@ -33,7 +33,7 @@ public class VisitMapper {
                 .collect(Collectors.toList());
     }
 
-    public Visit fromCreateRequest(CreateVisitRequest request) {
+    public Visit fromCreateRequest(VisitCreateRequest request) {
         Doctor doctor = new Doctor();
         doctor.setId(request.getDoctorId());
 
@@ -55,7 +55,7 @@ public class VisitMapper {
                 .build();
     }
 
-    public Visit toUpdateEntity(UUID id, UpdateVisitRequest request) {
+    public Visit toUpdateEntity(UUID id, VisitUpdateRequest request) {
         Visit visit = new Visit();
         visit.setId(id);
 

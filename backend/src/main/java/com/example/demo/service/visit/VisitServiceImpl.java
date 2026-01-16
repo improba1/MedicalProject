@@ -9,7 +9,7 @@ import com.example.demo.model.VisitServiceItem;
 import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VisitRepository;
-import com.example.demo.repository.specification.visit.VisitSpecification;
+import com.example.demo.repository.specification.visit.VisitSpecificationBuilder;
 import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.slot.SlotService;
 import com.example.demo.service.visit_service_item.VisitServiceItemService;
@@ -36,10 +36,6 @@ public class VisitServiceImpl implements VisitService {
     private final VisitStatusService visitStatusService;
     private final CurrentUserService currentUserService;
     private final VisitServiceItemService visitServiceItemService;
-
-    // ============================================================
-    // 🔹 HELPERS
-    // ============================================================
 
     private Visit getVisit(UUID id) {
         return visitRepository.findById(id)
@@ -69,11 +65,6 @@ public class VisitServiceImpl implements VisitService {
         };
     }
 
-
-    // ============================================================
-    // 🔹 READ
-    // ============================================================
-
     @Override
     public Visit getById(UUID id) {
         return visitRepository.findById(id)
@@ -82,9 +73,37 @@ public class VisitServiceImpl implements VisitService {
                 );
     }
 
-    // ============================================================
-    // 🔹 CREATE (ADMIN)
-    // ============================================================
+    @Override
+    @Transactional(readOnly = true)
+    public Visit getByIdForAuthenticatedDoctor(UUID id) {
+        UUID doctorId = currentUserService.getAuthenticatedDoctor().getId();
+
+        Visit visit = visitRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Visit not found with id: " + id));
+
+        if (!visit.getDoctor().getId().equals(doctorId)) {
+            throw new AccessDeniedException("You can access only your own visits");
+        }
+
+        return visit;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Visit getByIdForAuthenticatedPatient(UUID id) {
+        UUID patientId = currentUserService.getAuthenticatedPatient().getId();
+
+        Visit visit = visitRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Visit not found with id: " + id));
+
+        if (!visit.getPatient().getId().equals(patientId)) {
+            throw new AccessDeniedException("You can access only your own visits");
+        }
+
+        return visit;
+    }
+
+
 
     @Transactional
     @Override
@@ -103,10 +122,6 @@ public class VisitServiceImpl implements VisitService {
         }
         return visitRepository.save(visit);
     }
-
-    // ============================================================
-    // 🔹 PATIENT ACTIONS
-    // ============================================================
 
     @Transactional
     @Override
@@ -157,26 +172,17 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public List<Visit> searchVisitsForAuthenticatedPatient(
-            UUID doctorId,
-            VisitStatus status,
-            LocalDateTime start,
-            LocalDateTime end
-    ) {
+    public List<Visit> searchForPatient(UUID doctorId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
+        UUID patientId = currentUserService.getAuthenticatedPatient().getId();
+        if (doctorId != null && !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
+            throw new AccessDeniedException("You have no visits with this doctor");
+        }
         return visitRepository.findAll(
-                VisitSpecification.byFilters(
-                        doctorId,
-                        currentUserService.getPatientId(),
-                        status,
-                        start,
-                        end
+                VisitSpecificationBuilder.build(
+                        patientId, doctorId, status, start, end
                 )
         );
     }
-
-    // ============================================================
-    // 🔹 DOCTOR ACTIONS
-    // ============================================================
 
     @Transactional
     @Override
@@ -197,26 +203,18 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public List<Visit> searchVisitsForAuthenticatedDoctor(
-            UUID patientId,
-            VisitStatus status,
-            LocalDateTime start,
-            LocalDateTime end
-    ) {
+    public List<Visit> searchForDoctor(UUID patientId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
+        UUID doctorId = currentUserService.getAuthenticatedDoctor().getId();
+        if (patientId != null && !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
+            throw new AccessDeniedException("You have no visits with this patient");
+        }
+
         return visitRepository.findAll(
-                VisitSpecification.byFilters(
-                        currentUserService.getDoctorId(),
-                        patientId,
-                        status,
-                        start,
-                        end
+                VisitSpecificationBuilder.build(
+                        doctorId, patientId, status, start, end
                 )
         );
     }
-
-    // ============================================================
-    // 🔹 ADMIN ACTIONS
-    // ============================================================
 
     @Transactional
     @Override
@@ -249,25 +247,13 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public List<Visit> searchVisitsForAdmin(
-            UUID doctorId,
-            UUID patientId,
-            VisitStatus status,
-            LocalDateTime start,
-            LocalDateTime end
-    ) {
+    public List<Visit> searchForAdmin(UUID doctorId, UUID patientId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
         return visitRepository.findAll(
-                VisitSpecification.byFilters(
-                        doctorId,
-                        patientId,
-                        status,
-                        start,
-                        end
+                VisitSpecificationBuilder.build(
+                        doctorId, patientId, status, start, end
                 )
         );
     }
-
-    //CART
 
     @Transactional
     @Override

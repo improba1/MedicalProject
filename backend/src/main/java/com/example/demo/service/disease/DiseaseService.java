@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DiseaseService {
-    List<Disease> searchByCode(String codePart);
-    List<Disease> searchByName(String namePart);
-    List<Disease> search(String query);
+   List<Disease> search(String query);
 
     Disease getById(UUID id);
     Disease addDisease(Disease disease);

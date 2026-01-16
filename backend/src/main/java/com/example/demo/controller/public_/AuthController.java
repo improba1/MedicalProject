@@ -1,7 +1,7 @@
 package com.example.demo.controller.public_;
 
 import com.example.demo.dto.request.auth.AuthRequest;
-import com.example.demo.dto.request.patient.RegisterPatientRequest;
+import com.example.demo.dto.request.patient.PatientRegisterRequest;
 import com.example.demo.dto.response.AuthResponse;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.service.auth.AuthService;
@@ -26,25 +26,21 @@ public class AuthController {
     private final AuthService authService;
     private final LogoutService logoutService;
 
-    // Реєстрація доступна тільки для пацієнтів
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody @Valid RegisterPatientRequest request) {
+    public ResponseEntity<AuthResponse> register(@RequestBody @Valid PatientRegisterRequest request) {
         return ResponseEntity.ok(authService.registerPatient(request));
     }
 
-    // Логін доступний для всіх (адмін, лікар, пацієнт)
     @PostMapping("/authenticate")
     public ResponseEntity<AuthResponse> authenticate(@RequestBody @Valid AuthRequest request) {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
-    // Оновлення токена
     @PostMapping("/refresh-token")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         authService.refreshToken(request, response);
     }
 
-    // 🔹 Явний logout
     @PostMapping("/logout")
     @PreAuthorize("hasAuthority('user:logout')")
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {

@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.request.patient.RegisterPatientRequest;
-import com.example.demo.dto.request.patient.UpdatePatientRequest;
+import com.example.demo.dto.request.patient.PatientRegisterRequest;
+import com.example.demo.dto.request.patient.PatientUpdateRequest;
 import com.example.demo.dto.response.PatientResponse;
 import com.example.demo.enums.Role;
 import com.example.demo.model.Patient;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Component
 public class PatientMapper {
 
-    public Patient toEntity(RegisterPatientRequest request) {
+    public Patient toEntity(PatientRegisterRequest request) {
         return Patient.builder()
                 .nickname(request.getNickname())
                 .firstname(request.getFirstname())
@@ -29,7 +29,7 @@ public class PatientMapper {
                 .build();
     }
 
-    public void updateEntity(Patient patient, UpdatePatientRequest request) {
+    public void updateEntity(Patient patient, PatientUpdateRequest request) {
         if (request.getEmail() != null) patient.setEmail(request.getEmail());
         if (request.getNickname() != null) patient.setNickname(request.getNickname());
         if (request.getPhone() != null) patient.setPhone(request.getPhone());

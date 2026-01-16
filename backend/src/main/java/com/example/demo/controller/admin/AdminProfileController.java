@@ -1,6 +1,6 @@
 package com.example.demo.controller.admin;
 
-import com.example.demo.dto.request.user.UpdateUserRequest;
+import com.example.demo.dto.request.user.UserUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.mapper.UserMapper;
@@ -22,7 +22,6 @@ public class AdminProfileController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    // 🔹 Подивитись свій профіль
     @PreAuthorize("hasAuthority('admin:read')")
     @GetMapping("/get")
     public ResponseEntity<ApiResponse<UserResponse>> getProfile() {
@@ -31,16 +30,14 @@ public class AdminProfileController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile fetched successfully", response));
     }
 
-    // 🔹 Оновити профіль
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<UserResponse>> updateProfile(@RequestBody UpdateUserRequest request) {
+    public ResponseEntity<ApiResponse<UserResponse>> updateProfile(@RequestBody UserUpdateRequest request) {
         User updatedAdmin = userService.updateCurrentUser(request);
         UserResponse response = userMapper.toResponse(updatedAdmin);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile updated successfully", response));
     }
 
-    // 🔹 Видалити профіль (деактивація з logout)
     @DeleteMapping("/deactivate")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ApiResponse<Void>> deactivateProfile(HttpServletRequest request, HttpServletResponse response) {

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UpdatePatientRequest {
+public class PatientUpdateRequest {
 
     @Email(message = "Invalid email format")
     private String email;

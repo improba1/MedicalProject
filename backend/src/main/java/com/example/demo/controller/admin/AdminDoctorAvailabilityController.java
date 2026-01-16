@@ -26,17 +26,22 @@ public class AdminDoctorAvailabilityController {
     private final DoctorAvailabilityService availabilityService;
     private final DoctorAvailabilityMapper mapper;
 
-    // ------------------ HELPERS ------------------
+    @GetMapping("/get/{availabilityId}")
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> getAvailabilityById(
+            @PathVariable UUID availabilityId
+    ) {
+        var availability = availabilityService.getById(availabilityId);
 
-    private ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> okOne(DoctorAvailability entity) {
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "Availability updated successfully",
-                mapper.toResponse(entity)
-        ));
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        200,
+                        "Availability retrieved successfully",
+                        mapper.toResponse(availability)
+                )
+        );
     }
 
-    // ------------------ CREATE ------------------
     @PostMapping("/create/{doctorId}")
     @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> createForDoctor(
@@ -53,7 +58,6 @@ public class AdminDoctorAvailabilityController {
         ));
     }
 
-    // ------------------ UPDATE ------------------
     @PutMapping("/update/{doctorId}/{availabilityId}")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> updateForDoctor(
@@ -64,10 +68,13 @@ public class AdminDoctorAvailabilityController {
         DoctorAvailability updateEntity = mapper.toUpdateEntity(availabilityId, request);
         DoctorAvailability updated = availabilityService.updateForDoctor(doctorId, updateEntity);
 
-        return okOne(updated);
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Availability updated successfully",
+                mapper.toResponse(updated)
+        ));
     }
 
-    // ------------------ DELETE ------------------
     @DeleteMapping("/delete/{doctorId}/{availabilityId}")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ApiResponse<Void>> deleteForDoctor(
@@ -88,6 +95,11 @@ public class AdminDoctorAvailabilityController {
             @RequestParam(required = false) UUID doctorId,
             DoctorAvailabilitySearchRequest request
     ) {
-        return availabilityService.searchForAdmin(doctorId, request);
+        return availabilityService.searchForAdmin(
+                doctorId,
+                request.getActive(),
+                request.getFrom(),
+                request.getTo()
+        );
     }
 }

@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.request.doctor.AddDoctorRequest;
-import com.example.demo.dto.request.doctor.UpdateDoctorRequest;
+import com.example.demo.dto.request.doctor.DoctorCreateRequest;
+import com.example.demo.dto.request.doctor.DoctorUpdateRequest;
 import com.example.demo.dto.response.DoctorResponse;
 import com.example.demo.dto.response.ImageResponse;
 import com.example.demo.enums.Role;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 public class DoctorMapper {
 
-    public Doctor toEntity(AddDoctorRequest request) {
+    public Doctor toEntity(DoctorCreateRequest request) {
         return Doctor.builder()
                 .nickname(request.getNickname())
                 .password(request.getPassword())
@@ -36,7 +36,7 @@ public class DoctorMapper {
                 .build();
     }
 
-    public Doctor toUpdatedEntity(Doctor existing, UpdateDoctorRequest request) {
+    public Doctor toUpdatedEntity(Doctor existing, DoctorUpdateRequest request) {
         if (request.getQualification() != null)
             existing.setQualification(request.getQualification());
 

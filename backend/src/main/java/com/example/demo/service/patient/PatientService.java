@@ -1,7 +1,6 @@
 package com.example.demo.service.patient;
 
 import com.example.demo.model.Patient;
-import com.example.demo.model.Visit;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -21,9 +20,6 @@ public interface PatientService {
     void delete(UUID id, HttpServletRequest request, HttpServletResponse response);
 
     Patient deactivatePatientById(UUID id, HttpServletRequest request, HttpServletResponse response);
-
-    // 🔹 Додаткові методи
-    List<Visit> getVisits(UUID patientId);
 
     List<Patient> searchPatientsForCurrentDoctor(String name);
 

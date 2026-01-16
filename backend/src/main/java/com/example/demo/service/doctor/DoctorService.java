@@ -1,6 +1,6 @@
 package com.example.demo.service.doctor;
 
-import com.example.demo.dto.request.doctor.DoctorSearchRequest;
+import com.example.demo.enums.Specialization;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Patient;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,8 +13,8 @@ import java.util.UUID;
 public interface DoctorService {
 
     Doctor getById(UUID id);
-    List<Doctor> getAll();
-    List<Doctor> searchDoctors(DoctorSearchRequest request);
+    List<Doctor> searchDoctors(String name, Specialization specialization, Double rating, Boolean active);
+    List<Doctor> searchPublicDoctors(String name, Specialization specialization, Double rating);
 
     // ADMIN
     Doctor create(Doctor doctor);

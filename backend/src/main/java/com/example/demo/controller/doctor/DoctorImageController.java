@@ -20,7 +20,7 @@ public class DoctorImageController {
     private final ImageMapper imageMapper;
     private final ImageService imageService;
 
-    @PostMapping
+    @PostMapping("/upload")
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ImageResponse> uploadImage(
             @RequestParam MultipartFile file
@@ -31,8 +31,7 @@ public class DoctorImageController {
         );
     }
 
-    // 🔹 Download avatar
-    @GetMapping
+    @GetMapping("/download")
     @PreAuthorize("hasAuthority('doctor:read')")
     public ResponseEntity<byte[]> downloadOwnImage() {
         return imageService.downloadOwnImage();

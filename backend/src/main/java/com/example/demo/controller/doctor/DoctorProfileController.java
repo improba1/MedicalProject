@@ -1,6 +1,6 @@
 package com.example.demo.controller.doctor;
 
-import com.example.demo.dto.request.doctor.UpdateDoctorRequest;
+import com.example.demo.dto.request.doctor.DoctorUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.DoctorResponse;
 import com.example.demo.mapper.DoctorMapper;
@@ -34,7 +34,7 @@ public class DoctorProfileController {
     @PutMapping(value = "/update", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority('doctor:update')")
     public ResponseEntity<ApiResponse<DoctorResponse>> updateProfile(
-            @ModelAttribute UpdateDoctorRequest request
+            @ModelAttribute DoctorUpdateRequest request
     ) {
         Doctor updated = doctorMapper.toUpdatedEntity(new Doctor(), request);
         Doctor saved = doctorService.updateCurrentDoctor(updated, request.getImage());

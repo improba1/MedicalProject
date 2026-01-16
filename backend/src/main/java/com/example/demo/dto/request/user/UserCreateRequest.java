@@ -1,6 +1,5 @@
 package com.example.demo.dto.request.user;
 
-import com.example.demo.enums.Role;
 import com.example.demo.enums.Sex;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -8,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class AddUserRequest {
+public class UserCreateRequest {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50)

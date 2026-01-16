@@ -1,12 +1,10 @@
 package com.example.demo.service.patient;
 
 import com.example.demo.model.Patient;
-import com.example.demo.model.Visit;
 import com.example.demo.repository.PatientRepository;
 import com.example.demo.repository.specification.patient.PatientSpecificationBuilder;
 import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.logout.LogoutService;
-import com.example.demo.service.visit.VisitService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +21,6 @@ import java.util.UUID;
 public class PatientServiceImpl implements PatientService {
 
     private final PatientRepository patientRepository;
-    private final VisitService visitService;
     private final LogoutService logoutService;
     private final PasswordEncoder passwordEncoder;
     private final CurrentUserService currentUserService;
@@ -76,17 +73,6 @@ public class PatientServiceImpl implements PatientService {
         Patient updated = patientRepository.save(patient);
         logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
         return updated;
-    }
-
-    @Override
-    public List<Visit> getVisits(UUID patientId) {
-        Patient authenticated = getAuthenticatedPatient();
-
-        if (!authenticated.getId().equals(patientId)) {
-            throw new SecurityException("Access denied");
-        }
-
-        return visitService.searchVisitsForAuthenticatedPatient(null, null, null,null);
     }
 
 

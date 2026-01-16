@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.request.user.AddUserRequest;
-import com.example.demo.dto.request.user.UpdateUserRequest;
+import com.example.demo.dto.request.user.UserCreateRequest;
+import com.example.demo.dto.request.user.UserUpdateRequest;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.enums.Role;
 import com.example.demo.model.User;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Component
 public class UserMapper {
 
-    public User toEntity(AddUserRequest request) {
+    public User toEntity(UserCreateRequest request) {
         return User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
@@ -29,7 +29,7 @@ public class UserMapper {
                 .build();
     }
 
-    public void updateEntity(User user, UpdateUserRequest request) {
+    public void updateEntity(User user, UserUpdateRequest request) {
         if (request.getFirstname() != null) user.setFirstname(request.getFirstname());
         if (request.getLastname() != null) user.setLastname(request.getLastname());
         if (request.getEmail() != null) user.setEmail(request.getEmail());

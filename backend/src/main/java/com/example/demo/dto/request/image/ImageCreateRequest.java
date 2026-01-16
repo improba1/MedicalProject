@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 @Data
-public class AddImageRequest {
+public class ImageCreateRequest {
     private UUID doctorId;
     private MultipartFile file;
 }
