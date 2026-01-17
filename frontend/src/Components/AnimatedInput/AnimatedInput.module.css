@@ -1,0 +1,24 @@
+.inputGroup {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    position: absolute;
+    top: -25px;
+    /* Fixed position above */
+    left: 10px;
+    font-size: 14px;
+    color: #ccc;
+    /* Slightly dimmer to distinguish from input text */
+    opacity: 1;
+    /* Always visible */
+    pointer-events: none;
+    font-weight: 500;
+}
+
+.labelVisible {
+    /* No longer needed for visibility toggling, but kept if class is used */
+    opacity: 1;
+}
