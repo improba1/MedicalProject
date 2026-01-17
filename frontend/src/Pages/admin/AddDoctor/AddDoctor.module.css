@@ -166,3 +166,80 @@ select.input {
     border-style: solid;
 }
 
+.inputBox {
+    width: 100%;
+}
+
+.selectField {
+    width: 100%;
+    padding: 15px 25px;
+    border-radius: 50px;
+    background-color: #222224;
+    border: 1px solid #444;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    cursor: pointer;
+    appearance: none; /* Убирает стандартную стрелку браузера */
+}
+
+.selectField:focus {
+    border-color: #F5782D;
+}
+
+/* Стилизация опций (может не работать в некоторых браузерах на 100%, 
+   но базовый цвет текста будет соблюден) */
+.selectField option {
+    background-color: #222224;
+    color: white;
+}
+
+.selectField option[disabled] {
+    color: #888;
+}
+
+/* ... (ваши существующие стили) ... */
+
+.fileUploadContainer {
+    width: 100%;
+    position: relative;
+    cursor: pointer; /* Указываем, что вся область кликабельна */
+}
+
+.dragActive .fileUploadBtn {
+    border-color: #F5782D;
+    background-color: rgba(245, 120, 45, 0.1);
+    transform: scale(1.02);
+}
+
+.fileUploadBtn {
+    display: block;
+    width: 100%;
+    padding: 15px 25px;
+    border-radius: 50px;
+    background-color: #222224;
+    border: 1px dashed #444;
+    color: #888;
+    font-size: 16px;
+    text-align: center;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    
+    /* ИЗМЕНЕНИЕ ТУТ: */
+    pointer-events: auto; /* Возвращаем возможность клика */
+    cursor: pointer;
+}
+
+/* Нужно включить события обратно для клика в контейнере, 
+   но сам label обычно пробрасывает клик на input */
+.fileUploadContainer {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.fileUploadBtn:hover {
+    border-color: #F5782D;
+    color: white;
+}
+

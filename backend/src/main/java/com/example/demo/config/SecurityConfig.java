@@ -30,6 +30,7 @@ public class SecurityConfig {
             "/api/v1/auth/**",
             "/api/v1/doctors/search",
             "/api/v1/doctors/get-all",
+            "api/v1/doctors/public/search",
             "/api/v1/images/**",
             "/v2/api-docs",
             "/v3/api-docs",

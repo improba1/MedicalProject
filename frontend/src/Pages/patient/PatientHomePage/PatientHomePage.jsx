@@ -1,145 +1,221 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-
 import styles from './PatientHomePage.module.css';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import HeaderWithProfile from '../../../Components/HeaderWithProfile/HeaderWithProfile';
-import HeartBackground from '../../../Components/HeartBackground/HeartBackground';
-
-// API только для визитов и врачей
-import { visitApi } from '../../../Api/patient/visitApi';
-import { doctorApi } from '../../../Api/doctor/doctorApi';
-
-const Card = ({ data, onClick }) => (
-    <button className={styles.card} onClick={onClick} type="button">
-        <div className={styles.cardHeader}>
-            <div className={styles.iconBox}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F5782D" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                </svg>
-            </div>
-            <span className={styles.date}>{data.date}</span>
-        </div>
-        <div className={styles.cardBody}>
-            <h3 className={styles.cardTitle}>{data.title}</h3>
-            <p className={styles.cardText}>{data.time}</p>
-            <p className={styles.cardText}>{data.specialization}</p>
-            <p className={styles.cardDoctor}>{data.doctor}</p>
-        </div>
-    </button>
-);
+import { publicDoctorApi } from '../../../Api/all/publicDoctorApi';
 
 const PatientHomePage = () => {
     const navigate = useNavigate();
-    const [upcomingVisits, setUpcomingVisits] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [doctors, setDoctors] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    
+    // Состояния для управления результатами поиска
+    const [isSpecializationActive, setIsSpecializationActive] = useState(false);
+    const [activeSpecName, setActiveSpecName] = useState('');
+    
+    const dropdownRef = useRef(null);
+
+    const specializations = [
+        "CARDIOLOGIST", "DERMATOLOGIST", "NEUROLOGIST", 
+        "PEDIATRICIAN", "PSYCHIATRIST", "SURGEON", 
+        "ORTHOPEDIST", "OPHTHALMOLOGIST", "GYNECOLOGIST", "UROLOGIST"
+    ];
 
     useEffect(() => {
-        const fetchData = async () => {
+        const loadDoctors = async () => {
             try {
-                // Загружаем только предстоящие визиты
-                const visitsRes = await visitApi.getUpcomingVisits();
-                const visitsData = visitsRes.data;
-
-                // Подтягиваем данные врачей для карточек
-                const fullVisits = await Promise.all(
-                    visitsData.map(async (visit) => {
-                        try {
-                            const docRes = await doctorApi.getDoctorById(visit.doctorId);
-                            const doc = docRes.data;
-                            const dateObj = new Date(visit.appointmentTime);
-                            
-                            return {
-                                id: visit.id,
-                                date: dateObj.toLocaleDateString('ru-RU'),
-                                time: dateObj.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
-                                title: "Clinic Visit",
-                                specialization: doc.specialization,
-                                doctor: `Dr. ${doc.lastname}`
-                            };
-                        } catch (err) {
-                            return null;
-                        }
-                    })
-                );
-
-                setUpcomingVisits(fullVisits.filter(v => v !== null));
+                const response = await publicDoctorApi.getAllDoctors();
+                setDoctors(response.data.data || []);
             } catch (error) {
-                console.error("Error loading home page data:", error);
-            } finally {
-                setLoading(false);
+                console.error("Failed to load doctors", error);
             }
         };
-        fetchData();
+        loadDoctors();
+
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    // 1. Логика фильтрации специализаций для выпадающего списка
+    // Если пользователь вводит что-то, что не похоже на специализацию (фамилию), список пустеет и скрывается
+    const filteredSpecsSuggestions = specializations.filter(spec =>
+        spec.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // 2. Логика отображения врачей в гриде
+    const getDisplayedDoctors = () => {
+        // Если была нажата кнопка Find по специализации
+        if (isSpecializationActive) {
+            return doctors.filter(doc => doc.specialization === activeSpecName);
+        }
+        // В остальных случаях (поиск по фамилии в реальном времени)
+        return doctors.filter(doc => 
+            doc.lastname.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    };
+
+    const handleSelectSpecialization = (spec) => {
+        setSearchTerm(spec);
+        setShowDropdown(false);
+    };
+
+    const handleFindClick = () => {
+        // Если текст в инпуте в точности совпадает с одной из специализаций
+        if (specializations.includes(searchTerm.toUpperCase())) {
+            setIsSpecializationActive(true);
+            setActiveSpecName(searchTerm.toUpperCase());
+        } else {
+            // Если ищем просто по тексту (фамилии), сбрасываем режим специализации
+            setIsSpecializationActive(false);
+        }
+        setShowDropdown(false);
+    };
+
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setIsSpecializationActive(false);
+        setActiveSpecName('');
+        setShowDropdown(false);
+    };
 
     return (
         <AnimatedPage>
             <div className={styles.pageContainer}>
-                <HeartBackground />
                 <HeaderWithProfile />
 
-                <main className={styles.mainContent}>
-                    <section className={styles.hero}>
-                        <h1 className={styles.welcome}>
-                            {/* Приветствие через localStorage, так как API удалено */}
-                            Hello, <span className={styles.orange}>{localStorage.getItem('userName') || 'Patient'}</span>
+                <div className={styles.scrollWrapper}>
+                    <header className={styles.heroSection}>
+                        <h1 className={styles.heroTitle}>
+                            Your Health, <br />
+                            <span className={styles.highlight}>Our Priority.</span>
                         </h1>
-                        <p className={styles.subtext}>
-                            Take charge of your health. Book an appointment with a specialist at your convenience!
+                        <p className={styles.heroSubtitle}>
+                            Connect with top-rated specialists in seconds. <br/>
+                            Modern healthcare management powered by AI.
                         </p>
-                        <button className={styles.bookBtn} onClick={() => navigate('/book-appointment')}>
-                            Book appointment
-                        </button>
-                    </section>
 
-                    <div className={styles.bottomSection}>
-                        <div className={styles.historyCard}>
-                            <p className={styles.historyText}>All of your appointments and consultations will be stored here:</p>
-                            <button className={styles.historyBtn} onClick={() => navigate('/appointment-history')}>
-                                Appointment history
-                            </button>
-                        </div>
+                        <div className={styles.searchContainer} ref={dropdownRef}>
+                            <div className={styles.inputWrapper}>
+                                <svg className={styles.searchIcon} width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                
+                                <input 
+                                    type="text" 
+                                    placeholder="Search doctor or select specialization..." 
+                                    className={styles.heroInput}
+                                    value={searchTerm}
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        // Если пользователь стирает или меняет текст, сбрасываем заголовок "Specialization:"
+                                        if (isSpecializationActive) setIsSpecializationActive(false);
+                                    }}
+                                    onFocus={() => setShowDropdown(true)}
+                                />
 
-                        <div className={styles.sliderContainer}>
-                            <h2 className={styles.sliderTitle}>Upcoming appointments</h2>
-                            <div className={styles.swiperWrapper}>
-                                {loading ? (
-                                    <div className={styles.emptyLine} /> 
-                                ) : upcomingVisits.length > 0 ? (
-                                    <Swiper
-                                        modules={[Navigation]}
-                                        spaceBetween={15}
-                                        slidesPerView={3.2}
-                                        navigation={true}
-                                        className={styles.mySwiper}
-                                    >
-                                        {upcomingVisits.map((visit) => (
-                                            <SwiperSlide key={visit.id}>
-                                                <Card 
-                                                    data={visit} 
-                                                    onClick={() => navigate(`/visit-details/${visit.id}`)} 
-                                                />
-                                            </SwiperSlide>
-                                        ))}
-                                    </Swiper>
-                                ) : (
-                                    /* Пустая область, если визитов нет */
-                                    <div className={styles.emptyLine} />
+                                {searchTerm && (
+                                    <button className={styles.clearBtn} onClick={handleClearSearch}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M18 6L6 18M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                 )}
                             </div>
+                            <button className={styles.heroSearchBtn} onClick={handleFindClick}>Find</button>
+
+                            {/* Dropdown скрывается, если нет совпадений по специализациям (т.е. вводится фамилия) */}
+                            {showDropdown && filteredSpecsSuggestions.length > 0 && (
+                                <ul className={styles.dropdown}>
+                                    {filteredSpecsSuggestions.map((spec, index) => (
+                                        <li 
+                                            key={index} 
+                                            className={styles.dropdownItem}
+                                            onClick={() => handleSelectSpecialization(spec)}
+                                        >
+                                            {spec}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
-                    </div>
-                </main>
+                    </header>
+
+                    <section className={styles.doctorsSection}>
+                        <div className={styles.sectionHeader}>
+                            <h2>
+                                {isSpecializationActive 
+                                    ? `Specialization: ${activeSpecName}` 
+                                    : "Top Rated Specialists"}
+                            </h2>
+                        </div>
+
+                        <div className={styles.grid}>
+                            {getDisplayedDoctors().length > 0 ? (
+                                getDisplayedDoctors().map((doc) => (
+                                    <DoctorCard key={doc.id} doctor={doc} />
+                                ))
+                            ) : (
+                                <div className={styles.noData}>No doctors found.</div>
+                            )}
+                        </div>
+                    </section>
+                </div>
             </div>
         </AnimatedPage>
+    );
+};
+
+const DoctorCard = ({ doctor }) => {
+    const navigate = useNavigate();
+    const imageUrl = doctor.image?.downloadUrl;
+
+    const checkIsLoggedIn = () => {
+        return !!localStorage.getItem('access_token'); 
+    };
+
+    const handleBookClick = (e) => {
+        e.stopPropagation();
+        if (!checkIsLoggedIn()) {
+            navigate('/signUpForm');
+        } else {
+            navigate('/book-appointment');
+        }
+    };
+
+    return (
+        <div 
+            className={styles.card} 
+            onClick={() => navigate('/doctor-profile-public', { state: { doctorData: doctor } })}
+        >
+            <div className={styles.imageWrapper}>
+                {imageUrl ? (
+                    <img src={imageUrl} alt="Doctor" className={styles.docImage} />
+                ) : (
+                    <div className={styles.placeholderImage}>
+                        {doctor.firstname[0]}{doctor.lastname[0]}
+                    </div>
+                )}
+                <div className={styles.ratingBadge}>⭐ {doctor.rating}</div>
+            </div>
+
+            <div className={styles.cardContent}>
+                <h3 className={styles.docName}>{doctor.firstname} {doctor.lastname}</h3>
+                <span className={styles.specialization}>{doctor.specialization}</span>
+                <div className={styles.tags}>
+                    <span className={styles.tag}>{doctor.experienceYears} Yrs Exp.</span>
+                </div>
+                <button className={styles.bookBtn} onClick={handleBookClick}>
+                    Book Appointment
+                </button>
+            </div>
+        </div>
     );
 };
 
