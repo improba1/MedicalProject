@@ -1,59 +1,82 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.request.visit.VisitCreateRequest;
+import com.example.demo.dto.request.visit.VisitCreateByAdminRequest;
+import com.example.demo.dto.request.visit.VisitCreateByPatientRequest;
 import com.example.demo.dto.request.visit.VisitUpdateRequest;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.enums.VisitStatus;
 import com.example.demo.model.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static com.example.demo.enums.VisitStatus.SCHEDULED;
 
 @Component
+@RequiredArgsConstructor
 public class VisitMapper {
+
+    private final VisitServiceItemMapper itemMapper;
+
+    /* ========= RESPONSE ========= */
 
     public VisitResponse toResponse(Visit visit) {
         return VisitResponse.builder()
                 .id(visit.getId())
-                .doctorId(visit.getDoctor().getId())
-                .patientId(visit.getPatient().getId())
+                .doctorId(visit.getDoctor() != null ? visit.getDoctor().getId() : null)
+                .patientId(visit.getPatient() != null ? visit.getPatient().getId() : null)
                 .appointmentTime(visit.getAppointmentTime())
-                .status(visit.getStatus().name())
-                .raportId(visit.getRaport() != null ? visit.getRaport().getId() : null)
+                .status(visit.getStatus() != null ? visit.getStatus().name() : null)
+                .raportId(
+                        visit.getRaport() != null
+                                ? visit.getRaport().getId()
+                                : null
+                )
+                .services(itemMapper.toResponseList(visit.getServices()))
+                .totalPrice(visit.getTotalPrice())
                 .build();
     }
 
     public List<VisitResponse> toResponseList(List<Visit> visits) {
         return visits.stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public Visit fromCreateRequest(VisitCreateRequest request) {
+    /* ========= CREATE ========= */
+
+    public Visit fromPatientCreateRequest(VisitCreateByPatientRequest req) {
+        Visit visit = new Visit();
+
+        // doctor і patient будуть підставлені в service
         Doctor doctor = new Doctor();
-        doctor.setId(request.getDoctorId());
+        doctor.setId(req.getDoctorId());
+        visit.setDoctor(doctor);
+
+        visit.setAppointmentTime(req.getAppointmentTime());
+        visit.setPatientSymptoms(req.getPatientSymptoms());
+
+        return visit;
+    }
+
+    public Visit fromAdminCreateRequest(VisitCreateByAdminRequest req) {
+        Visit visit = new Visit();
+
+        Doctor doctor = new Doctor();
+        doctor.setId(req.getDoctorId());
+        visit.setDoctor(doctor);
 
         Patient patient = new Patient();
-        patient.setId(request.getPatientId());
+        patient.setId(req.getPatientId());
+        visit.setPatient(patient);
 
-        Raport raport = null;
-        if (request.getRaportId() != null) {
-            raport = new Raport();
-            raport.setId(request.getRaportId());
-        }
+        visit.setAppointmentTime(req.getAppointmentTime());
+        visit.setPatientSymptoms(req.getPatientSymptoms());
 
-        return Visit.builder()
-                .doctor(doctor)
-                .patient(patient)
-                .raport(raport)
-                .appointmentTime(request.getAppointmentTime())
-                .status(SCHEDULED)
-                .build();
+        return visit;
     }
+
+    /* ========= UPDATE ========= */
 
     public Visit toUpdateEntity(UUID id, VisitUpdateRequest request) {
         Visit visit = new Visit();
@@ -64,7 +87,9 @@ public class VisitMapper {
         }
 
         if (request.getVisitStatus() != null && !request.getVisitStatus().isBlank()) {
-            visit.setStatus(VisitStatus.valueOf(request.getVisitStatus().toUpperCase()));
+            visit.setStatus(
+                    VisitStatus.valueOf(request.getVisitStatus().toUpperCase())
+            );
         }
 
         return visit;

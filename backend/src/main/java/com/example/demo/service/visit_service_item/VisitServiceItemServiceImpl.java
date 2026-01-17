@@ -7,12 +7,12 @@ import com.example.demo.repository.MedicalServiceRepository;
 import com.example.demo.repository.VisitRepository;
 import com.example.demo.repository.VisitServiceItemRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,26 +27,14 @@ public class VisitServiceItemServiceImpl implements VisitServiceItemService {
     @Transactional
     public void addItemToVisit(UUID visitId, UUID medicalServiceId, Integer quantity) {
 
-        if (quantity == null || quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be > 0");
-        }
-
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
 
         MedicalService service = medicalServiceRepository.findById(medicalServiceId)
-                .orElseThrow(() -> new EntityNotFoundException("Medical service not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
 
-        Optional<VisitServiceItem> existing = itemRepository.findByVisitIdAndServiceId(visitId, medicalServiceId);
-        if (existing.isPresent()) {
-            VisitServiceItem item = existing.get();
-            item.setQuantity(item.getQuantity() + quantity);
-            VisitServiceItem saved = itemRepository.save(item);
-            if (visit.getServices() != null && !visit.getServices().contains(saved)) {
-                visit.getServices().removeIf(i -> i.getId().equals(saved.getId()));
-                visit.getServices().add(saved);
-            }
-            return;
+        if (!service.getDoctor().getId().equals(visit.getDoctor().getId())) {
+            throw new IllegalArgumentException("Service does not belong to visit doctor");
         }
 
         VisitServiceItem item = VisitServiceItem.builder()
@@ -58,10 +46,10 @@ public class VisitServiceItemServiceImpl implements VisitServiceItemService {
                 .build();
 
         VisitServiceItem saved = itemRepository.save(item);
-
-        if (visit.getServices() != null) {
-            visit.getServices().add(saved);
+        if (visit.getServices() == null) {
+            visit.setServices(new ArrayList<>());
         }
+        visit.getServices().add(saved);
     }
 
     @Override
@@ -91,7 +79,6 @@ public class VisitServiceItemServiceImpl implements VisitServiceItemService {
     public List<VisitServiceItem> getItemsForVisit(UUID visitId) {
         return itemRepository.findByVisitId(visitId);
     }
-
 
     @Override
     @Transactional

@@ -2,11 +2,9 @@ package com.example.demo.service.visit;
 
 import com.example.demo.enums.Role;
 import com.example.demo.enums.VisitStatus;
-import com.example.demo.model.Doctor;
-import com.example.demo.model.Patient;
-import com.example.demo.model.Visit;
-import com.example.demo.model.VisitServiceItem;
+import com.example.demo.model.*;
 import com.example.demo.repository.DoctorRepository;
+import com.example.demo.repository.RaportRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VisitRepository;
 import com.example.demo.repository.specification.visit.VisitSpecificationBuilder;
@@ -23,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +35,7 @@ public class VisitServiceImpl implements VisitService {
     private final VisitStatusService visitStatusService;
     private final CurrentUserService currentUserService;
     private final VisitServiceItemService visitServiceItemService;
+    private final RaportRepository  raportRepository;
 
     private Visit getVisit(UUID id) {
         return visitRepository.findById(id)
@@ -46,6 +46,20 @@ public class VisitServiceImpl implements VisitService {
         if (!visit.getDoctor().getId().equals(currentUserService.getDoctorId())) {
             throw new EntityNotFoundException("Visit not found for this doctor");
         }
+    }
+
+    private Visit getVisitAndAssertDoctor(UUID visitId) {
+        UUID doctorId = currentUserService.getDoctorId();
+        Visit visit = visitRepository.findById(visitId)
+                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
+        if (!visit.getDoctor().getId().equals(doctorId)) {
+            throw new AccessDeniedException("You can access only your own visits");
+        }
+        if (visit.getStatus() != VisitStatus.PAID &&
+                visit.getStatus() != VisitStatus.COMPLETED) {
+            throw new IllegalStateException("Visit must be paid before processing");
+        }
+        return visit;
     }
 
     private boolean canModifyCart(Visit visit) {
@@ -63,6 +77,18 @@ public class VisitServiceImpl implements VisitService {
             case DOCTOR -> visit.getDoctor().getId().equals(currentUserService.getDoctorId());
             case SUPERADMIN, ADMIN -> true;
         };
+    }
+
+    private String buildServicesSnapshot(List<VisitServiceItem> items) {
+        return items.stream()
+                .map(item -> String.format(
+                        "serviceId=%s; name=%s; price=%s; qty=%d",
+                        item.getService().getId(),
+                        item.getServiceName(),
+                        item.getPriceAtMomentOfPurchase(),
+                        item.getQuantity()
+                ))
+                .collect(Collectors.joining("\n"));
     }
 
     @Override
@@ -103,47 +129,49 @@ public class VisitServiceImpl implements VisitService {
         return visit;
     }
 
-
-
-    @Transactional
     @Override
-    public Visit createVisit(Visit visit) {
+    @Transactional
+    public Visit createByAdmin(Visit visit) {
+
+        Patient patient = userRepository.findById(visit.getPatient().getId())
+                .map(Patient.class::cast)
+                .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
+
         Doctor doctor = doctorRepository.findById(visit.getDoctor().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
 
-        Patient patient = (Patient) userRepository.findById(visit.getPatient().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
-
         slotService.occupy(doctor.getId(), visit.getAppointmentTime());
-        visit.setDoctor(doctor);
+
         visit.setPatient(patient);
-        if (visit.getStatus() == null) {
-            visit.setStatus(VisitStatus.SCHEDULED);
-        }
+        visit.setDoctor(doctor);
+        visit.setStatus(VisitStatus.SCHEDULED);
+        visit.setCartLocked(false);
+
         return visitRepository.save(visit);
     }
 
-    @Transactional
     @Override
-    public Visit createVisitForAuthenticatedPatient(Visit visit) {
+    @Transactional
+    public Visit createByPatient(Visit visit) {
+
         UUID patientId = currentUserService.getPatientId();
 
-        if (!visit.getPatient().getId().equals(patientId)) {
-            throw new EntityNotFoundException("Cannot create visit for another patient");
-        }
-
-        Doctor doctor = doctorRepository.findById(visit.getDoctor().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
-
-        Patient patient = (Patient) userRepository.findById(patientId)
+        Patient patient = userRepository.findById(patientId)
+                .map(Patient.class::cast)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
 
+        UUID doctorId = visit.getDoctor().getId();
+
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
+
         slotService.occupy(doctor.getId(), visit.getAppointmentTime());
-        visit.setDoctor(doctor);
+
         visit.setPatient(patient);
-        if (visit.getStatus() == null) {
-            visit.setStatus(VisitStatus.SCHEDULED);
-        }
+        visit.setDoctor(doctor);
+        visit.setStatus(VisitStatus.SCHEDULED);
+        visit.setCartLocked(false);
+
         return visitRepository.save(visit);
     }
 
@@ -214,6 +242,42 @@ public class VisitServiceImpl implements VisitService {
                         doctorId, patientId, status, start, end
                 )
         );
+    }
+
+    @Override
+    public Raport updateRaport(UUID visitId, Raport raportUpdate) {
+        Visit visit = getVisitAndAssertDoctor(visitId);
+
+        Raport raport = visit.getRaport();
+        if (raport == null) {
+            raport = Raport.builder()
+                    .visit(visit)
+                    .doctor(visit.getDoctor())
+                    .patient(visit.getPatient())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+        }
+
+        if (raportUpdate.getDisease() != null)
+            raport.setDisease(raportUpdate.getDisease());
+        if (raportUpdate.getTreatmentPlan() != null)
+            raport.setTreatmentPlan(raportUpdate.getTreatmentPlan());
+        if (raportUpdate.getDoctorNotes() != null)
+            raport.setDoctorNotes(raportUpdate.getDoctorNotes());
+
+        raportRepository.save(raport);
+
+        visit.setRaport(raport);
+        visitRepository.save(visit);
+
+        return raport;
+    }
+
+    @Override
+    public Visit completeVisit(UUID visitId) {
+        Visit visit = getVisitAndAssertDoctor(visitId);
+        visitStatusService.complete(visit, Role.DOCTOR);
+        return visitRepository.save(visit);
     }
 
     @Transactional
@@ -308,20 +372,30 @@ public class VisitServiceImpl implements VisitService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    @Transactional
     @Override
-    public Visit lockCart(UUID visitId) {
+    @Transactional
+    public void lockCart(UUID visitId) {
         Visit visit = getVisit(visitId);
         if (visit.isCartLocked()) {
-            return visit;
+            return;
         }
-        if (visit.getStatus() == VisitStatus.PAID || visit.getStatus() == VisitStatus.COMPLETED || visit.getStatus() == VisitStatus.CANCELED) {
-            throw new IllegalStateException("Cart cannot be locked in current visit status");
-        }
-        if (visit.getServices() == null || visit.getServices().isEmpty()) {
+        List<VisitServiceItem> services = visit.getServices();
+        if (services == null || services.isEmpty()) {
             throw new IllegalStateException("Cannot lock empty cart");
         }
         visit.setCartLocked(true);
-        return visitRepository.save(visit);
+        Raport raport = Raport.builder()
+                .visit(visit)
+                .doctor(visit.getDoctor())
+                .patient(visit.getPatient())
+                .disease("")
+                .symptoms(visit.getPatientSymptoms())
+                .totalPrice(calculateTotalPrice(visit.getId()))
+                .servicesSnapshot(buildServicesSnapshot(services))
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        visit.setRaport(raport);
+        visitRepository.save(visit);
     }
 }

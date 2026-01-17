@@ -3,8 +3,12 @@ package com.example.demo.controller.doctor;
 import com.example.demo.dto.request.visit.VisitUpdateRequest;
 import com.example.demo.dto.request.visit.VisitSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
+import com.example.demo.dto.response.RaportResponse;
 import com.example.demo.dto.response.VisitResponse;
+import com.example.demo.mapper.RaportMapper;
 import com.example.demo.mapper.VisitMapper;
+import com.example.demo.model.Raport;
+import com.example.demo.model.Visit;
 import com.example.demo.service.visit.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ public class DoctorVisitController {
 
     private final VisitService visitService;
     private final VisitMapper visitMapper;
+    private final RaportMapper raportMapper;
 
     @GetMapping("/get/{visitId}")
     @PreAuthorize("hasAuthority('doctor:read')")
@@ -63,6 +68,29 @@ public class DoctorVisitController {
         return ResponseEntity.ok(
                 ApiResponse.of(200, "Visit rescheduled successfully",
                         visitMapper.toResponse(visit))
+        );
+    }
+
+    @PostMapping("/{visitId}/update/raport")
+    @PreAuthorize("hasAuthority('doctor:update')")
+    public ResponseEntity<ApiResponse<RaportResponse>> updateRaport(
+            @PathVariable UUID visitId,
+            @RequestBody Raport raportUpdate
+    ) {
+        Raport raport = visitService.updateRaport(visitId, raportUpdate);
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Raport updated", raportMapper.toResponse(raport))
+        );
+    }
+
+    @PostMapping("/{visitId}/complete")
+    @PreAuthorize("hasAuthority('doctor:update')")
+    public ResponseEntity<ApiResponse<VisitResponse>> completeVisit(
+            @PathVariable UUID visitId
+    ) {
+        Visit visit = visitService.completeVisit(visitId);
+        return ResponseEntity.ok(
+                ApiResponse.of(200, "Visit marked as completed", visitMapper.toResponse(visit))
         );
     }
 
