@@ -1,6 +1,6 @@
 package com.example.demo.controller.patient;
 
-import com.example.demo.dto.request.visit.VisitCreateRequest;
+import com.example.demo.dto.request.visit.VisitCreateByPatientRequest;
 import com.example.demo.dto.request.visit.VisitSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
@@ -9,6 +9,7 @@ import com.example.demo.model.Visit;
 import com.example.demo.service.visit.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -43,21 +44,19 @@ public class PatientVisitController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('patient:create')")
-    public ResponseEntity<ApiResponse<VisitResponse>> createVisit(
-            @RequestBody @Valid VisitCreateRequest request
+    public ResponseEntity<ApiResponse<VisitResponse>> createByPatient(
+            @Valid @RequestBody VisitCreateByPatientRequest request
     ) {
-        Visit visit = visitService.createVisitForAuthenticatedPatient(
-                visitMapper.fromCreateRequest(request)
-        );
-
-        return ResponseEntity.ok(
-                ApiResponse.of(
+        Visit visit = visitMapper.fromPatientCreateRequest(request);
+        Visit created = visitService.createByPatient(visit);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of(
                         201,
                         "Visit created successfully",
-                        visitMapper.toResponse(visit)
-                )
-        );
+                        visitMapper.toResponse(created)
+                ));
     }
+
 
 
     @PutMapping("/reschedule/{visitId}")

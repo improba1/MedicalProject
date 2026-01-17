@@ -7,6 +7,7 @@ import com.example.demo.model.Payment;
 import com.example.demo.model.Visit;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.VisitRepository;
+import com.example.demo.service.visit.VisitServiceImpl;
 import com.example.demo.service.visit.VisitStatusService;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
@@ -34,6 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final VisitRepository visitRepository;
     private final PaymentRepository paymentRepository;
     private final VisitStatusService visitStatusService;
+    private final VisitServiceImpl visitService;
 
     @Value("${stripe.secret-key}")
     private String stripeSecretKey;
@@ -101,7 +103,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .createdAt(LocalDateTime.now())
                     .build();
             paymentRepository.save(payment);
-            visit.setCartLocked(true);
+            visitService.lockCart(visitId);
             visitRepository.save(visit);
             return session.getUrl();
         } catch (StripeException e) {
