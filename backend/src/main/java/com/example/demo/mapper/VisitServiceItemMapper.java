@@ -8,6 +8,9 @@ import com.example.demo.model.Visit;
 import com.example.demo.model.VisitServiceItem;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class VisitServiceItemMapper {
 
@@ -35,5 +38,12 @@ public class VisitServiceItemMapper {
         dto.setPriceAtMomentOfPurchase(item.getPriceAtMomentOfPurchase());
         dto.setQuantity(item.getQuantity());
         return dto;
+    }
+
+    public List<VisitServiceItemResponse> toResponseList(List<VisitServiceItem> items) {
+        if (items == null) return List.of();
+        return items.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 }

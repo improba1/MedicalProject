@@ -1,6 +1,7 @@
 package com.example.demo.service.visit;
 
 import com.example.demo.enums.VisitStatus;
+import com.example.demo.model.Raport;
 import com.example.demo.model.Visit;
 
 import java.math.BigDecimal;
@@ -12,11 +13,11 @@ public interface VisitService {
     Visit getById(UUID id);
     Visit getByIdForAuthenticatedDoctor(UUID id);
     Visit getByIdForAuthenticatedPatient(UUID id);
-    Visit createVisit(Visit visit);
     Visit updateVisit(Visit visitUpdate);
     void delete(UUID id);
 
-    Visit createVisitForAuthenticatedPatient(Visit visit);
+    Visit createByAdmin(Visit visit);
+    Visit createByPatient(Visit visit);
     Visit cancelVisit(UUID visitId);
     Visit rescheduleVisit(UUID visitId, LocalDateTime newTime);
 
@@ -34,5 +35,9 @@ public interface VisitService {
     Visit clearCart(UUID visitId);
     Visit updateItemQuantity(UUID visitId, UUID itemId, Integer quantity);
     BigDecimal calculateTotalPrice(UUID visitId);
-    Visit lockCart(UUID visitId);
+    void lockCart(UUID visitId);
+
+
+    Raport updateRaport(UUID visitId, Raport raportUpdate);
+    Visit completeVisit(UUID visitId);
 }

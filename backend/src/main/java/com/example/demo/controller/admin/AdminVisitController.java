@@ -1,11 +1,12 @@
 package com.example.demo.controller.admin;
 
-import com.example.demo.dto.request.visit.VisitCreateRequest;
+import com.example.demo.dto.request.visit.VisitCreateByAdminRequest;
 import com.example.demo.dto.request.visit.VisitUpdateRequest;
 import com.example.demo.dto.request.visit.VisitSearchRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.VisitResponse;
 import com.example.demo.mapper.VisitMapper;
+import com.example.demo.model.Visit;
 import com.example.demo.service.visit.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +28,12 @@ public class AdminVisitController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('admin:create')")
-    public ResponseEntity<ApiResponse<VisitResponse>> createVisit(
-            @Valid @RequestBody VisitCreateRequest request) {
+    public ResponseEntity<ApiResponse<VisitResponse>> createByAdmin(
+            @Valid @RequestBody VisitCreateByAdminRequest request
+    ) {
 
-        var created = visitService.createVisit(
-                visitMapper.fromCreateRequest(request)
-        );
-
+        Visit visit = visitMapper.fromAdminCreateRequest(request);
+        Visit created = visitService.createByAdmin(visit);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.of(
                         201,
@@ -41,6 +41,7 @@ public class AdminVisitController {
                         visitMapper.toResponse(created)
                 ));
     }
+
 
     @PutMapping("/update/{visitId}")
     @PreAuthorize("hasAuthority('admin:update')")
