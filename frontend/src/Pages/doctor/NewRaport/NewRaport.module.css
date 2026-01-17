@@ -1,35 +1,7 @@
-.ai{
+/* Existing styles */
+.lab {
     position: fixed;
-    top:59%;
-    right: 10%;
-    width: 20%;
-    height: 7%;
-    border-radius: 50px;
-    background-color: #6C5BD4;
-    color: #FFFFFF;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-size: 18px;
-    font-weight: 600;
-    padding: 0 24px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    /* box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4); */
-    /* transition: transform 0.2s, background-color 0.2s; */
-}
-
-.ai:hover {
-    background-color: #493d91;
-    transform: scale(1.05);
-}
-
-.lab{
-    position: fixed;
-    top:59%;
+    top: 59%;
     right: 42%;
     width: 20%;
     height: 7%;
@@ -47,8 +19,6 @@
     padding: 0 24px;
     transition: all 0.2s ease;
     cursor: pointer;
-    /* box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4); */
-    /* transition: transform 0.2s, background-color 0.2s; */
 }
 
 .lab:hover {
@@ -56,9 +26,9 @@
     transform: scale(1.05);
 }
 
-.create{
+.create {
     position: fixed;
-    top:73%;
+    top: 73%;
     right: 42%;
     width: 20%;
     height: 7%;
@@ -76,8 +46,6 @@
     padding: 0 24px;
     transition: all 0.2s ease;
     cursor: pointer;
-    /* box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4); */
-    /* transition: transform 0.2s, background-color 0.2s; */
 }
 
 .create:hover {
@@ -85,7 +53,7 @@
     transform: scale(1.05);
 }
 
-.next{
+.next {
     position: fixed;
     bottom: 5%;
     right: 4%;
@@ -100,7 +68,6 @@
     font-size: 19px;
     font-weight: 600;
     cursor: pointer;
-    /* box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4); */
     transition: transform 0.2s, background-color 0.2s;
 }
 
@@ -109,17 +76,12 @@
     transform: scale(1.05);
 }
 
-.text{
-    position: fixed;
-    left: 65%;
-    right: 5%;
-    top: 30%;
-    color: white;
-    font-size: 24px;
-    font-weight: 600;
+.text {
+    /* Removed or hidden since we removed the text component in JSX */
+    display: none;
 }
 
-.newraport{
+.newraport {
     position: fixed;
     left: 6%;
     top: 15%;
@@ -128,7 +90,7 @@
     font-weight: 700;
 }
 
-.patientname{
+.patientname {
     position: fixed;
     left: 30%;
     top: 15%;
@@ -137,10 +99,12 @@
     font-weight: 700;
 }
 
-.anamnesis, .symptoms, .diagnosis, .treatment{
+.anamnesis,
+.symptoms,
+.diagnosis,
+.treatment {
     width: 100%;
     height: 100%;
-    /* top: 50%; */
     background: transparent;
     border: 1px solid grey;
     border-radius: 40px;
@@ -149,17 +113,17 @@
     color: white;
 }
 
-.placeholder{
-    position: fixed; 
+.placeholder {
+    position: fixed;
     left: 8%;
-    top: 30%; 
-    width: 25%; 
+    top: 30%;
+    width: 25%;
     display: flex;
-    flex-direction: column; 
-    gap: 60px; 
+    flex-direction: column;
+    gap: 60px;
 }
 
-.additional{
+.additional {
     position: fixed;
     width: 20%;
     height: 21%;
@@ -170,11 +134,159 @@
     border-radius: 20px;
     font-size: 16px;
     color: white;
-    padding: 15px 20px; 
+    padding: 15px 20px;
     text-align: left;
-    vertical-align: top; 
-    resize: vertical; 
+    vertical-align: top;
+    resize: vertical;
     line-height: 1.5;
     white-space: pre-wrap;
     overflow-y: auto;
+}
+
+/* AI Form Styles */
+.aiContainer {
+    position: fixed;
+    right: 5%;
+    top: 25%;
+    width: 25%;
+    /* Slightly reduced width for better proportion */
+    height: auto;
+    /* Let content dictate height, or fix if needed */
+    min-height: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    /* Increased gap to prevent label collision */
+    /* Increased gap for labels space */
+    background: rgba(45, 45, 50, 0.4);
+    /* Darker, more visible background */
+    padding: 20px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.aiTitle {
+    color: #F5782D;
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.aiInputFull {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px 12px;
+    /* Reduced padding */
+    color: white;
+    font-size: 15px;
+    /* Slightly smaller font */
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.aiInputFull:focus {
+    border-color: #F5782D;
+}
+
+.aiRow {
+    margin-top: 25px;
+    display: flex;
+    gap: 30px;
+    width: 100%;
+}
+
+.aiSelectInput {
+    flex: 2;
+    /* More space for Sex dropdown */
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px 12px;
+    /* Reduced padding */
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.aiInputSmall {
+    flex: 0.8;
+    /* Less space for Age */
+    max-width: 80px;
+    /* Constrain max width */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px 12px;
+    /* Reduced padding */
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.aiSelectInput:focus,
+.aiInputSmall:focus {
+    border-color: #F5782D;
+}
+
+.aiSelectInput option {
+    background-color: #2b2b2b;
+    color: white;
+}
+
+.aiButton {
+    background-color: #6C5BD4;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(108, 91, 212, 0.3);
+}
+
+.aiButton:hover {
+    background-color: #584ab0;
+    transform: translateY(-2px);
+}
+
+.aiButton:disabled {
+    background-color: #4a4a4a;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.aiResultContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    min-height: 150px;
+    /* Increased height */
+    max-height: 200px;
+    /* Allow more growth */
+}
+
+.aiInputResult {
+    min-height: 150px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    color: #e0e0e0;
+    font-size: 14px;
+    resize: none;
+    line-height: 1.5;
 }

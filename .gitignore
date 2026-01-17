@@ -15,7 +15,7 @@ target/
 # *.properties
 *.yml
 *.yaml
-
+!docker-compose.yml
 ### IntelliJ IDEA ###
 .idea
 *.iws
