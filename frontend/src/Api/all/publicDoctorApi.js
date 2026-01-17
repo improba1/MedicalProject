@@ -6,10 +6,10 @@ const $api = axios.create({
 
 export const publicDoctorApi = {
     getAllDoctors: async () => {
-        return $api.get('/doctors/get-all');
+        return $api.post('/doctors/public/search', {});
     },
 
     searchDoctors: async (searchParams) => {
-        return $api.post('/doctors/search', searchParams);
+        return $api.post('/doctors/public/search', searchParams);
     }
 };

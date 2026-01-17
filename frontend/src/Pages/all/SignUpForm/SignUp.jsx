@@ -83,62 +83,62 @@ const SignUpForm = () => {
                                     <h1 className={styles.title}>Sign Up</h1>
                                 </div>
 
-                                    <div className={styles.inputsContainer}>
-                            <div className={styles.leftPart}>
-                                <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="First name" value={firstname} onChange={(e) => setFirstName(e.target.value)} />
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Last name" value={lastname} onChange={(e) => setLastName(e.target.value)} />
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} />
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                                </div>
-                            </div>
-                            
-                            <div className={styles.rightPart}>
-                                <div className={styles.inputBox}>
-                                    <select 
-                                        required 
-                                        value={sex} 
-                                        onChange={(e) => setSex(e.target.value)}
-                                        style={{ color: sex ? 'white' : 'grey' }}
-                                    >
-                                        <option value="" disabled>Select Gender</option>
-                                        <option value="MALE">Male</option>
-                                        <option value="FEMALE">Female</option>
-                                    </select>
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input required 
-                                    type={(birthDate || document.activeElement === document.getElementById('dateInput')) ? "date" : "text"}
-                                    id="dateInput" 
-                                    placeholder="Birthday" 
-                                    value={birthDate} 
-                                    onChange={(e) => setBirthDay(e.target.value)}
-                                    onFocus={(e) => e.target.type = 'date'}
-                                    onBlur={(e) => {
-                                        if (!e.target.value) e.target.type = 'text'; 
-                                    }}
-                                    style={{ color: 'white' }} />
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input required type="text" placeholder="Login" value={nickname} onChange={(e) => setLogin(e.target.value)} />
-                                </div>
-                                <div className={styles.inputBox}>
-                                    <input required type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                </div>
-                            </div>
-                        </div>
+                                   <div className={styles.inputsContainer}>
+                                        {/* Имя и Фамилия */}
+                                        <div className={styles.inputBox}>
+                                            <input required type="text" placeholder="First name" value={firstname} onChange={(e) => setFirstName(e.target.value)} />
+                                        </div>
+                                        <div className={styles.inputBox}>
+                                            <input required type="text" placeholder="Last name" value={lastname} onChange={(e) => setLastName(e.target.value)} />
+                                        </div>
+
+                                        {/* Почта и Телефон */}
+                                        <div className={styles.inputBox}>
+                                            <input required type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                        </div>
+                                        <div className={styles.inputBox}>
+                                            <input required type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                                        </div>
+
+                                        {/* Пол и Дата рождения */}
+                                        <div className={styles.inputBox}>
+                                            <select 
+                                                required 
+                                                value={sex} 
+                                                onChange={(e) => setSex(e.target.value)}
+                                                style={{ color: sex ? 'white' : 'grey' }}
+                                            >
+                                                <option value="" disabled>Select Gender</option>
+                                                <option value="MALE">Male</option>
+                                                <option value="FEMALE">Female</option>
+                                            </select>
+                                        </div>
+                                        <div className={styles.inputBox}>
+                                            <input required 
+                                                type={(birthDate || document.activeElement === document.getElementById('dateInput')) ? "date" : "text"}
+                                                id="dateInput" 
+                                                placeholder="Birthday" 
+                                                value={birthDate} 
+                                                onChange={(e) => setBirthDay(e.target.value)}
+                                                onFocus={(e) => e.target.type = 'date'}
+                                                onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
+                                                style={{ color: 'white' }} 
+                                            />
+                                        </div>
+
+                                        {/* Логин и Пароль */}
+                                        <div className={styles.inputBox}>
+                                            <input required type="text" placeholder="Login" value={nickname} onChange={(e) => setLogin(e.target.value)} />
+                                        </div>
+                                        <div className={styles.inputBox}>
+                                            <input required type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                        </div>
+
+                                        {/* Адрес на всю ширину (добавляем класс fullWidth) */}
+                                        <div className={`${styles.inputBox} ${styles.fullWidth}`}>
+                                            <input required type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                                        </div>
+                                    </div>
                                     {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
                                 <button type="submit" className={styles.submitBtn}>Sign Up</button>
                                 <div className={styles.loginLink}>
