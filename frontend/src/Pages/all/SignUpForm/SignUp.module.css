@@ -23,10 +23,14 @@
 }
 
 .inputsContainer {
-    display: flex;
-    justify-content: space-between;
-    gap: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Две равные колонки */
+    gap: 0 40px; /* Отступ между колонками */
     margin-bottom: 20px;
+}
+
+.fullWidth {
+    grid-column: span 2;
 }
 
 .leftPart, .rightPart {

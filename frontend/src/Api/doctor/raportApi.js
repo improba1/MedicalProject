@@ -14,12 +14,14 @@ $api.interceptors.request.use((config) => {
 
 export const reportApi = {
     getAllReports: async () => {
-        const response = await $api.get('/doctors/me/visits/search');
+        // const response = await $api.get('/doctors/me/visits/search');
+        const response = await $api.post('/doctor/me/raports/search', {});
         return response.data;
     },
 
-    getReportDetails: async (visitId) => {
-        const response = await $api.get(`/doctor/me/raports/visit/${visitId}`); 
+    getReportDetails: async (raportId) => {
+        // const response = await $api.get(`/doctor/me/raports/visit/${visitId}`); 
+        const response = await $api.get(`/doctor/me/raports/get/${raportId}`); 
         return response.data;
     }
 };
