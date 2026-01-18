@@ -176,23 +176,17 @@ const DoctorCard = ({ doctor }) => {
     const navigate = useNavigate();
     const imageUrl = doctor.image?.downloadUrl;
 
-    const checkIsLoggedIn = () => {
-        return !!localStorage.getItem('access_token'); 
-    };
-
     const handleBookClick = (e) => {
         e.stopPropagation();
-        if (!checkIsLoggedIn()) {
-            navigate('/signUpForm');
-        } else {
-            navigate('/book-appointment');
-        }
+        // Мы предполагаем, что пользователь уже залогинен, 
+        // так как он находится на домашней странице пациента
+        navigate('/book-appointment', { state: { doctorData: doctor } });
     };
 
     return (
         <div 
             className={styles.card} 
-            onClick={() => navigate('/doctor-profile-public', { state: { doctorData: doctor } })}
+            onClick={() => navigate('/doctor-profile-logged', { state: { doctorData: doctor } })}
         >
             <div className={styles.imageWrapper}>
                 {imageUrl ? (

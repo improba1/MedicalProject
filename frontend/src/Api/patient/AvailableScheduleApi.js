@@ -1,43 +1,30 @@
 import axios from 'axios';
 
-// Создаем экземпляр axios с базовым URL вашего API
 const $api = axios.create({
-    baseURL: 'http://localhost:8080/api/v1' 
+    baseURL: '/api/v1'
 });
 
-// Интерцептор для автоматической подстановки JWT-токена в заголовки
 $api.interceptors.request.use((config) => {
     const token = localStorage.getItem('access_token');
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer ${token}`; // Авторизация пациента
     }
     return config;
 });
 
 export const availableScheduleApi = {
     /**
-     * Получение всех активных слотов для записи к конкретному врачу.
-     * Использует эндпоинт: GET /admin/doctors/availability/get/{doctorId}/active
-     *
+     * Поиск свободных слотов врача
+     * Эндпоинт: GET /patient/availabilities/search
      */
-    getAvailableSlots: async (doctorId) => {
-        // Запрос возвращает список доступного времени (appointmentTime)
-        const response = await $api.get(`/admin/doctors/availability/get/${doctorId}/active`);
-        return response.data;
-    },
-
-    /**
-     * Бронирование выбранного времени пациентом.
-     * Использует эндпоинт: POST /patient/me/visits/book/{doctorId}
-     *
-     * @param {string} doctorId - UUID врача
-     * @param {string} appointmentTime - выбранная дата и время в формате ISO
-     */
-    bookAppointment: async (doctorId, appointmentTime) => {
-        // Передаем выбранное время в теле запроса
-        const response = await $api.post(`/patient/me/visits/book/${doctorId}`, {
-            appointmentTime: appointmentTime
+    searchSlots: async (doctorId, date) => {
+        // Устанавливаем диапазон: от начала выбранного дня до его конца
+        const from = `${date}T00:00:00Z`;
+        const to = `${date}T23:59:59Z`;
+        
+        const response = await $api.get('/patient/availabilities/search', {
+            params: { doctorId, from, to }
         });
-        return response.data;
+        return response.data; // Возвращает только активные будущие слоты
     }
 };

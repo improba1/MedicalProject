@@ -1,126 +1,136 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './BookAppointment.module.css';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
-import HeaderWithProfile from '../../../Components/HeaderWithoutProfile/HeaderWithoutProfile';
-import { doctorApi } from '../../../Api/doctor/AllDoctorsApi';
+import HeaderWithProfile from '../../../Components/HeaderWithProfile/HeaderWithProfile';
+import { availableScheduleApi } from '../../../Api/patient/AvailableScheduleApi';
+import { visitApi } from '../../../Api/patient/visitApi';
 
 const BookAppointment = () => {
+    const location = useLocation();
     const navigate = useNavigate();
-    const dropdownRef = useRef(null); // Реф для отслеживания клика вне списка
-    
-    const [allSpecializations, setAllSpecializations] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedSpec, setSelectedSpec] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const doctor = location.state?.doctorData;
 
-    // Закрытие при клике вне компонента
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [slots, setSlots] = useState([]);
+    const [selectedTime, setSelectedTime] = useState(null);
+    const [symptoms, setSymptoms] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
 
+    // Загрузка доступных слотов при изменении даты
     useEffect(() => {
-        const fetchSpecializations = async () => {
-            try {
-                const response = await doctorApi.getAllDoctors();
-                
-                if (response.status === 0 && response.data) {
-                    const uniqueSpecs = [
-                        ...new Set(response.data.map(doctor => doctor.specialization))
-                    ].filter(Boolean).sort(); 
-                    
-                    setAllSpecializations(uniqueSpecs);
+        if (doctor) {
+            const fetchSlots = async () => {
+                setLoading(true);
+                try {
+                    const response = await availableScheduleApi.searchSlots(doctor.id, selectedDate);
+                    setSlots(response.data || []);
+                } catch (error) {
+                    console.error("Error fetching slots", error);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (error) {
-                console.error("Ошибка при загрузке специализаций:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSpecializations();
-    }, []);
+            };
+            fetchSlots();
+        }
+    }, [doctor, selectedDate]);
 
-    const filteredSpecs = allSpecializations.filter(spec =>
-        spec?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const handleBooking = async () => {
+        if (!selectedTime) return;
 
-    const handleSelect = (spec) => {
-        setSearchQuery(spec);
-        setSelectedSpec(spec);
-        setIsOpen(false);
+        try {
+            const payload = {
+                doctorId: doctor.id,
+                appointmentTime: selectedTime,
+                patientSymptoms: symptoms
+            };
+            // Создание визита: POST /api/v1/patient/me/visits/create
+            await visitApi.createVisit(payload);
+            setIsSuccess(true);
+        } catch (error) {
+            alert("Failed to book appointment. Please try again.");
+        }
     };
+
+    if (isSuccess) {
+        return (
+            <AnimatedPage>
+                <div className={styles.successContainer}>
+                    <div className={styles.successCard}>
+                        <div className={styles.successIcon}>✓</div>
+                        <h1>Congratulations!</h1>
+                        <p>Your appointment with <strong>Dr. {doctor.lastname}</strong> has been successfully booked.</p>
+                        <button className={styles.homeBtn} onClick={() => navigate('/patient-home')}>
+                            Back to Home
+                        </button>
+                    </div>
+                </div>
+            </AnimatedPage>
+        );
+    }
 
     return (
         <AnimatedPage>
             <div className={styles.pageContainer}>
                 <HeaderWithProfile />
-                
-                <main className={styles.mainContent}>
-                    <h1 className={styles.title}>New appointment</h1>
-                    
-                    <div className={styles.card}>
-                        <div className={styles.selectWrapper} ref={dropdownRef}>
-                            <div className={styles.inputContainer}>
-                                <input
-                                    type="text"
-                                    className={styles.selectInput}
-                                    placeholder={loading ? "Loading..." : "Select specialization"}
-                                    value={searchQuery}
-                                    autoComplete="off"
-                                    onChange={(e) => {
-                                        setSearchQuery(e.target.value);
-                                        setIsOpen(true);
-                                        setSelectedSpec(null);
-                                    }}
-                                    onClick={() => setIsOpen(true)} // Открываем при клике
-                                    onFocus={() => setIsOpen(true)} // Открываем при фокусе
-                                    disabled={loading}
-                                />
-                                <div 
-                                    className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}
-                                    onClick={() => setIsOpen(!isOpen)}
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M6 9l6 6 6-6" />
-                                    </svg>
-                                </div>
+                <main className={styles.content}>
+                    <div className={styles.bookingCard}>
+                        <h1 className={styles.title}>Book an Appointment</h1>
+                        
+                        <div className={styles.doctorBrief}>
+                            <div className={styles.miniAvatar}>
+                                {doctor?.firstname[0]}{doctor?.lastname[0]}
                             </div>
+                            <div>
+                                <h3>Dr. {doctor?.firstname} {doctor?.lastname}</h3>
+                                <span>{doctor?.specialization}</span>
+                            </div>
+                        </div>
 
-                            {/* Выпадающий список */}
-                            {isOpen && (
-                                <ul className={styles.dropdown}>
-                                    {filteredSpecs.length > 0 ? (
-                                        filteredSpecs.map((spec, index) => (
-                                            <li 
-                                                key={index} 
-                                                className={styles.dropdownItem}
-                                                onClick={() => handleSelect(spec)}
-                                            >
-                                                {spec}
-                                            </li>
-                                        ))
-                                    ) : (
-                                        <li className={styles.noResults}>
-                                            {loading ? "Loading..." : "No results found"}
-                                        </li>
-                                    )}
-                                </ul>
-                            )}
+                        <div className={styles.formSection}>
+                            <label>1. Select Date</label>
+                            <input 
+                                type="date" 
+                                className={styles.dateInput}
+                                value={selectedDate}
+                                min={new Date().toISOString().split('T')[0]}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                            />
+                        </div>
+
+                        <div className={styles.formSection}>
+                            <label>2. Select Available Time</label>
+                            <div className={styles.slotsGrid}>
+                                {loading ? <p>Loading slots...</p> : 
+                                 slots.length > 0 ? slots.map((slot, index) => (
+                                    <button 
+                                        key={index}
+                                        className={`${styles.slotBtn} ${selectedTime === slot.appointmentTime ? styles.activeSlot : ''}`}
+                                        onClick={() => setSelectedTime(slot.appointmentTime)}
+                                    >
+                                        {new Date(slot.appointmentTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                    </button>
+                                )) : <p className={styles.noSlots}>No slots available for this date.</p>}
+                            </div>
+                        </div>
+
+                        <div className={styles.formSection}>
+                            <label>3. Describe your symptoms</label>
+                            <textarea 
+                                className={styles.textarea}
+                                placeholder="Write briefly what bothers you..."
+                                value={symptoms}
+                                onChange={(e) => setSymptoms(e.target.value)}
+                            />
                         </div>
 
                         <button 
-                            className={styles.nextBtn}
-                            onClick={() => navigate('/book-appointment/select-doctor', { state: { specialization: selectedSpec } })}
-                            disabled={!selectedSpec || loading}
+                            className={styles.confirmBtn}
+                            disabled={!selectedTime}
+                            onClick={handleBooking}
                         >
-                            Next step
+                            Confirm Appointment
                         </button>
                     </div>
                 </main>

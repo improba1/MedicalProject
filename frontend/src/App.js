@@ -25,6 +25,8 @@ import PatientHomePage from './Pages/patient/PatientHomePage/PatientHomePage';
 import BookAppointment from './Pages/patient/BookAppointment/BookAppointment';
 import Start from './Pages/all/PublicFindDoctors/PublicFindDoctors';
 import DoctorProfilePublic from './Pages/all/DoctorProfilePublic/DoctorProfilePublic';
+import DoctorProfileForLogged from './Pages/patient/DoctorProfileForLogged/DoctorProfileForLogged';
+
 
 function App() {
   const location = useLocation();
@@ -61,6 +63,7 @@ function App() {
 
         <Route path="/patient" element={<PatientHomePage />} />
         <Route path="/book-appointment" element={<BookAppointment />} />
+        <Route path="/doctor-profile-logged" element={<DoctorProfileForLogged />} />
 
 
 

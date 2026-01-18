@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const $api = axios.create({
-    baseURL: '/api/v1' 
+    baseURL: '/api/v1'
 });
 
 $api.interceptors.request.use((config) => {
@@ -13,8 +13,13 @@ $api.interceptors.request.use((config) => {
 });
 
 export const visitApi = {
-    getUpcomingVisits: async () => {
-        const response = await $api.get('/patient/me/visits/upcoming');
-        return response.data;
+    /**
+     * Создание визита пациентом
+     * Эндпоинт: POST /patient/me/visits/create
+     * Body: { doctorId, appointmentTime, patientSymptoms }
+     */
+    createVisit: async (payload) => {
+        const response = await $api.post('/patient/me/visits/create', payload);
+        return response.data; // Результат: визит создан, кошелек открыт
     }
 };
