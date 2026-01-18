@@ -8,7 +8,6 @@ import styles from './Conclusion.module.css';
 import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 
 const Conclusion = () => {
-    // state или props
     const docLinks = {
         labTest: "/files/lab-test-referral.txt", 
         specialist: "/files/specialist-referral.txt"
@@ -30,7 +29,6 @@ const Conclusion = () => {
 
                 <div className={styles.contentRow}>
                     
-                    {/* Левая часть: Карточка с информацией */}
                     <div className={styles.infoCard}>
                         <InfoRow label="Patient" value="Full name" />
                         <InfoRow label="Doctor" value="Dr. House" />
@@ -40,7 +38,6 @@ const Conclusion = () => {
                         <InfoRow label="Treatment" value="Antibiotics, rest..." />
                         <InfoRow label="Notes" value="(optional)" />
                         
-                        {/* Ссылки на документы */}
                         <div className={styles.infoRow}>
                             <span className={styles.label}>Lab test referral: </span>
                             <a 

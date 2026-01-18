@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const $api = axios.create({
-    // Обязательно абсолютный URL, чтобы избежать CORS-путаницы
     baseURL: '/api/v1' 
 });
 
@@ -14,16 +13,12 @@ $api.interceptors.request.use((config) => {
 });
 
 export const availableScheduleApi = {
-    /**
-     * Поиск слотов из patient-doctor-availability-controller
-     */
     searchSlots: async (doctorId, date) => {
-        // Формируем параметры как в Swagger
         const body = {
             doctorId: doctorId,
             from: `${date}T00:00:00Z`,
             to: `${date}T23:59:59Z`,
-            active: true // Добавили обязательное поле из swagger
+            active: true 
         };
         
         const response = await $api.get('/patient/availabilities/search', body);

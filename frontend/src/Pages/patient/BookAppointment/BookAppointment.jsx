@@ -18,7 +18,6 @@ const BookAppointment = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // Загрузка доступных слотов при изменении даты
     useEffect(() => {
         if (doctor) {
             const fetchSlots = async () => {
@@ -28,8 +27,6 @@ const BookAppointment = () => {
                     const response = await availableScheduleApi.searchSlots(doctor.id, selectedDate);
                     const allSlots = response.data || [];
 
-                    // ФИЛЬТРАЦИЯ: Оставляем только те слоты, дата которых (YYYY-MM-DD) совпадает с выбранной
-                    // СОРТИРОВКА: Выстраиваем время по порядку
                     const validSlots = allSlots
                         .filter(slot => slot.availableTime.startsWith(selectedDate))
                         .sort((a, b) => new Date(a.availableTime) - new Date(b.availableTime));
@@ -55,7 +52,6 @@ const BookAppointment = () => {
                 appointmentTime: selectedTime,
                 patientSymptoms: symptoms
             };
-            // Создание визита: POST /api/v1/patient/me/visits/create
             await visitApi.createVisit(payload);
             setIsSuccess(true);
         } catch (error) {

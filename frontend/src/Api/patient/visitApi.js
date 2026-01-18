@@ -13,7 +13,6 @@ $api.interceptors.request.use((config) => {
 });
 
 export const visitApi = {
-    // POST /api/v1/patient/me/visits/create
     createVisit: async (payload) => {
         const response = await $api.post('/patient/me/visits/create', payload);
         return response.data;

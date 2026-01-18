@@ -20,19 +20,16 @@ const ManageSchedule = () => {
         '17:00', '17:30', '18:00'
     ];
 
-    // Добавить временной слот
     const addTimeSlot = (time) => {
         if (!timeSlots.includes(time)) {
             setTimeSlots([...timeSlots, time].sort());
         }
     };
 
-    // Удалить временной слот
     const removeTimeSlot = (time) => {
         setTimeSlots(timeSlots.filter(slot => slot !== time));
     };
 
-    // Выбрать время для массового добавления
     const handleTimeSelect = (time) => {
         if (selectedTimeSlots.includes(time)) {
             setSelectedTimeSlots(selectedTimeSlots.filter(t => t !== time));
@@ -41,17 +38,14 @@ const ManageSchedule = () => {
         }
     };
 
-    // Добавить выбранные времена
     const addSelectedTimes = () => {
         const newSlots = [...new Set([...timeSlots, ...selectedTimeSlots])].sort();
         setTimeSlots(newSlots);
         setSelectedTimeSlots([]);
     };
 
-    // Сохранить расписание
     const saveSchedule = async () => {
         const doctorId = localStorage.getItem('userId');
-        // const doctorId = '2ca03f0a-fb14-47d6-b8e0-180c9d9ab2f3'
         if (!doctorId) {
             alert("Ошибка: ID врача не найден. Попробуйте перелогиниться.");
             return;
@@ -79,7 +73,6 @@ const ManageSchedule = () => {
         }
     };
 
-    // Форматирование даты
     const formatDate = (date) => {
         return date.toLocaleDateString('en-US', {
             weekday: 'long',
@@ -89,12 +82,10 @@ const ManageSchedule = () => {
         });
     };
 
-    // Получить дату в формате YYYY-MM-DD для input type="date"
     const getDateString = (date) => {
         return date.toISOString().split('T')[0];
     };
 
-    // Создать массив дней недели
     const getWeekDays = () => {
         const today = new Date();
         const days = [];
@@ -116,16 +107,13 @@ const ManageSchedule = () => {
             <MyProfileBtn></MyProfileBtn>
             
             <div >
-                {/* Заголовок */}
                 <h1 className={styles.pageTitle}>Manage Schedule</h1>
                 <p className={styles.pageSubtitle}>Set your available time slots for appointments</p>
                 
                 <div className={styles.content}>
-                    {/* Левая часть - Календарь */}
                     <div className={styles.calendarSection}>
                         <h2 className={styles.sectionTitle}>Select Date</h2>
                         
-                        {/* Простой выбор даты */}
                         <div className={styles.dateInputContainer}>
                             <label className={styles.dateLabel}>Choose a date:</label>
                             <input
@@ -140,7 +128,6 @@ const ManageSchedule = () => {
                             />
                         </div>
                         
-                        {/* Быстрые даты на неделю вперед */}
                         <div className={styles.quickDates}>
                             <h3 className={styles.subtitle}>Quick Dates</h3>
                             <div className={styles.daysGrid}>
@@ -166,18 +153,15 @@ const ManageSchedule = () => {
                             </div>
                         </div>
                         
-                        {/* Выбранная дата */}
                         <div className={styles.selectedDate}>
                             <span className={styles.dateLabel}>Selected Date:</span>
                             <span className={styles.dateValue}>{formatDate(selectedDate)}</span>
                         </div>
                     </div>
 
-                    {/* Правая часть - Выбор времени */}
                     <div className={styles.timeSection}>
                         <h2 className={styles.sectionTitle}>Available Time Slots</h2>
                         
-                        {/* Быстрый выбор времени */}
                         <div className={styles.quickSelection}>
                             <h3 className={styles.subtitle}>Quick Selection</h3>
                             <div className={styles.timeGrid}>
@@ -203,7 +187,6 @@ const ManageSchedule = () => {
                             </button>
                         </div>
 
-                        {/* Добавление конкретного времени */}
                         <div className={styles.customTime}>
                             <h3 className={styles.subtitle}>Add Custom Time</h3>
                             <div className={styles.customInput}>
@@ -224,7 +207,6 @@ const ManageSchedule = () => {
                             </div>
                         </div>
 
-                        {/* Список выбранных слотов */}
                         <div className={styles.selectedSlots}>
                             <h3 className={styles.subtitle}>
                                 Selected Slots for {selectedDate.toLocaleDateString()}
@@ -250,7 +232,6 @@ const ManageSchedule = () => {
                             )}
                         </div>
 
-                        {/* Кнопка сохранения */}
                         <button 
                         type='submit'
                             className={styles.saveBtn}

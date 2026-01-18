@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = '/assistant'; // CRA proxy
+const BASE_URL = '/assistant';
 const $api = axios.create({ baseURL: BASE_URL });
 
 export const aiApi = {

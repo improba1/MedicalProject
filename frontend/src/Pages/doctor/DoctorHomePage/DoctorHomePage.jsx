@@ -17,11 +17,6 @@ const MyProfile = () => {
                  <Heart></Heart>
                  <span className={styles.welcomeback}>Welcome back, <span className={styles.dr}>{localStorage.userName}!</span></span>
                  <span className={styles.txt}>Your dashboard is centralized for optimal workflow. Review your daily schedule, access patient histories, and complete visit reports.</span>
-                 {/* <div className={styles.newraportbtnbackground}>
-                    <Link to="/new-raport">
-                        <button className={styles.newraportbtn}>New raport</button>
-                    </Link>
-                 </div> */}
                  <div className={styles.buttonsbackgound}>
                     <Link to="/manage-schedule">
                         <button className={styles.button1}>Manage schedule</button>

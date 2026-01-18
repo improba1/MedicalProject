@@ -4,7 +4,6 @@ const $api = axios.create({
     baseURL: '/api/v1'
 });
 
-// Добавляем токен к каждому запросу
 $api.interceptors.request.use((config) => {
     const token = localStorage.getItem('access_token');
     if (token) {
@@ -17,12 +16,10 @@ export const doctorVisitApi = {
     getUpcomingVisits: async () => {
         const today = new Date();
         const nextYear = new Date();
-        nextYear.setFullYear(today.getFullYear() + 1); // Берем запас на 1 год вперед
+        nextYear.setFullYear(today.getFullYear() + 1); 
 
         const body = {
-            // Фильтруем только запланированные (активные)
             status: 'SCHEDULED', 
-            // Обязательные поля для поиска по времени
             start: today.toISOString(),
             end: nextYear.toISOString() 
         };
@@ -32,7 +29,6 @@ export const doctorVisitApi = {
     },
 
     getPatientById: async (patientId) => {
-        // Запрос: /api/v1/doctor/patients/get/{patientId}
         const response = await $api.get(`/doctor/patients/get/${patientId}`);
         return response.data; 
     }
