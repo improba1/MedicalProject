@@ -52,7 +52,7 @@ public class ImageServiceImpl implements ImageService {
             image.setDoctor(doctor);
 
             Image saved = imageRepository.save(image);
-            saved.setDownloadUrl("/api/v1/images/download/" + saved.getId());
+            saved.setDownloadUrl("/api/v1/images/public/download/" + saved.getId());
             saved = imageRepository.save(saved);
 
             doctor.setImage(saved);
@@ -120,7 +120,7 @@ public class ImageServiceImpl implements ImageService {
             image.setDoctor(doctor);
 
             Image saved = imageRepository.save(image);
-            saved.setDownloadUrl("/api/v1/images/download/" + saved.getId());
+            saved.setDownloadUrl("/api/v1/images/public/download/" + saved.getId());
             saved = imageRepository.save(saved);
 
             doctor.setImage(saved);
