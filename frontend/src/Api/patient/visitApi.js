@@ -13,13 +13,9 @@ $api.interceptors.request.use((config) => {
 });
 
 export const visitApi = {
-    /**
-     * Создание визита пациентом
-     * Эндпоинт: POST /patient/me/visits/create
-     * Body: { doctorId, appointmentTime, patientSymptoms }
-     */
+    // POST /api/v1/patient/me/visits/create
     createVisit: async (payload) => {
         const response = await $api.post('/patient/me/visits/create', payload);
-        return response.data; // Результат: визит создан, кошелек открыт
+        return response.data;
     }
 };

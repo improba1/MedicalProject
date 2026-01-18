@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './BookAppointment.module.css';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
-import HeaderWithProfile from '../../../Components/HeaderWithProfile/HeaderWithProfile';
+import HeaderWithProfile from '../../../Components/HeaderWithoutProfile/HeaderWithoutProfile';
 import { availableScheduleApi } from '../../../Api/patient/AvailableScheduleApi';
 import { visitApi } from '../../../Api/patient/visitApi';
 
