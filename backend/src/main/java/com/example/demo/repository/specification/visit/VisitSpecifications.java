@@ -38,10 +38,11 @@ public class VisitSpecifications {
         };
     }
 
-    public static Specification<Visit> orderByCreatedDesc() {
+    public static Specification<Visit> orderByAppointmentTimeDesc() {
         return (root, query, cb) -> {
-            assert query != null;
-            query.orderBy(cb.desc(root.get("createdAt")));
+            if (query != null) {
+                query.orderBy(cb.desc(root.get("appointmentTime")));
+            }
             return cb.conjunction();
         };
     }
