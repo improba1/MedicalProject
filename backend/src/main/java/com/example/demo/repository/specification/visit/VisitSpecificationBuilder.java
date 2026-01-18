@@ -21,7 +21,7 @@ public class VisitSpecificationBuilder {
                 VisitSpecifications.hasPatient(patientId),
                 VisitSpecifications.hasStatus(status),
                 VisitSpecifications.createdBetween(start, end),
-                VisitSpecifications.orderByCreatedDesc()
+                VisitSpecifications.orderByAppointmentTimeDesc()
         );
     }
 }
