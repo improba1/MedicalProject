@@ -14,7 +14,7 @@ $api.interceptors.request.use((config) => {
 
 export const profileApi = {
     getPatientProfile: async () => {
-        const response = await $api.get('/patient/me/profile'); 
+        const response = await $api.get('/patient/me/profile/get'); 
         return response.data;
     },
 

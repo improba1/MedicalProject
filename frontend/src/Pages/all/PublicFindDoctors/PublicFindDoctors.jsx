@@ -32,7 +32,7 @@ const Home = () => {
             <nav className={styles.navbar}>
                 <div className={styles.authButtons}>
                     <Link to="/login" className={styles.loginLink}>Log In</Link>
-                    <Link to="/register">
+                    <Link to="/signUpForm">
                         <button className={styles.signupBtn}>Sign Up</button>
                     </Link>
                 </div>
@@ -90,8 +90,25 @@ const DoctorCard = ({ doctor }) => {
     const navigate = useNavigate();
     const imageUrl = doctor.image?.downloadUrl;
 
+    const checkIsLoggedIn = () => {
+        return !!localStorage.getItem('acces_token'); 
+    };
+
+    const handleBookClick = (e) => {
+        e.stopPropagation();
+
+        if (!checkIsLoggedIn()) {
+            navigate('/signUpForm');
+        } else {
+            console.log("User is logged in, proceed to booking");
+        }
+    };
+
     return (
-        <div className={styles.card} onClick={() => navigate('/doctor-profile-public', { state: { doctorData: doctor } })}>
+        <div 
+            className={styles.card} 
+            onClick={() => navigate('/doctor-profile-public', { state: { doctorData: doctor } })}
+        >
             <div className={styles.imageWrapper}>
                 {imageUrl ? (
                     <img src={imageUrl} alt="Doc" className={styles.docImage} />
@@ -113,7 +130,9 @@ const DoctorCard = ({ doctor }) => {
                     <span className={styles.tag}>{doctor.experienceYears} Years Exp.</span>
                 </div>
 
-                <button className={styles.bookBtn}>Book Appointment</button>
+                <button className={styles.bookBtn} onClick={handleBookClick}>
+                    Book Appointment
+                </button>
                 
             </div>
         </div>
