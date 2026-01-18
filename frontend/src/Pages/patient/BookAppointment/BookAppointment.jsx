@@ -23,11 +23,21 @@ const BookAppointment = () => {
         if (doctor) {
             const fetchSlots = async () => {
                 setLoading(true);
+                setSelectedTime(null); 
                 try {
                     const response = await availableScheduleApi.searchSlots(doctor.id, selectedDate);
-                    setSlots(response.data || []);
+                    const allSlots = response.data || [];
+
+                    // ФИЛЬТРАЦИЯ: Оставляем только те слоты, дата которых (YYYY-MM-DD) совпадает с выбранной
+                    // СОРТИРОВКА: Выстраиваем время по порядку
+                    const validSlots = allSlots
+                        .filter(slot => slot.availableTime.startsWith(selectedDate))
+                        .sort((a, b) => new Date(a.availableTime) - new Date(b.availableTime));
+
+                    setSlots(validSlots);
                 } catch (error) {
                     console.error("Error fetching slots", error);
+                    setSlots([]); 
                 } finally {
                     setLoading(false);
                 }
@@ -61,7 +71,7 @@ const BookAppointment = () => {
                         <div className={styles.successIcon}>✓</div>
                         <h1>Congratulations!</h1>
                         <p>Your appointment with <strong>Dr. {doctor.lastname}</strong> has been successfully booked.</p>
-                        <button className={styles.homeBtn} onClick={() => navigate('/patient-home')}>
+                        <button className={styles.homeBtn} onClick={() => navigate('/patient')}>
                             Back to Home
                         </button>
                     </div>
@@ -105,11 +115,11 @@ const BookAppointment = () => {
                                 {loading ? <p>Loading slots...</p> : 
                                  slots.length > 0 ? slots.map((slot, index) => (
                                     <button 
-                                        key={index}
+                                        key={slot.id}
                                         className={`${styles.slotBtn} ${selectedTime === slot.appointmentTime ? styles.activeSlot : ''}`}
-                                        onClick={() => setSelectedTime(slot.appointmentTime)}
+                                        onClick={() => setSelectedTime(slot.availableTime)}
                                     >
-                                        {new Date(slot.appointmentTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                        {new Date(slot.availableTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                     </button>
                                 )) : <p className={styles.noSlots}>No slots available for this date.</p>}
                             </div>

@@ -19,12 +19,14 @@ export const availableScheduleApi = {
      */
     searchSlots: async (doctorId, date) => {
         // Формируем параметры как в Swagger
-        const from = `${date}T00:00:00Z`;
-        const to = `${date}T23:59:59Z`;
+        const body = {
+            doctorId: doctorId,
+            from: `${date}T00:00:00Z`,
+            to: `${date}T23:59:59Z`,
+            active: true // Добавили обязательное поле из swagger
+        };
         
-        const response = await $api.get('/patient/availabilities/search', {
-            params: { doctorId, from, to }
-        });
+        const response = await $api.get('/patient/availabilities/search', body);
         return response.data;
     }
 };

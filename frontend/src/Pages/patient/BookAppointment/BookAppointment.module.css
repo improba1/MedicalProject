@@ -84,20 +84,27 @@
 .slotBtn {
     padding: 12px;
     background: #2c2c2e;
-    border: 1px solid #444;
+    border: 2px solid #444; /* Сделал рамку чуть толще */
     border-radius: 12px;
-    color: white;
+    color: #e0e0e0;
     cursor: pointer;
-    transition: all 0.2s;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out; /* Плавная анимация */
 }
 
 .slotBtn:hover {
     border-color: #F5782D;
+    background: #3a3a3c;
+    transform: translateY(-2px); /* Легкое поднятие при наведении */
 }
 
 .activeSlot {
-    background: #F5782D;
-    border-color: #F5782D;
+    background-color: #F5782D !important;
+    border-color: #F5782D !important;
+    color: white !important;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(245, 120, 45, 0.4); /* Красивое свечение */
+    transform: scale(1.05); /* Немного увеличиваем */
 }
 
 .confirmBtn {
