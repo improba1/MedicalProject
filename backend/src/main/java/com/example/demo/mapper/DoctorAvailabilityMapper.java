@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.request.doctor_availability.AddAvailabilityRequest;
-import com.example.demo.dto.request.doctor_availability.UpdateAvailabilityRequest;
+import com.example.demo.dto.request.doctor_availability.DoctorAvailabilityCreateRequest;
+import com.example.demo.dto.request.doctor_availability.DoctorAvailabilityUpdateRequest;
 import com.example.demo.dto.response.DoctorAvailabilityResponse;
 import com.example.demo.model.DoctorAvailability;
 import org.springframework.stereotype.Component;
@@ -12,14 +12,14 @@ import java.util.UUID;
 @Component
 public class DoctorAvailabilityMapper {
 
-    public DoctorAvailability toEntity(AddAvailabilityRequest request) {
+    public DoctorAvailability toEntity(DoctorAvailabilityCreateRequest request) {
         DoctorAvailability availability = new DoctorAvailability();
         availability.setAvailableTime(request.getAvailableTime());
         availability.setActive(true);
         return availability;
     }
 
-    public DoctorAvailability toUpdateEntity(UUID availabilityId, UpdateAvailabilityRequest request) {
+    public DoctorAvailability toUpdateEntity(UUID availabilityId, DoctorAvailabilityUpdateRequest request) {
         DoctorAvailability availability = new DoctorAvailability();
         availability.setId(availabilityId);
 

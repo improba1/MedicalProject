@@ -47,6 +47,7 @@ public class MedicalServiceSpecificationBuilder {
             BigDecimal maxPrice
     ) {
         return Specification.allOf(
+                MedicalServiceSpecifications.hasDoctor(doctorId),
                 MedicalServiceSpecifications.hasNameLike(name),
                 MedicalServiceSpecifications.priceBetween(minPrice, maxPrice),
                 MedicalServiceSpecifications.onlyActive(),

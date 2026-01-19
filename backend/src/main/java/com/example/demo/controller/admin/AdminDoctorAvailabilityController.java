@@ -1,8 +1,8 @@
 package com.example.demo.controller.admin;
 
-import com.example.demo.dto.request.doctor_availability.AddAvailabilityRequest;
+import com.example.demo.dto.request.doctor_availability.DoctorAvailabilityCreateRequest;
 import com.example.demo.dto.request.doctor_availability.DoctorAvailabilitySearchRequest;
-import com.example.demo.dto.request.doctor_availability.UpdateAvailabilityRequest;
+import com.example.demo.dto.request.doctor_availability.DoctorAvailabilityUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.DoctorAvailabilityResponse;
 import com.example.demo.mapper.DoctorAvailabilityMapper;
@@ -46,7 +46,7 @@ public class AdminDoctorAvailabilityController {
     @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> createForDoctor(
             @PathVariable UUID doctorId,
-            @Valid @RequestBody AddAvailabilityRequest request) {
+            @Valid @RequestBody DoctorAvailabilityCreateRequest request) {
 
         DoctorAvailability entity = mapper.toEntity(request);
         DoctorAvailability saved = availabilityService.createForDoctor(doctorId, entity);
@@ -63,7 +63,7 @@ public class AdminDoctorAvailabilityController {
     public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> updateForDoctor(
             @PathVariable UUID doctorId,
             @PathVariable UUID availabilityId,
-            @Valid @RequestBody UpdateAvailabilityRequest request) {
+            @Valid @RequestBody DoctorAvailabilityUpdateRequest request) {
 
         DoctorAvailability updateEntity = mapper.toUpdateEntity(availabilityId, request);
         DoctorAvailability updated = availabilityService.updateForDoctor(doctorId, updateEntity);

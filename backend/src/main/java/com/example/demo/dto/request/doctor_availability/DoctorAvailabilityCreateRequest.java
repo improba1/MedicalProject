@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class AddAvailabilityRequest {
+public class DoctorAvailabilityCreateRequest {
 
     @NotNull
     @Future(message = "Availability must be in the future")
