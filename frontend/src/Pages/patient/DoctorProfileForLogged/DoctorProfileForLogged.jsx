@@ -13,20 +13,24 @@ const DoctorProfileForLogged = () => {
 
     const [services, setServices] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    
+    // Состояние для сворачивания/разворачивания (false = свернуто изначально)
+    const [isServicesExpanded, setIsServicesExpanded] = useState(false);
 
     // Загрузка услуг
     useEffect(() => {
         if (doctorData?.id) {
             const loadServices = async () => {
                 try {
-                    // Используем пустую строку для загрузки всех услуг изначально
                     const response = await patientMedicalServiceApi.search(doctorData.id, searchQuery);
-                    setServices(response.data || []);
+                    // Проверка структуры данных (фикс из прошлого ответа)
+                    const servicesArray = Array.isArray(response.data) ? response.data : (response.data?.data || []); 
+                    setServices(servicesArray);
                 } catch (error) {
                     console.error("Failed to load services", error);
                 }
             };
-            // Добавляем debounce (задержку), чтобы не спамить запросами при вводе
+            
             const delayDebounceFn = setTimeout(() => {
                 loadServices();
             }, 500);
@@ -99,34 +103,57 @@ const DoctorProfileForLogged = () => {
 
                             <div className={styles.divider} />
                             
-                            <SectionTitle title="Medical Services" />
-                            
-                            {/* Поиск */}
-                            <input 
-                                type="text"
-                                className={styles.serviceSearchInput}
-                                placeholder="Search services..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-
-                            <div className={styles.servicesGrid}>
-                                {services.length > 0 ? (
-                                    services.map(service => (
-                                        <div key={service.id} className={styles.serviceCard}>
-                                            <div className={styles.serviceInfo}>
-                                                <h4>{service.name}</h4>
-                                                <p>{service.description}</p>
-                                                <span className={styles.servicePrice}>${service.price}</span>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div style={{color: '#888', textAlign: 'center', padding: '20px'}}>
-                                        No services found.
-                                    </div>
-                                )}
+                            {/* --- COLLAPSIBLE MEDICAL SERVICES --- */}
+                            <div 
+                                onClick={() => setIsServicesExpanded(!isServicesExpanded)}
+                                style={{
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center', 
+                                    cursor: 'pointer',
+                                    marginBottom: '10px'
+                                }}
+                            >
+                                <SectionTitle title="Medical Services" />
+                                {/* Стрелочка меняется в зависимости от состояния */}
+                                <div style={{ transform: isServicesExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b4cc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
                             </div>
+                            
+                            {/* Показываем контент только если isServicesExpanded === true */}
+                            {isServicesExpanded && (
+                                <div style={{animation: 'fadeIn 0.3s ease-in-out'}}>
+                                    <input 
+                                        type="text"
+                                        className={styles.serviceSearchInput}
+                                        placeholder="Search services..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onClick={(e) => e.stopPropagation()} // Чтобы клик по инпуту не сворачивал список
+                                    />
+
+                                    <div className={styles.servicesGrid}>
+                                        {services.length > 0 ? (
+                                            services.map(service => (
+                                                <div key={service.id} className={styles.serviceCard}>
+                                                    <div className={styles.serviceInfo}>
+                                                        <h4>{service.name}</h4>
+                                                        <p>{service.description}</p>
+                                                        <span className={styles.servicePrice}>${service.price}</span>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div style={{color: '#888', textAlign: 'center', padding: '20px'}}>
+                                                No services found.
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className={styles.divider} />
                             
@@ -153,7 +180,7 @@ const DoctorProfileForLogged = () => {
 };
 
 const SectionTitle = ({ title }) => (
-    <h3 className={styles.sectionTitle}>{title}</h3>
+    <h3 className={styles.sectionTitle} style={{margin: 0}}>{title}</h3>
 );
 
 const InfoRow = ({ label, value }) => (

@@ -62,14 +62,30 @@ const AddDoctor = () => {
         
         const formData = new FormData();
         const doctorData = {
-            email, nickname, phone, password, firstname, lastname,
-            birthDate: birthDate || null, sex, address, 
+            email, 
+            nickname, 
+            phone, 
+            password, 
+            firstname, 
+            lastname,
+            birthDate: birthDate || null, 
+            sex, 
+            address, 
             specialization, // Теперь это строка из ENUM
-            qualification, startDate: startDate || null, rating: Number(rating)
+            qualification, 
+            startDate: startDate || null, 
+            rating: Number(rating)
         };
 
+        // Log data to console to verify it's not empty before sending
+        console.log("Sending doctor data:", doctorData);
+
+        // Append JSON data as a Blob with application/json type
         formData.append("doctor", new Blob([JSON.stringify(doctorData)], { type: 'application/json' }));
-        if (imageFile) formData.append("image", imageFile);
+        
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
         
         try {
             const response = await addDoctorApi.createDoctor(formData);
@@ -77,8 +93,16 @@ const AddDoctor = () => {
                 navigate('/admin'); 
             }
         } catch (err) {
-            const message = err.response?.data?.message || "Server error.";
-            setErrorMsg(message);
+            console.error("API Error:", err);
+            // Display specific error message from backend if available
+            const message = err.response?.data?.message || "Server error. Check console for details.";
+            // Optionally, list specific validation errors
+            if (err.response?.data?.errors) {
+                 const validationErrors = err.response.data.errors.map(e => `${e.field}: ${e.message}`).join(', ');
+                 setErrorMsg(`${message} (${validationErrors})`);
+            } else {
+                 setErrorMsg(message);
+            }
         } finally {
             setLoading(false);
         }
