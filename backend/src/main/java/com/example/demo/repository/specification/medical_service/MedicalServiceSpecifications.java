@@ -28,7 +28,7 @@ public class MedicalServiceSpecifications {
     }
 
     public static Specification<MedicalService> onlyActive() {
-        return (root, query, cb) -> cb.isTrue(root.get("isActive"));
+        return (root, query, cb) -> cb.isTrue(root.get("active"));
     }
 
     public static Specification<MedicalService> priceBetween(BigDecimal min, BigDecimal max) {
