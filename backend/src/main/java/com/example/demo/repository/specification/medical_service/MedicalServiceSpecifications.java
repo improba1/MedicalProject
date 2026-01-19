@@ -24,7 +24,7 @@ public class MedicalServiceSpecifications {
     public static Specification<MedicalService> isActive(Boolean active) {
         return (root, query, cb) ->
                 active == null ? cb.conjunction()
-                        : cb.equal(root.get("isActive"), active);
+                        : cb.equal(root.get("active"), active);
     }
 
     public static Specification<MedicalService> onlyActive() {

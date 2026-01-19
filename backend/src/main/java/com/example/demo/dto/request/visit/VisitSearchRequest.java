@@ -8,7 +8,6 @@ import java.util.UUID;
 
 @Data
 public class VisitSearchRequest {
-
     private UUID doctorId;
     private UUID patientId;
     private VisitStatus status;
