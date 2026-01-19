@@ -4,7 +4,6 @@ import com.example.demo.enums.Role;
 import com.example.demo.enums.VisitStatus;
 import com.example.demo.model.*;
 import com.example.demo.repository.DoctorRepository;
-import com.example.demo.repository.RaportRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VisitRepository;
 import com.example.demo.repository.specification.visit.VisitSpecificationBuilder;
@@ -35,7 +34,6 @@ public class VisitServiceImpl implements VisitService {
     private final VisitStatusService visitStatusService;
     private final CurrentUserService currentUserService;
     private final VisitServiceItemService visitServiceItemService;
-    private final RaportRepository  raportRepository;
 
     private Visit getVisit(UUID id) {
         return visitRepository.findById(id)
@@ -44,21 +42,24 @@ public class VisitServiceImpl implements VisitService {
 
     private void assertDoctorOwnsVisit(Visit visit) {
         if (!visit.getDoctor().getId().equals(currentUserService.getDoctorId())) {
-            throw new EntityNotFoundException("Visit not found for this doctor");
+            throw new AccessDeniedException("You can access only your own visits");
         }
     }
 
     private Visit getVisitAndAssertDoctor(UUID visitId) {
         UUID doctorId = currentUserService.getDoctorId();
+
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
+
         if (!visit.getDoctor().getId().equals(doctorId)) {
             throw new AccessDeniedException("You can access only your own visits");
         }
-        if (visit.getStatus() != VisitStatus.PAID &&
-                visit.getStatus() != VisitStatus.COMPLETED) {
-            throw new IllegalStateException("Visit must be paid before processing");
+
+        if (visit.getStatus() != VisitStatus.PAID) {
+            throw new IllegalStateException("Visit must be paid");
         }
+
         return visit;
     }
 
@@ -200,14 +201,22 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Visit> searchForPatient(UUID doctorId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
         UUID patientId = currentUserService.getAuthenticatedPatient().getId();
-        if (doctorId != null && !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
+
+        if (doctorId != null &&
+                !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
             throw new AccessDeniedException("You have no visits with this doctor");
         }
+
         return visitRepository.findAll(
                 VisitSpecificationBuilder.build(
-                        patientId, doctorId, status, start, end
+                        patientId,
+                        doctorId,
+                        status,
+                        start,
+                        end
                 )
         );
     }
@@ -231,49 +240,54 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Visit> searchForDoctor(UUID patientId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
         UUID doctorId = currentUserService.getAuthenticatedDoctor().getId();
-        if (patientId != null && !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
+
+        if (patientId != null &&
+                !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
             throw new AccessDeniedException("You have no visits with this patient");
         }
-
+        if (patientId == null && status == null && start == null && end == null) {
+            return visitRepository.findAllWithServicesByDoctorId(doctorId);
+        }
         return visitRepository.findAll(
                 VisitSpecificationBuilder.build(
-                        doctorId, patientId, status, start, end
+                        doctorId,
+                        patientId,
+                        status,
+                        start,
+                        end
                 )
         );
     }
 
     @Override
+    @Transactional
     public Raport updateRaport(UUID visitId, Raport raportUpdate) {
         Visit visit = getVisitAndAssertDoctor(visitId);
 
         Raport raport = visit.getRaport();
         if (raport == null) {
-            raport = Raport.builder()
-                    .visit(visit)
-                    .doctor(visit.getDoctor())
-                    .patient(visit.getPatient())
-                    .createdAt(LocalDateTime.now())
-                    .build();
+            throw new IllegalStateException("Raport not initialized. Lock cart first.");
         }
 
-        if (raportUpdate.getDisease() != null)
+        if (raportUpdate.getDisease() != null) {
             raport.setDisease(raportUpdate.getDisease());
-        if (raportUpdate.getTreatmentPlan() != null)
+        }
+        if (raportUpdate.getTreatmentPlan() != null) {
             raport.setTreatmentPlan(raportUpdate.getTreatmentPlan());
-        if (raportUpdate.getDoctorNotes() != null)
+        }
+        if (raportUpdate.getDoctorNotes() != null) {
             raport.setDoctorNotes(raportUpdate.getDoctorNotes());
+        }
 
-        raportRepository.save(raport);
-
-        visit.setRaport(raport);
         visitRepository.save(visit);
-
         return raport;
     }
 
     @Override
+    @Transactional
     public Visit completeVisit(UUID visitId) {
         Visit visit = getVisitAndAssertDoctor(visitId);
         visitStatusService.complete(visit, Role.DOCTOR);
@@ -311,10 +325,15 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Visit> searchForAdmin(UUID doctorId, UUID patientId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
         return visitRepository.findAll(
                 VisitSpecificationBuilder.build(
-                        doctorId, patientId, status, start, end
+                        doctorId,
+                        patientId,
+                        status,
+                        start,
+                        end
                 )
         );
     }
@@ -376,14 +395,18 @@ public class VisitServiceImpl implements VisitService {
     @Transactional
     public void lockCart(UUID visitId) {
         Visit visit = getVisit(visitId);
+
         if (visit.isCartLocked()) {
             return;
         }
+
         List<VisitServiceItem> services = visit.getServices();
         if (services == null || services.isEmpty()) {
             throw new IllegalStateException("Cannot lock empty cart");
         }
+
         visit.setCartLocked(true);
+
         Raport raport = Raport.builder()
                 .visit(visit)
                 .doctor(visit.getDoctor())
