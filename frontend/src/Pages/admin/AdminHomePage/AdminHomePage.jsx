@@ -27,7 +27,7 @@ const AdminHomePage = () => {
                         </Link>
 
                         <Link to="/admin/remove-doctor" className={styles.removeBtn}>
-                            Remove doctor
+                            Manage doctors
                         </Link>
                     </div>
                 </main>

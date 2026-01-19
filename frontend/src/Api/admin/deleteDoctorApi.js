@@ -16,5 +16,17 @@ export const deleteDoctorApi = {
     hardDeleteDoctor: async (id) => {
         const response = await $api.delete(`/admin/doctors/hard-delete/${id}`);
         return response.data;
+    },
+    getDoctorById: async (id) => {
+        const response = await $api.get(`/admin/doctors/get/${id}`);
+        return response.data;
+    },
+
+    // Обновление
+    updateDoctor: async (id, formData) => {
+        // PUT multipart/form-data
+        // Axios сам поставит хедеры
+        const response = await $api.put(`/admin/doctors/update/${id}`, formData);
+        return response.data;
     }
 };

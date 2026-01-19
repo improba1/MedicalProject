@@ -31,5 +31,11 @@ export const doctorVisitApi = {
     getPatientById: async (patientId) => {
         const response = await $api.get(`/doctor/patients/get/${patientId}`);
         return response.data; 
+    },
+
+    getVisitById: async (visitId) => {
+        // GET /api/v1/doctor/me/visits/get/{visitId}
+        const response = await $api.get(`/doctor/me/visits/get/${visitId}`);
+        return response.data;
     }
 };

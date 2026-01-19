@@ -1,34 +1,49 @@
 .pageContainer {
     width: 100%;
-    min-height: 100vh;
+    height: 100vh; /* Фиксируем высоту на весь экран */
     background-color: black;
     display: flex;
     flex-direction: column;
     position: relative;
     font-family: sans-serif;
+    overflow: hidden; /* Запрещаем скролл всей страницы */
 }
 
 .mainContent {
-    flex: 1;
+    flex: 1; /* Занимает все доступное место под хедером */
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 70px;
+    padding: 20px 70px 50px 70px; /* Отступы */
     width: 100%;
     box-sizing: border-box;
+    overflow-y: auto; /* Скроллится ТОЛЬКО контент */
+    
+    /* Стилизация скроллбара */
+    scrollbar-width: thin;
+    scrollbar-color: #444 transparent;
+}
+
+.mainContent::-webkit-scrollbar {
+    width: 8px;
+}
+.mainContent::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 4px;
 }
 
 .title {
     color: white;
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 600;
     margin-bottom: 30px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .formWrapper {
     width: 100%;
-    max-width: 1000px;
+    max-width: 1100px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -38,7 +53,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-    gap: 40px;
+    gap: 60px; /* Увеличил отступ между колонками */
     margin-bottom: 40px;
 }
 
@@ -46,7 +61,34 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 25px; /* Увеличил отступ между блоками */
+}
+
+/* Группировка полей */
+.sectionTitle {
+    color: #F5782D;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.label {
+    color: #bbb;
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 15px; /* Выравнивание по началу текста в инпуте */
 }
 
 .input {
@@ -59,187 +101,97 @@
     font-size: 16px;
     outline: none;
     box-sizing: border-box;
-    transition: border-color 0.2s;
-}
-
-select.input {
-    cursor: pointer;
-    appearance: none;
-}
-
-.input::placeholder {
-    color: #888;
+    transition: all 0.2s;
 }
 
 .input:focus {
     border-color: #F5782D;
-}
-
-.input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    cursor: pointer;
-}
-
-.createBtn {
-    width: 100%;
-    max-width: 350px;
-    padding: 18px 0;
-    background-color: #F5782D; 
-    color: white;
-    font-size: 20px;
-    font-weight: 600;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-    box-shadow: 0 4px 15px rgba(245, 120, 45, 0.3);
-    margin-bottom: 40px;
-}
-
-.createBtn:hover {
-    opacity: 0.9;
-}
-
-.createBtn:active {
-    transform: scale(0.98);
-}
-
-.inputGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-}
-
-.label {
-    color: #888;
-    font-size: 14px;
-    padding-left: 20px;
-    margin-bottom: -10px;
-}
-
-.input[type="date"] {
-    position: relative;
-}
-
-.errorMessage {
-    color: #ff4d4d;
-    margin-bottom: 20px;
-    font-size: 14px;
-    text-align: center;
-}
-
-
-.fileUploadContainer {
-    width: 100%;
-    position: relative;
-}
-
-.hiddenFileInput {
-    display: none; /* Полностью скрываем стандартный инпут */
-}
-
-.fileUploadBtn {
-    display: block;
-    width: 100%;
-    padding: 15px 25px;
-    border-radius: 50px;
-    background-color: #222224;
-    border: 1px dashed #444; /* Пунктирная рамка подчеркивает, что это зона загрузки */
-    color: #888;
-    font-size: 16px;
-    text-align: center;
-    cursor: pointer;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-.fileUploadBtn:hover {
-    border-color: #F5782D;
-    color: white;
     background-color: #2a2a2c;
 }
 
-/* Если фото выбрано, можно немного изменить стиль кнопки */
-.fileUploadBtn:has(+ .hiddenFileInput:valid),
-.fileUploadBtn:active {
-    border-style: solid;
-}
-
-.inputBox {
-    width: 100%;
-}
-
+/* Специфические стили */
 .selectField {
+    @extend .input; /* Если препроцессор не используется, просто скопируйте стили input */
     width: 100%;
     padding: 15px 25px;
     border-radius: 50px;
     background-color: #222224;
     border: 1px solid #444;
+    color: white;
     font-size: 16px;
     outline: none;
     box-sizing: border-box;
-    transition: border-color 0.2s;
     cursor: pointer;
-    appearance: none; /* Убирает стандартную стрелку браузера */
+    appearance: none;
 }
 
 .selectField:focus {
     border-color: #F5782D;
 }
 
-/* Стилизация опций (может не работать в некоторых браузерах на 100%, 
-   но базовый цвет текста будет соблюден) */
-.selectField option {
-    background-color: #222224;
-    color: white;
-}
-
-.selectField option[disabled] {
-    color: #888;
-}
-
-/* ... (ваши существующие стили) ... */
-
+/* File Upload */
 .fileUploadContainer {
     width: 100%;
-    position: relative;
-    cursor: pointer; /* Указываем, что вся область кликабельна */
+    margin-top: 10px;
 }
 
-.dragActive .fileUploadBtn {
-    border-color: #F5782D;
-    background-color: rgba(245, 120, 45, 0.1);
-    transform: scale(1.02);
+.hiddenFileInput {
+    display: none;
 }
 
 .fileUploadBtn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    padding: 15px 25px;
-    border-radius: 50px;
-    background-color: #222224;
-    border: 1px dashed #444;
+    padding: 20px;
+    border-radius: 20px; /* Квадратнее для фото */
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 2px dashed #444;
     color: #888;
-    font-size: 16px;
-    text-align: center;
-    box-sizing: border-box;
+    font-size: 15px;
+    cursor: pointer;
     transition: all 0.2s ease;
-    
-    /* ИЗМЕНЕНИЕ ТУТ: */
-    pointer-events: auto; /* Возвращаем возможность клика */
-    cursor: pointer;
 }
 
-/* Нужно включить события обратно для клика в контейнере, 
-   но сам label обычно пробрасывает клик на input */
-.fileUploadContainer {
-    pointer-events: auto;
-    cursor: pointer;
-}
-
-.fileUploadBtn:hover {
+.fileUploadBtn:hover, .dragActive .fileUploadBtn {
     border-color: #F5782D;
     color: white;
+    background-color: rgba(245, 120, 45, 0.1);
 }
 
+.createBtn {
+    width: 100%;
+    max-width: 400px;
+    padding: 18px 0;
+    background-color: #F5782D; 
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(245, 120, 45, 0.4);
+    margin-bottom: 20px;
+}
+
+.createBtn:hover {
+    transform: translateY(-2px);
+}
+
+.createBtn:active {
+    transform: scale(0.98);
+}
+
+.errorMessage {
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+}

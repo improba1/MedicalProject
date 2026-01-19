@@ -14,11 +14,7 @@ $api.interceptors.request.use((config) => {
 
 export const addDoctorApi = {
     createDoctor: async (formData) => {
-        const response = await $api.post('/admin/doctors/create', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        const response = await $api.post('/admin/doctors/create', formData);
         
         return response.data;
     }
