@@ -94,7 +94,7 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     public Visit getById(UUID id) {
-        return visitRepository.findById(id)
+        return visitRepository.findByIdWithServices(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Visit not found with id: " + id)
                 );
@@ -105,7 +105,7 @@ public class VisitServiceImpl implements VisitService {
     public Visit getByIdForAuthenticatedDoctor(UUID id) {
         UUID doctorId = currentUserService.getAuthenticatedDoctor().getId();
 
-        Visit visit = visitRepository.findById(id)
+        Visit visit = visitRepository.findByIdWithServices(id)
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found with id: " + id));
 
         if (!visit.getDoctor().getId().equals(doctorId)) {
@@ -120,7 +120,7 @@ public class VisitServiceImpl implements VisitService {
     public Visit getByIdForAuthenticatedPatient(UUID id) {
         UUID patientId = currentUserService.getAuthenticatedPatient().getId();
 
-        Visit visit = visitRepository.findById(id)
+        Visit visit = visitRepository.findByIdWithServices(id)
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found with id: " + id));
 
         if (!visit.getPatient().getId().equals(patientId)) {
@@ -202,27 +202,26 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Visit> searchForPatient(UUID doctorId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
+    public List<Visit> searchForPatient(
+            UUID doctorId,
+            VisitStatus status,
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
         UUID patientId = currentUserService.getAuthenticatedPatient().getId();
-
         if (doctorId != null &&
                 !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
             throw new AccessDeniedException("You have no visits with this doctor");
         }
-
-        List<Visit> visits = visitRepository.findAll(
+        return visitRepository.findAll(
                 VisitSpecificationBuilder.build(
-                        patientId,
                         doctorId,
+                        patientId,
                         status,
                         start,
                         end
                 )
         );
-
-        visits.forEach(v -> v.getServices().size());
-
-        return visits;
     }
 
     @Transactional
@@ -245,21 +244,18 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Visit> searchForDoctor(UUID patientId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
+    public List<Visit> searchForDoctor(
+            UUID patientId,
+            VisitStatus status,
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
         UUID doctorId = currentUserService.getAuthenticatedDoctor().getId();
-
         if (patientId != null &&
                 !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
             throw new AccessDeniedException("You have no visits with this patient");
         }
-
-        // Якщо немає фільтрів — просто повертаємо всі візити лікаря з services
-        if (patientId == null && status == null && start == null && end == null) {
-            return visitRepository.findAllWithServicesByDoctorId(doctorId);
-        }
-
-        // Якщо є фільтри — будуємо Specification, але fetch join треба додати окремо
-        List<Visit> visits = visitRepository.findAll(
+        return visitRepository.findAll(
                 VisitSpecificationBuilder.build(
                         doctorId,
                         patientId,
@@ -268,9 +264,6 @@ public class VisitServiceImpl implements VisitService {
                         end
                 )
         );
-        visits.forEach(v -> v.getServices().size());
-
-        return visits;
     }
 
     @Override
@@ -337,8 +330,14 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Visit> searchForAdmin(UUID doctorId, UUID patientId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
-        List<Visit> visits = visitRepository.findAll(
+    public List<Visit> searchForAdmin(
+            UUID doctorId,
+            UUID patientId,
+            VisitStatus status,
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
+        return visitRepository.findAll(
                 VisitSpecificationBuilder.build(
                         doctorId,
                         patientId,
@@ -347,10 +346,6 @@ public class VisitServiceImpl implements VisitService {
                         end
                 )
         );
-
-        visits.forEach(v -> v.getServices().size());
-
-        return visits;
     }
 
     @Transactional

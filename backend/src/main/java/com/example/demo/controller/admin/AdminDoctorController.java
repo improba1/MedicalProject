@@ -10,6 +10,7 @@ import com.example.demo.model.Doctor;
 import com.example.demo.service.doctor.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -46,17 +47,15 @@ public class AdminDoctorController {
         );
     }
 
-    @PostMapping("/create")
-    @PreAuthorize("hasAuthority('admin:create')")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<DoctorResponse>> createDoctor(
-            @Valid @RequestBody DoctorCreateRequest request) {
-
+            @Valid @ModelAttribute DoctorCreateRequest request
+    ) {
         Doctor doctor = doctorMapper.toEntity(request);
-        Doctor saved = doctorService.create(doctor);
+        Doctor saved = doctorService.create(doctor, request.getImage());
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(201, "Doctor created",
-                        doctorMapper.toResponse(saved)));
+                .body(ApiResponse.of(201, "Doctor created", doctorMapper.toResponse(saved)));
     }
 
     @PutMapping(value = "/update/{doctorId}", consumes = "multipart/form-data")

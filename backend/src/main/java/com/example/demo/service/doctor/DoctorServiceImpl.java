@@ -88,10 +88,15 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public Doctor create(Doctor doctor) {
+    public Doctor create(Doctor doctor, MultipartFile image) {
         doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
         doctor.setActive(true);
-        return doctorRepository.save(doctor);
+
+        Doctor saved = doctorRepository.save(doctor);
+
+        handleImage(saved, image);
+
+        return doctorRepository.save(saved);
     }
 
     @Override

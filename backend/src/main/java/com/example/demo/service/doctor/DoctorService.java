@@ -17,7 +17,7 @@ public interface DoctorService {
     List<Doctor> searchPublicDoctors(String name, Specialization specialization, Double rating);
 
     // ADMIN
-    Doctor create(Doctor doctor);
+    Doctor create(Doctor doctor, MultipartFile image);
     Doctor updateDoctorByAdmin(UUID doctorId, Doctor updated, MultipartFile image);
     Doctor activateDoctor(UUID id);
     Doctor deactivateDoctor(UUID id);
