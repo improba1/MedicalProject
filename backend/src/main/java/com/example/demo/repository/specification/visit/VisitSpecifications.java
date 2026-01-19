@@ -31,10 +31,10 @@ public class VisitSpecifications {
         return (root, query, cb) -> {
             if (start == null && end == null) return cb.conjunction();
             if (start != null && end != null)
-                return cb.between(root.get("createdAt"), start, end);
+                return cb.between(root.get("appointmentTime"), start, end);
             if (start != null)
-                return cb.greaterThanOrEqualTo(root.get("createdAt"), start);
-            return cb.lessThanOrEqualTo(root.get("createdAt"), end);
+                return cb.greaterThanOrEqualTo(root.get("appointmentTime"), start);
+            return cb.lessThanOrEqualTo(root.get("appointmentTime"), end);
         };
     }
 

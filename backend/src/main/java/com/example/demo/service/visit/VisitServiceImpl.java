@@ -210,7 +210,7 @@ public class VisitServiceImpl implements VisitService {
             throw new AccessDeniedException("You have no visits with this doctor");
         }
 
-        return visitRepository.findAll(
+        List<Visit> visits = visitRepository.findAll(
                 VisitSpecificationBuilder.build(
                         patientId,
                         doctorId,
@@ -219,6 +219,10 @@ public class VisitServiceImpl implements VisitService {
                         end
                 )
         );
+
+        visits.forEach(v -> v.getServices().size());
+
+        return visits;
     }
 
     @Transactional
@@ -248,10 +252,14 @@ public class VisitServiceImpl implements VisitService {
                 !visitRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
             throw new AccessDeniedException("You have no visits with this patient");
         }
+
+        // Якщо немає фільтрів — просто повертаємо всі візити лікаря з services
         if (patientId == null && status == null && start == null && end == null) {
             return visitRepository.findAllWithServicesByDoctorId(doctorId);
         }
-        return visitRepository.findAll(
+
+        // Якщо є фільтри — будуємо Specification, але fetch join треба додати окремо
+        List<Visit> visits = visitRepository.findAll(
                 VisitSpecificationBuilder.build(
                         doctorId,
                         patientId,
@@ -260,6 +268,9 @@ public class VisitServiceImpl implements VisitService {
                         end
                 )
         );
+        visits.forEach(v -> v.getServices().size());
+
+        return visits;
     }
 
     @Override
@@ -327,7 +338,7 @@ public class VisitServiceImpl implements VisitService {
     @Override
     @Transactional(readOnly = true)
     public List<Visit> searchForAdmin(UUID doctorId, UUID patientId, VisitStatus status, LocalDateTime start, LocalDateTime end) {
-        return visitRepository.findAll(
+        List<Visit> visits = visitRepository.findAll(
                 VisitSpecificationBuilder.build(
                         doctorId,
                         patientId,
@@ -336,6 +347,10 @@ public class VisitServiceImpl implements VisitService {
                         end
                 )
         );
+
+        visits.forEach(v -> v.getServices().size());
+
+        return visits;
     }
 
     @Transactional
