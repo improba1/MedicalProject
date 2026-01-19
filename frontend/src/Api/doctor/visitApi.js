@@ -19,9 +19,9 @@ export const doctorVisitApi = {
         nextYear.setFullYear(today.getFullYear() + 1); 
 
         const body = {
-            status: 'SCHEDULED', 
-            start: today.toISOString(),
-            end: nextYear.toISOString() 
+            // status: 'SCHEDULED', 
+            // start: today.toISOString(),
+            // end: nextYear.toISOString() 
         };
 
         const response = await $api.post('/doctor/me/visits/search', body);

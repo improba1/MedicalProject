@@ -1,17 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from '../../all/MyProfile/MyProfile.module.css'; 
 import Background from '../../../Components/Background/Background';
 import BackBtn from '../../../Components/BackButton/BackButton';
 import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import { patientMedicalServiceApi } from '../../../Api/patient/medicalServiceApi';
 
 const DoctorProfileForLogged = () => {
     const location = useLocation();
     const navigate = useNavigate();
-
     const doctorData = location.state?.doctorData;
 
-    // Переход сразу на экран выбора времени
+    const [services, setServices] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Загрузка услуг
+    useEffect(() => {
+        if (doctorData?.id) {
+            const loadServices = async () => {
+                try {
+                    // Используем пустую строку для загрузки всех услуг изначально
+                    const response = await patientMedicalServiceApi.search(doctorData.id, searchQuery);
+                    setServices(response.data || []);
+                } catch (error) {
+                    console.error("Failed to load services", error);
+                }
+            };
+            // Добавляем debounce (задержку), чтобы не спамить запросами при вводе
+            const delayDebounceFn = setTimeout(() => {
+                loadServices();
+            }, 500);
+
+            return () => clearTimeout(delayDebounceFn);
+        }
+    }, [doctorData, searchQuery]);
+
     const handleBookClick = () => {
         navigate('/book-appointment', { state: { doctorData: doctorData } });
     };
@@ -72,6 +95,37 @@ const DoctorProfileForLogged = () => {
                                 <InfoRow label="Qualification" value={doctorData.qualification} />
                                 <InfoRow label="Experience" value={`${doctorData.experienceYears || 0} years`} />
                                 <InfoRow label="Started working" value={doctorData.startDate} />
+                            </div>
+
+                            <div className={styles.divider} />
+                            
+                            <SectionTitle title="Medical Services" />
+                            
+                            {/* Поиск */}
+                            <input 
+                                type="text"
+                                className={styles.serviceSearchInput}
+                                placeholder="Search services..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+
+                            <div className={styles.servicesGrid}>
+                                {services.length > 0 ? (
+                                    services.map(service => (
+                                        <div key={service.id} className={styles.serviceCard}>
+                                            <div className={styles.serviceInfo}>
+                                                <h4>{service.name}</h4>
+                                                <p>{service.description}</p>
+                                                <span className={styles.servicePrice}>${service.price}</span>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div style={{color: '#888', textAlign: 'center', padding: '20px'}}>
+                                        No services found.
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.divider} />

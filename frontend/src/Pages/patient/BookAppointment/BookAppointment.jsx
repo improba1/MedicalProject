@@ -5,6 +5,8 @@ import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import HeaderWithProfile from '../../../Components/HeaderWithoutProfile/HeaderWithoutProfile';
 import { availableScheduleApi } from '../../../Api/patient/AvailableScheduleApi';
 import { visitApi } from '../../../Api/patient/visitApi';
+// Импортируем API оплаты
+import { paymentApi } from '../../../Api/patient/paymentApi';
 
 const BookAppointment = () => {
     const location = useLocation();
@@ -15,8 +17,8 @@ const BookAppointment = () => {
     const [slots, setSlots] = useState([]);
     const [selectedTime, setSelectedTime] = useState(null);
     const [symptoms, setSymptoms] = useState('');
-    const [isSuccess, setIsSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+    // isSuccess больше не нужен здесь, так как мы уходим на оплату
 
     useEffect(() => {
         if (doctor) {
@@ -47,34 +49,37 @@ const BookAppointment = () => {
         if (!selectedTime) return;
 
         try {
+            // 1. Создаем визит
             const payload = {
                 doctorId: doctor.id,
                 appointmentTime: selectedTime,
                 patientSymptoms: symptoms
             };
-            await visitApi.createVisit(payload);
-            setIsSuccess(true);
+            
+            const visitResponse = await visitApi.createVisit(payload);
+            // Получаем ID созданного визита (предполагаем, что бекенд возвращает объект визита в data)
+            const createdVisitId = visitResponse.data.id; 
+
+            if (createdVisitId) {
+                // 2. Запрашиваем ссылку на оплату
+                const paymentResponse = await paymentApi.payForVisit(createdVisitId);
+                
+                // В response.data лежит строка URL (судя по твоему примеру JSON)
+                const paymentUrl = paymentResponse.data; 
+
+                if (paymentUrl) {
+                    // 3. Редиректим пользователя на оплату
+                    window.location.href = paymentUrl;
+                } else {
+                    alert("Payment link not found.");
+                }
+            }
+
         } catch (error) {
-            alert("Failed to book appointment. Please try again.");
+            console.error(error);
+            alert("Failed to process booking. Please try again.");
         }
     };
-
-    if (isSuccess) {
-        return (
-            <AnimatedPage>
-                <div className={styles.successContainer}>
-                    <div className={styles.successCard}>
-                        <div className={styles.successIcon}>✓</div>
-                        <h1>Congratulations!</h1>
-                        <p>Your appointment with <strong>Dr. {doctor.lastname}</strong> has been successfully booked.</p>
-                        <button className={styles.homeBtn} onClick={() => navigate('/patient')}>
-                            Back to Home
-                        </button>
-                    </div>
-                </div>
-            </AnimatedPage>
-        );
-    }
 
     return (
         <AnimatedPage>
@@ -86,7 +91,7 @@ const BookAppointment = () => {
                         
                         <div className={styles.doctorBrief}>
                             <div className={styles.miniAvatar}>
-                                {doctor?.firstname[0]}{doctor?.lastname[0]}
+                                {doctor?.firstname?.[0]}{doctor?.lastname?.[0]}
                             </div>
                             <div>
                                 <h3>Dr. {doctor?.firstname} {doctor?.lastname}</h3>
@@ -109,10 +114,10 @@ const BookAppointment = () => {
                             <label>2. Select Available Time</label>
                             <div className={styles.slotsGrid}>
                                 {loading ? <p>Loading slots...</p> : 
-                                 slots.length > 0 ? slots.map((slot, index) => (
+                                 slots.length > 0 ? slots.map((slot) => (
                                     <button 
                                         key={slot.id}
-                                        className={`${styles.slotBtn} ${selectedTime === slot.appointmentTime ? styles.activeSlot : ''}`}
+                                        className={`${styles.slotBtn} ${selectedTime === slot.availableTime ? styles.activeSlot : ''}`}
                                         onClick={() => setSelectedTime(slot.availableTime)}
                                     >
                                         {new Date(slot.availableTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
@@ -136,7 +141,7 @@ const BookAppointment = () => {
                             disabled={!selectedTime}
                             onClick={handleBooking}
                         >
-                            Confirm Appointment
+                            Proceed to Payment
                         </button>
                     </div>
                 </main>

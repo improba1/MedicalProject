@@ -11,7 +11,6 @@ const PatientHomePage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
     
-    // Состояния для управления результатами поиска
     const [isSpecializationActive, setIsSpecializationActive] = useState(false);
     const [activeSpecName, setActiveSpecName] = useState('');
     
@@ -43,19 +42,14 @@ const PatientHomePage = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // 1. Логика фильтрации специализаций для выпадающего списка
-    // Если пользователь вводит что-то, что не похоже на специализацию (фамилию), список пустеет и скрывается
     const filteredSpecsSuggestions = specializations.filter(spec =>
         spec.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // 2. Логика отображения врачей в гриде
     const getDisplayedDoctors = () => {
-        // Если была нажата кнопка Find по специализации
         if (isSpecializationActive) {
             return doctors.filter(doc => doc.specialization === activeSpecName);
         }
-        // В остальных случаях (поиск по фамилии в реальном времени)
         return doctors.filter(doc => 
             doc.lastname.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -67,12 +61,10 @@ const PatientHomePage = () => {
     };
 
     const handleFindClick = () => {
-        // Если текст в инпуте в точности совпадает с одной из специализаций
         if (specializations.includes(searchTerm.toUpperCase())) {
             setIsSpecializationActive(true);
             setActiveSpecName(searchTerm.toUpperCase());
         } else {
-            // Если ищем просто по тексту (фамилии), сбрасываем режим специализации
             setIsSpecializationActive(false);
         }
         setShowDropdown(false);
@@ -114,7 +106,6 @@ const PatientHomePage = () => {
                                     value={searchTerm}
                                     onChange={(e) => {
                                         setSearchTerm(e.target.value);
-                                        // Если пользователь стирает или меняет текст, сбрасываем заголовок "Specialization:"
                                         if (isSpecializationActive) setIsSpecializationActive(false);
                                     }}
                                     onFocus={() => setShowDropdown(true)}
@@ -130,7 +121,6 @@ const PatientHomePage = () => {
                             </div>
                             <button className={styles.heroSearchBtn} onClick={handleFindClick}>Find</button>
 
-                            {/* Dropdown скрывается, если нет совпадений по специализациям (т.е. вводится фамилия) */}
                             {showDropdown && filteredSpecsSuggestions.length > 0 && (
                                 <ul className={styles.dropdown}>
                                     {filteredSpecsSuggestions.map((spec, index) => (
@@ -178,8 +168,6 @@ const DoctorCard = ({ doctor }) => {
 
     const handleBookClick = (e) => {
         e.stopPropagation();
-        // Мы предполагаем, что пользователь уже залогинен, 
-        // так как он находится на домашней странице пациента
         navigate('/book-appointment', { state: { doctorData: doctor } });
     };
 
