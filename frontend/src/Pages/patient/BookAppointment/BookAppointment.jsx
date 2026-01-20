@@ -5,8 +5,10 @@ import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import HeaderWithProfile from '../../../Components/HeaderWithoutProfile/HeaderWithoutProfile';
 import { availableScheduleApi } from '../../../Api/patient/AvailableScheduleApi';
 import { visitApi } from '../../../Api/patient/visitApi';
-// Импортируем API оплаты
 import { paymentApi } from '../../../Api/patient/paymentApi';
+// Новые импорты
+import { servicesApi } from '../../../Api/patient/ServicesApi';
+import { cartApi } from '../../../Api/patient/CartApi';
 
 const BookAppointment = () => {
     const location = useLocation();
@@ -15,28 +17,27 @@ const BookAppointment = () => {
 
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [slots, setSlots] = useState([]);
+    const [services, setServices] = useState([]); // Список доступных услуг
     const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedServiceId, setSelectedServiceId] = useState(null); // Выбранная услуга
     const [symptoms, setSymptoms] = useState('');
     const [loading, setLoading] = useState(false);
-    // isSuccess больше не нужен здесь, так как мы уходим на оплату
 
+    // Загрузка слотов при смене даты
     useEffect(() => {
         if (doctor) {
             const fetchSlots = async () => {
                 setLoading(true);
-                setSelectedTime(null); 
+                setSelectedTime(null);
                 try {
                     const response = await availableScheduleApi.searchSlots(doctor.id, selectedDate);
                     const allSlots = response.data || [];
-
                     const validSlots = allSlots
                         .filter(slot => slot.availableTime.startsWith(selectedDate))
                         .sort((a, b) => new Date(a.availableTime) - new Date(b.availableTime));
-
                     setSlots(validSlots);
                 } catch (error) {
-                    console.error("Error fetching slots", error);
-                    setSlots([]); 
+                    setSlots([]);
                 } finally {
                     setLoading(false);
                 }
@@ -45,39 +46,50 @@ const BookAppointment = () => {
         }
     }, [doctor, selectedDate]);
 
-    const handleBooking = async () => {
-        if (!selectedTime) return;
+    // Загрузка услуг врача (эндпоинт из image_af059d.png)
+    useEffect(() => {
+        if (doctor) {
+            const fetchServices = async () => {
+                try {
+                    const response = await servicesApi.searchServices(doctor.id);
+                    setServices(response.data || []);
+                } catch (error) {
+                    console.error("Error fetching services", error);
+                }
+            };
+            fetchServices();
+        }
+    }, [doctor]);
 
+    const handleBooking = async () => {
+        if (!selectedTime || !selectedServiceId) {
+            alert("Please select both time and service.");
+            return;
+        }
+
+        setLoading(true);
         try {
-            // 1. Создаем визит
+            // 1. Создаем визит (POST /api/v1/patient/me/visits/create)
             const payload = {
                 doctorId: doctor.id,
                 appointmentTime: selectedTime,
                 patientSymptoms: symptoms
             };
-            
             const visitResponse = await visitApi.createVisit(payload);
-            // Получаем ID созданного визита (предполагаем, что бекенд возвращает объект визита в data)
-            const createdVisitId = visitResponse.data.id; 
+            const createdVisitId = visitResponse.data.id || visitResponse.id;
 
             if (createdVisitId) {
-                // 2. Запрашиваем ссылку на оплату
-                const paymentResponse = await paymentApi.payForVisit(createdVisitId);
-                
-                // В response.data лежит строка URL (судя по твоему примеру JSON)
-                const paymentUrl = paymentResponse.data; 
+                // 2. Добавляем услугу в корзину (POST /api/v1/patient/me/visits/{id}/cart/add/items)
+                await cartApi.addItem(createdVisitId, selectedServiceId);
 
-                if (paymentUrl) {
-                    // 3. Редиректим пользователя на оплату
-                    window.location.href = paymentUrl;
-                } else {
-                    alert("Payment link not found.");
-                }
+                // 3. Переходим на экран оплаты
+                navigate('/payment-page', { state: { visitId: createdVisitId } });
             }
-
         } catch (error) {
             console.error(error);
             alert("Failed to process booking. Please try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -88,7 +100,7 @@ const BookAppointment = () => {
                 <main className={styles.content}>
                     <div className={styles.bookingCard}>
                         <h1 className={styles.title}>Book an Appointment</h1>
-                        
+
                         <div className={styles.doctorBrief}>
                             <div className={styles.miniAvatar}>
                                 {doctor?.firstname?.[0]}{doctor?.lastname?.[0]}
@@ -99,10 +111,11 @@ const BookAppointment = () => {
                             </div>
                         </div>
 
+                        {/* Шаг 1: Дата */}
                         <div className={styles.formSection}>
                             <label>1. Select Date</label>
-                            <input 
-                                type="date" 
+                            <input
+                                type="date"
                                 className={styles.dateInput}
                                 value={selectedDate}
                                 min={new Date().toISOString().split('T')[0]}
@@ -110,25 +123,44 @@ const BookAppointment = () => {
                             />
                         </div>
 
+                        {/* Шаг 2: Время */}
                         <div className={styles.formSection}>
                             <label>2. Select Available Time</label>
                             <div className={styles.slotsGrid}>
-                                {loading ? <p>Loading slots...</p> : 
-                                 slots.length > 0 ? slots.map((slot) => (
-                                    <button 
-                                        key={slot.id}
-                                        className={`${styles.slotBtn} ${selectedTime === slot.availableTime ? styles.activeSlot : ''}`}
-                                        onClick={() => setSelectedTime(slot.availableTime)}
-                                    >
-                                        {new Date(slot.availableTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                    </button>
-                                )) : <p className={styles.noSlots}>No slots available for this date.</p>}
+                                {loading ? <p>Loading slots...</p> :
+                                    slots.length > 0 ? slots.map((slot) => (
+                                        <button
+                                            key={slot.id}
+                                            className={`${styles.slotBtn} ${selectedTime === slot.availableTime ? styles.activeSlot : ''}`}
+                                            onClick={() => setSelectedTime(slot.availableTime)}
+                                        >
+                                            {new Date(slot.availableTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </button>
+                                    )) : <p className={styles.noSlots}>No slots available for this date.</p>}
                             </div>
                         </div>
 
+                        {/* Шаг 3: Выбор услуги (Новое) */}
                         <div className={styles.formSection}>
-                            <label>3. Describe your symptoms</label>
-                            <textarea 
+                            <label>3. Select Service</label>
+                            <div className={styles.servicesGrid}>
+                                {services.length > 0 ? services.map((service) => (
+                                    <div
+                                        key={service.id}
+                                        className={`${styles.serviceCard} ${selectedServiceId === service.id ? styles.activeService : ''}`}
+                                        onClick={() => setSelectedServiceId(service.id)}
+                                    >
+                                        <span className={styles.serviceName}>{service.name}</span>
+                                        <span className={styles.servicePrice}>{service.price} $</span>
+                                    </div>
+                                )) : <p className={styles.noSlots}>No services available.</p>}
+                            </div>
+                        </div>
+
+                        {/* Шаг 4: Симптомы */}
+                        <div className={styles.formSection}>
+                            <label>4. Describe your symptoms</label>
+                            <textarea
                                 className={styles.textarea}
                                 placeholder="Write briefly what bothers you..."
                                 value={symptoms}
@@ -136,12 +168,12 @@ const BookAppointment = () => {
                             />
                         </div>
 
-                        <button 
+                        <button
                             className={styles.confirmBtn}
-                            disabled={!selectedTime}
+                            disabled={!selectedTime || !selectedServiceId || loading}
                             onClick={handleBooking}
                         >
-                            Proceed to Payment
+                            {loading ? "Processing..." : "Proceed to Payment"}
                         </button>
                     </div>
                 </main>

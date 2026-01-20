@@ -164,3 +164,44 @@
     color: white;
     cursor: pointer;
 }
+
+/* ... ваши существующие стили ... */
+
+.servicesGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.serviceCard {
+    background: #2c2c2e;
+    border: 2px solid #444;
+    border-radius: 15px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.serviceCard:hover {
+    border-color: #6C5CE7;
+}
+
+.activeService {
+    border-color: #F5782D;
+    background: #3a3a3c;
+    box-shadow: 0 4px 15px rgba(245, 120, 45, 0.2);
+}
+
+.serviceName {
+    font-weight: 500;
+    color: #e0e0e0;
+}
+
+.servicePrice {
+    color: #F5782D;
+    font-weight: 700;
+    font-size: 1.1rem;
+}

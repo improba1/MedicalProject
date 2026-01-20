@@ -27,6 +27,8 @@ import Start from './Pages/all/PublicFindDoctors/PublicFindDoctors';
 import DoctorProfilePublic from './Pages/all/DoctorProfilePublic/DoctorProfilePublic';
 import DoctorProfileForLogged from './Pages/patient/DoctorProfileForLogged/DoctorProfileForLogged';
 import EditDoctor from './Pages/admin/EditDoctor/EditDoctor';
+import PaymentSuccess from './Pages/patient/PaymentSuccess/PaymentSuccess'
+import PaymentPage from './Pages/patient/PaymentPage/PaymentPage'
 
 
 function App() {
@@ -65,6 +67,10 @@ function App() {
         <Route path="/patient" element={<PatientHomePage />} />
         <Route path="/book-appointment" element={<BookAppointment />} />
         <Route path="/doctor-profile-logged" element={<DoctorProfileForLogged />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-page" element={<PaymentPage />} />
+
+
 
 
 
