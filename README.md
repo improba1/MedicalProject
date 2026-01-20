@@ -50,7 +50,7 @@ Follow these steps to set up the project locally.
 ```bash
 git clone [https://github.com/your-username/medical-project.git](https://github.com/your-username/medical-project.git)
 ```
-2. Backend Configuration
+### 2. Backend Configuration
 Navigate to the backend folder and configure your database connection in application.properties:
 
 Properties
@@ -64,7 +64,7 @@ Run the server:
 mvn spring-boot:run
 ```
 
-3. Frontend Setup
+### 3. Frontend Setup
 Navigate to the frontend folder, install dependencies, and start the client:
 
 ```bash
