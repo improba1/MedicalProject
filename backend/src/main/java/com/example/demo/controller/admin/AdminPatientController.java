@@ -6,9 +6,8 @@ import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.PatientResponse;
 import com.example.demo.mapper.PatientMapper;
 import com.example.demo.model.Patient;
+import com.example.demo.service.logout.LogoutService;
 import com.example.demo.service.patient.PatientService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +25,7 @@ public class AdminPatientController {
 
     private final PatientService patientService;
     private final PatientMapper patientMapper;
+    private final LogoutService logoutService;
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('admin:create')")
@@ -34,69 +34,92 @@ public class AdminPatientController {
     ) {
         Patient entity = patientMapper.toEntity(request);
         Patient saved = patientService.create(entity);
-        PatientResponse dto = patientMapper.toResponse(saved);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.of(HttpStatus.CREATED.value(), "Patient created successfully", dto));
+                .body(ApiResponse.of(
+                        HttpStatus.CREATED.value(),
+                        "Patient created successfully",
+                        patientMapper.toResponse(saved)
+                ));
     }
 
     @PutMapping("/update/{patientId}")
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<PatientResponse>> updatePatient(
             @PathVariable UUID patientId,
-            @RequestBody PatientUpdateRequest request
+            @Valid @RequestBody PatientUpdateRequest request
     ) {
         Patient patient = patientService.getById(patientId);
         patientMapper.updateEntity(patient, request);
         Patient updated = patientService.update(patient);
-        PatientResponse dto = patientMapper.toResponse(updated);
 
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient updated successfully", dto));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Patient updated successfully",
+                        patientMapper.toResponse(updated)
+                ));
     }
 
     @GetMapping("/get/{patientId}")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<PatientResponse>> getPatientById(@PathVariable UUID patientId) {
+    public ResponseEntity<ApiResponse<PatientResponse>> getPatientById(
+            @PathVariable UUID patientId
+    ) {
         Patient patient = patientService.getById(patientId);
-        PatientResponse dto = patientMapper.toResponse(patient);
 
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient fetched successfully", dto));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Patient fetched successfully",
+                        patientMapper.toResponse(patient)
+                ));
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<List<PatientResponse>> searchPatients(
+    public ResponseEntity<ApiResponse<List<PatientResponse>>> searchPatients(
             @RequestParam(required = false) String name
     ) {
-        return ResponseEntity.ok(
-                patientMapper.toResponseList(
-                        patientService.searchPatientsForAdmin(name)
-                )
-        );
+        List<Patient> patients = patientService.searchPatientsForAdmin(name);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Patients fetched successfully",
+                        patientMapper.toResponseList(patients)
+                ));
     }
 
     @PutMapping("/deactivate/{patientId}")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<PatientResponse>> softDeletePatient(
-            @PathVariable UUID patientId,
-            HttpServletRequest request,
-            HttpServletResponse response
+    public ResponseEntity<ApiResponse<PatientResponse>> deactivatePatient(
+            @PathVariable UUID patientId
     ) {
-        Patient deactivated = patientService.deactivatePatientById(patientId, request, response);
-        PatientResponse dto = patientMapper.toResponse(deactivated);
-
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient deactivated successfully", dto));
+        Patient patient = patientService.deactivatePatientById(patientId);
+        logoutService.forceLogoutUser(patient.getEmail());
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Patient deactivated successfully",
+                patientMapper.toResponse(patient)
+        ));
     }
 
     @DeleteMapping("/hard-delete/{patientId}")
     @PreAuthorize("hasAuthority('admin:delete')")
-    public ResponseEntity<ApiResponse<Void>> hardDeletePatient(
-            @PathVariable UUID patientId,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        patientService.delete(patientId, request, response);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Patient permanently deleted", null));
+    public ResponseEntity<ApiResponse<Void>> hardDeletePatient(@PathVariable UUID patientId) {
+        Patient patient = patientService.getById(patientId);
+        patientService.delete(patientId);
+        logoutService.forceLogoutUser(patient.getEmail());
+
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Patient permanently deleted",
+                null
+        ));
     }
 }

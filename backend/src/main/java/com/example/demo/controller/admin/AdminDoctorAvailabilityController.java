@@ -31,31 +31,33 @@ public class AdminDoctorAvailabilityController {
     public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> getAvailabilityById(
             @PathVariable UUID availabilityId
     ) {
-        var availability = availabilityService.getById(availabilityId);
+        DoctorAvailability availability = availabilityService.getById(availabilityId);
 
-        return ResponseEntity.ok(
-                ApiResponse.of(
-                        200,
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
                         "Availability retrieved successfully",
                         mapper.toResponse(availability)
-                )
-        );
+                ));
     }
 
     @PostMapping("/create/{doctorId}")
     @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> createForDoctor(
             @PathVariable UUID doctorId,
-            @Valid @RequestBody DoctorAvailabilityCreateRequest request) {
-
+            @Valid @RequestBody DoctorAvailabilityCreateRequest request
+    ) {
         DoctorAvailability entity = mapper.toEntity(request);
         DoctorAvailability saved = availabilityService.createForDoctor(doctorId, entity);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(
-                HttpStatus.CREATED.value(),
-                "Availability created successfully",
-                mapper.toResponse(saved)
-        ));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.of(
+                        HttpStatus.CREATED.value(),
+                        "Availability created successfully",
+                        mapper.toResponse(saved)
+                ));
     }
 
     @PutMapping("/update/{doctorId}/{availabilityId}")
@@ -63,43 +65,56 @@ public class AdminDoctorAvailabilityController {
     public ResponseEntity<ApiResponse<DoctorAvailabilityResponse>> updateForDoctor(
             @PathVariable UUID doctorId,
             @PathVariable UUID availabilityId,
-            @Valid @RequestBody DoctorAvailabilityUpdateRequest request) {
-
+            @Valid @RequestBody DoctorAvailabilityUpdateRequest request
+    ) {
         DoctorAvailability updateEntity = mapper.toUpdateEntity(availabilityId, request);
         DoctorAvailability updated = availabilityService.updateForDoctor(doctorId, updateEntity);
 
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "Availability updated successfully",
-                mapper.toResponse(updated)
-        ));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Availability updated successfully",
+                        mapper.toResponse(updated)
+                ));
     }
 
     @DeleteMapping("/delete/{doctorId}/{availabilityId}")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ApiResponse<Void>> deleteForDoctor(
             @PathVariable UUID doctorId,
-            @PathVariable UUID availabilityId) {
-
+            @PathVariable UUID availabilityId
+    ) {
         availabilityService.deleteForDoctor(doctorId, availabilityId);
 
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "Availability deleted successfully",
-                null
-        ));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Availability deleted successfully",
+                        null
+                ));
     }
 
     @GetMapping("/search")
-    public List<DoctorAvailability> search(
+    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<ApiResponse<List<DoctorAvailabilityResponse>>> search(
             @RequestParam(required = false) UUID doctorId,
-            DoctorAvailabilitySearchRequest request
+            @Valid DoctorAvailabilitySearchRequest request
     ) {
-        return availabilityService.searchForAdmin(
+        List<DoctorAvailability> result = availabilityService.searchForAdmin(
                 doctorId,
                 request.getActive(),
                 request.getFrom(),
                 request.getTo()
         );
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Availability search completed",
+                        mapper.toResponseList(result)
+                ));
     }
 }

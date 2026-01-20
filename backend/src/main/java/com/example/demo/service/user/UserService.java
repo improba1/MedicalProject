@@ -20,6 +20,6 @@ public interface UserService {
 
     User getCurrentUser();
     User updateCurrentUser(UserUpdateRequest request);
-    void deactivateCurrentUser(HttpServletRequest request, HttpServletResponse response);
-    void deactivateUserById(UUID id, HttpServletRequest request, HttpServletResponse response);
+    User deactivateCurrentUser();
+    User deactivateUserById(UUID id);
 }

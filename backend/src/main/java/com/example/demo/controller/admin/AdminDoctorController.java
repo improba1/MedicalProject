@@ -8,14 +8,13 @@ import com.example.demo.dto.response.DoctorResponse;
 import com.example.demo.mapper.DoctorMapper;
 import com.example.demo.model.Doctor;
 import com.example.demo.service.doctor.DoctorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,85 +32,122 @@ public class AdminDoctorController {
     public ResponseEntity<ApiResponse<List<DoctorResponse>>> searchAdmin(
             @RequestBody DoctorSearchRequest request
     ) {
-        var doctors = doctorService.searchDoctors(
+        List<Doctor> doctors = doctorService.searchDoctors(
                 request.getName(),
                 request.getSpecialization(),
                 request.getRating(),
                 request.getIsActive()
         );
 
-        var response = doctorMapper.toResponseList(doctors);
-
-        return ResponseEntity.ok(
-                ApiResponse.of(200, "Doctors fetched successfully", response)
-        );
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Doctors fetched successfully",
+                        doctorMapper.toResponseList(doctors)
+                ));
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ApiResponse<DoctorResponse>> createDoctor(
             @Valid @ModelAttribute DoctorCreateRequest request
     ) {
         Doctor doctor = doctorMapper.toEntity(request);
         Doctor saved = doctorService.create(doctor, request.getImage());
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(201, "Doctor created", doctorMapper.toResponse(saved)));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.of(
+                        HttpStatus.CREATED.value(),
+                        "Doctor created successfully",
+                        doctorMapper.toResponse(saved)
+                ));
     }
 
-    @PutMapping(value = "/update/{doctorId}", consumes = "multipart/form-data")
+    @PutMapping(value = "/update/{doctorId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ApiResponse<DoctorResponse>> updateDoctor(
             @PathVariable UUID doctorId,
-            @ModelAttribute DoctorUpdateRequest request
+            @Valid @ModelAttribute DoctorUpdateRequest request
     ) {
-        Doctor updated = doctorMapper.toUpdatedEntity(new Doctor(), request);
-        Doctor saved = doctorService.updateDoctorByAdmin(doctorId, updated, request.getImage());
+        Doctor updatedEntity = doctorMapper.toUpdatedEntity(new Doctor(), request);
+        Doctor saved = doctorService.updateDoctorByAdmin(
+                doctorId,
+                updatedEntity,
+                request.getImage()
+        );
 
-        return ResponseEntity.ok(ApiResponse.of(
-                200, "Doctor updated", doctorMapper.toResponse(saved)
-        ));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Doctor updated successfully",
+                        doctorMapper.toResponse(saved)
+                ));
     }
 
     @PutMapping("/{doctorId}/deactivate")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<DoctorResponse>> deactivateDoctor(@PathVariable UUID doctorId) {
+    public ResponseEntity<ApiResponse<DoctorResponse>> deactivateDoctor(
+            @PathVariable UUID doctorId
+    ) {
         Doctor doctor = doctorService.deactivateDoctor(doctorId);
 
-        return ResponseEntity.ok(ApiResponse.of(
-                200,
-                "Doctor deactivated",
-                doctorMapper.toResponse(doctor)
-        ));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Doctor deactivated",
+                        doctorMapper.toResponse(doctor)
+                ));
     }
 
     @PutMapping("/{doctorId}/activate")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<DoctorResponse>> activateDoctor(@PathVariable UUID doctorId) {
+    public ResponseEntity<ApiResponse<DoctorResponse>> activateDoctor(
+            @PathVariable UUID doctorId
+    ) {
         Doctor doctor = doctorService.activateDoctor(doctorId);
 
-        return ResponseEntity.ok(ApiResponse.of(
-                200,
-                "Doctor activated",
-                doctorMapper.toResponse(doctor)
-        ));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Doctor activated",
+                        doctorMapper.toResponse(doctor)
+                ));
     }
 
     @GetMapping("/get/{doctorId}")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<ApiResponse<DoctorResponse>> getDoctorById(@PathVariable UUID doctorId) {
-        return ResponseEntity.ok(
-                ApiResponse.of(
+    public ResponseEntity<ApiResponse<DoctorResponse>> getDoctorById(
+            @PathVariable UUID doctorId
+    ) {
+        Doctor doctor = doctorService.getById(doctorId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
                         HttpStatus.OK.value(),
                         "Doctor fetched successfully",
-                        doctorMapper.toResponse(doctorService.getById(doctorId))
-                )
-        );
+                        doctorMapper.toResponse(doctor)
+                ));
     }
 
     @DeleteMapping("/hard-delete/{doctorId}")
     @PreAuthorize("hasAuthority('admin:delete')")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID doctorId) {
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @PathVariable UUID doctorId
+    ) {
         doctorService.delete(doctorId);
-        return ResponseEntity.ok(ApiResponse.of(200, "Doctor deleted", null));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Doctor deleted successfully",
+                        null
+                ));
     }
 }
