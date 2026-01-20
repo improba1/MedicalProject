@@ -29,6 +29,7 @@ import DoctorProfileForLogged from './Pages/patient/DoctorProfileForLogged/Docto
 import EditDoctor from './Pages/admin/EditDoctor/EditDoctor';
 import PaymentSuccess from './Pages/patient/PaymentSuccess/PaymentSuccess'
 import PaymentPage from './Pages/patient/PaymentPage/PaymentPage'
+import UpcomingVisits from './Pages/patient/UpcomingVisits/UpcomingVisits'
 
 
 function App() {
@@ -69,7 +70,7 @@ function App() {
         <Route path="/doctor-profile-logged" element={<DoctorProfileForLogged />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-page" element={<PaymentPage />} />
-
+        <Route path="/upcoming-visits" element={<UpcomingVisits />} />
 
 
 
