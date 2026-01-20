@@ -48,7 +48,7 @@ Follow these steps to set up the project locally.
 
 ### 1. Clone the repository
 ```bash
-git clone [https://github.com/your-username/medical-project.git](https://github.com/your-username/medical-project.git)
+git clone https://github.com/improba1/medical-project.git
 ```
 ### 2. Backend Configuration
 Navigate to the backend folder and configure your database connection in application.properties:
