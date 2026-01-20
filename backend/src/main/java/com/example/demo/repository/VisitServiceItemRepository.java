@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.model.VisitServiceItem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,5 +14,12 @@ public interface VisitServiceItemRepository extends JpaRepository<VisitServiceIt
 
     void deleteByVisitId(UUID visitId);
 
-    Optional<VisitServiceItem> findByVisitIdAndServiceId(UUID visitId, UUID medicalServiceId);
+    @Query("""
+        select i
+        from VisitServiceItem i
+        join fetch i.service s
+        join fetch i.visit v
+        where v.id = :visitId
+    """)
+    List<VisitServiceItem> findByVisitIdWithRelations(UUID visitId);
 }

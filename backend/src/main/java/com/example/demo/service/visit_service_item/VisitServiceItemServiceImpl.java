@@ -76,8 +76,9 @@ public class VisitServiceItemServiceImpl implements VisitServiceItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VisitServiceItem> getItemsForVisit(UUID visitId) {
-        return itemRepository.findByVisitId(visitId);
+        return itemRepository.findByVisitIdWithRelations(visitId);
     }
 
     @Override
