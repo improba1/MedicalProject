@@ -6,7 +6,6 @@ import HeaderWithProfile from '../../../Components/HeaderWithoutProfile/HeaderWi
 import { availableScheduleApi } from '../../../Api/patient/AvailableScheduleApi';
 import { visitApi } from '../../../Api/patient/visitApi';
 import { paymentApi } from '../../../Api/patient/paymentApi';
-// Новые импорты
 import { servicesApi } from '../../../Api/patient/ServicesApi';
 import { cartApi } from '../../../Api/patient/CartApi';
 
@@ -19,7 +18,7 @@ const BookAppointment = () => {
     const [slots, setSlots] = useState([]);
     const [services, setServices] = useState([]); // Список доступных услуг
     const [selectedTime, setSelectedTime] = useState(null);
-    const [selectedServiceId, setSelectedServiceId] = useState(null); // Выбранная услуга
+    const [selectedServiceIds, setSelectedServiceIds] = useState([]); // Выбранные услуги (массив)
     const [symptoms, setSymptoms] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -46,7 +45,7 @@ const BookAppointment = () => {
         }
     }, [doctor, selectedDate]);
 
-    // Загрузка услуг врача (эндпоинт из image_af059d.png)
+    // Загрузка услуг врача
     useEffect(() => {
         if (doctor) {
             const fetchServices = async () => {
@@ -61,15 +60,25 @@ const BookAppointment = () => {
         }
     }, [doctor]);
 
+    const toggleService = (id) => {
+        setSelectedServiceIds(prev => {
+            if (prev.includes(id)) {
+                return prev.filter(itemId => itemId !== id);
+            } else {
+                return [...prev, id];
+            }
+        });
+    };
+
     const handleBooking = async () => {
-        if (!selectedTime || !selectedServiceId) {
-            alert("Please select both time and service.");
+        if (!selectedTime || selectedServiceIds.length === 0) {
+            alert("Please select time and at least one service.");
             return;
         }
 
         setLoading(true);
         try {
-            // 1. Создаем визит (POST /api/v1/patient/me/visits/create)
+            // 1. Создаем визит
             const payload = {
                 doctorId: doctor.id,
                 appointmentTime: selectedTime,
@@ -79,8 +88,10 @@ const BookAppointment = () => {
             const createdVisitId = visitResponse.data.id || visitResponse.id;
 
             if (createdVisitId) {
-                // 2. Добавляем услугу в корзину (POST /api/v1/patient/me/visits/{id}/cart/add/items)
-                await cartApi.addItem(createdVisitId, selectedServiceId);
+                // 2. Добавляем услуги в корзину
+                for (const serviceId of selectedServiceIds) {
+                    await cartApi.addItem(createdVisitId, serviceId);
+                }
 
                 // 3. Переходим на экран оплаты
                 navigate('/payment-page', { state: { visitId: createdVisitId } });
@@ -140,20 +151,23 @@ const BookAppointment = () => {
                             </div>
                         </div>
 
-                        {/* Шаг 3: Выбор услуги (Новое) */}
+                        {/* Шаг 3: Выбор услуги (Множественный) */}
                         <div className={styles.formSection}>
-                            <label>3. Select Service</label>
+                            <label>3. Select Services</label>
                             <div className={styles.servicesGrid}>
-                                {services.length > 0 ? services.map((service) => (
-                                    <div
-                                        key={service.id}
-                                        className={`${styles.serviceCard} ${selectedServiceId === service.id ? styles.activeService : ''}`}
-                                        onClick={() => setSelectedServiceId(service.id)}
-                                    >
-                                        <span className={styles.serviceName}>{service.name}</span>
-                                        <span className={styles.servicePrice}>{service.price} $</span>
-                                    </div>
-                                )) : <p className={styles.noSlots}>No services available.</p>}
+                                {services.length > 0 ? services.map((service) => {
+                                    const isSelected = selectedServiceIds.includes(service.id);
+                                    return (
+                                        <div
+                                            key={service.id}
+                                            className={`${styles.serviceCard} ${isSelected ? styles.activeService : ''}`}
+                                            onClick={() => toggleService(service.id)}
+                                        >
+                                            <span className={styles.serviceName}>{service.name}</span>
+                                            <span className={styles.servicePrice}>{service.price} $</span>
+                                        </div>
+                                    );
+                                }) : <p className={styles.noSlots}>No services available.</p>}
                             </div>
                         </div>
 
@@ -170,7 +184,7 @@ const BookAppointment = () => {
 
                         <button
                             className={styles.confirmBtn}
-                            disabled={!selectedTime || !selectedServiceId || loading}
+                            disabled={!selectedTime || !selectedServiceIds.length || loading}
                             onClick={handleBooking}
                         >
                             {loading ? "Processing..." : "Proceed to Payment"}

@@ -10,15 +10,16 @@ const PatientHomePage = () => {
     const [doctors, setDoctors] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
-    
+
+    // Состояния для управления заголовком и типом фильтрации
     const [isSpecializationActive, setIsSpecializationActive] = useState(false);
     const [activeSpecName, setActiveSpecName] = useState('');
-    
+
     const dropdownRef = useRef(null);
 
     const specializations = [
-        "CARDIOLOGIST", "DERMATOLOGIST", "NEUROLOGIST", 
-        "PEDIATRICIAN", "PSYCHIATRIST", "SURGEON", 
+        "CARDIOLOGIST", "DERMATOLOGIST", "NEUROLOGIST",
+        "PEDIATRICIAN", "PSYCHIATRIST", "SURGEON",
         "ORTHOPEDIST", "OPHTHALMOLOGIST", "GYNECOLOGIST", "UROLOGIST"
     ];
 
@@ -42,15 +43,14 @@ const PatientHomePage = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const filteredSpecsSuggestions = specializations.filter(spec =>
-        spec.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
+    // Логика отображения врачей
     const getDisplayedDoctors = () => {
         if (isSpecializationActive) {
-            return doctors.filter(doc => doc.specialization === activeSpecName);
+            // Если активирован режим специализации, фильтруем строго по ней
+            return doctors.filter(doc => doc.specialization.toUpperCase() === activeSpecName.toUpperCase());
         }
-        return doctors.filter(doc => 
+        // Иначе фильтруем по фамилии (текстовый поиск)
+        return doctors.filter(doc =>
             doc.lastname.toLowerCase().includes(searchTerm.toLowerCase())
         );
     };
@@ -61,11 +61,15 @@ const PatientHomePage = () => {
     };
 
     const handleFindClick = () => {
-        if (specializations.includes(searchTerm.toUpperCase())) {
+        const upperSearch = searchTerm.toUpperCase();
+        // Если введенный текст есть в списке специализаций
+        if (specializations.includes(upperSearch)) {
             setIsSpecializationActive(true);
-            setActiveSpecName(searchTerm.toUpperCase());
+            setActiveSpecName(upperSearch);
         } else {
+            // Если это имя или текст не из списка — обычный режим
             setIsSpecializationActive(false);
+            setActiveSpecName('');
         }
         setShowDropdown(false);
     };
@@ -76,6 +80,11 @@ const PatientHomePage = () => {
         setActiveSpecName('');
         setShowDropdown(false);
     };
+
+    // Предложения специализаций фильтруются по вводу
+    const filteredSpecsSuggestions = specializations.filter(spec =>
+        spec.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <AnimatedPage>
@@ -89,31 +98,34 @@ const PatientHomePage = () => {
                             <span className={styles.highlight}>Our Priority.</span>
                         </h1>
                         <p className={styles.heroSubtitle}>
-                            Connect with top-rated specialists in seconds. <br/>
+                            Connect with top-rated specialists in seconds. <br />
                             Modern healthcare management powered by AI.
                         </p>
 
                         <div className={styles.searchContainer} ref={dropdownRef}>
                             <div className={styles.inputWrapper}>
                                 <svg className={styles.searchIcon} width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
-                                
-                                <input 
-                                    type="text" 
-                                    placeholder="Search doctor or select specialization..." 
+
+                                <input
+                                    type="text"
+                                    placeholder="Search doctor or select specialization..."
                                     className={styles.heroInput}
                                     value={searchTerm}
                                     onChange={(e) => {
                                         setSearchTerm(e.target.value);
+                                        // При начале печати сбрасываем "режим специализации" для заголовка
                                         if (isSpecializationActive) setIsSpecializationActive(false);
+                                        setShowDropdown(true);
                                     }}
                                     onFocus={() => setShowDropdown(true)}
                                 />
 
+                                {/* Кнопка крестика для очистки */}
                                 {searchTerm && (
-                                    <button className={styles.clearBtn} onClick={handleClearSearch}>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <button className={styles.clearBtn} onClick={handleClearSearch} type="button">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                             <path d="M18 6L6 18M6 6l12 12" />
                                         </svg>
                                     </button>
@@ -121,11 +133,12 @@ const PatientHomePage = () => {
                             </div>
                             <button className={styles.heroSearchBtn} onClick={handleFindClick}>Find</button>
 
+                            {/* Выпадающий список накладывается поверх */}
                             {showDropdown && filteredSpecsSuggestions.length > 0 && (
                                 <ul className={styles.dropdown}>
                                     {filteredSpecsSuggestions.map((spec, index) => (
-                                        <li 
-                                            key={index} 
+                                        <li
+                                            key={index}
                                             className={styles.dropdownItem}
                                             onClick={() => handleSelectSpecialization(spec)}
                                         >
@@ -140,8 +153,8 @@ const PatientHomePage = () => {
                     <section className={styles.doctorsSection}>
                         <div className={styles.sectionHeader}>
                             <h2>
-                                {isSpecializationActive 
-                                    ? `Specialization: ${activeSpecName}` 
+                                {isSpecializationActive
+                                    ? `Specialization: ${activeSpecName}`
                                     : "Top Rated Specialists"}
                             </h2>
                         </div>
@@ -162,6 +175,8 @@ const PatientHomePage = () => {
     );
 };
 
+// ... Компонент DoctorCard остается без изменений
+
 const DoctorCard = ({ doctor }) => {
     const navigate = useNavigate();
     const imageUrl = doctor.image?.downloadUrl;
@@ -172,8 +187,8 @@ const DoctorCard = ({ doctor }) => {
     };
 
     return (
-        <div 
-            className={styles.card} 
+        <div
+            className={styles.card}
             onClick={() => navigate('/doctor-profile-logged', { state: { doctorData: doctor } })}
         >
             <div className={styles.imageWrapper}>

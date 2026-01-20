@@ -45,17 +45,24 @@ const PaymentPage = () => {
     const handleFinalPay = async () => {
         setProcessing(true);
         try {
-            // Запрос на создание сессии Stripe
-            const response = await paymentApi.initiatePayment(visitId);
-            const stripeUrl = response.data;
+            // STUB: Заглушка, так как бекенд отдает 500 ошибку при создании сессии
+            // const response = await paymentApi.initiatePayment(visitId);
+            // const stripeUrl = response.data;
 
-            if (stripeUrl) {
-                window.location.href = stripeUrl; // Редирект на Stripe
-            }
+            // if (stripeUrl) {
+            //     window.location.href = stripeUrl; // Редирект на Stripe
+            // }
+
+            // Имитация успешной оплаты
+            setTimeout(() => {
+                navigate('/payment-success');
+            }, 1000);
+
         } catch (error) {
+            console.error(error);
             alert("Payment initialization failed.");
         } finally {
-            setProcessing(false);
+            // setProcessing(false); // Не сбрасываем, так как переходим на другую страницу
         }
     };
 

@@ -5,28 +5,31 @@
     position: fixed;
     top: 0;
     left: 0;
-    overflow: hidden; 
+    overflow: hidden;
     color: white;
-    font-family: 'Arial', sans-serif; 
+    font-family: 'Arial', sans-serif;
 }
 
 
 .scrollWrapper {
-    position: absolute; 
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh; 
-    overflow-y: auto; 
+    height: 100vh;
+    overflow-y: auto;
     padding-top: 100px;
     padding-bottom: 50px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
-    scrollbar-width: none; 
+    scrollbar-width: none;
 }
-.scrollWrapper::-webkit-scrollbar { display: none; }
+
+.scrollWrapper::-webkit-scrollbar {
+    display: none;
+}
 
 .navbar {
     position: fixed;
@@ -38,7 +41,7 @@
     justify-content: right;
     align-items: center;
     z-index: 100;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
     box-sizing: border-box;
 }
 
@@ -56,7 +59,10 @@
     font-size: 16px;
     transition: color 0.3s;
 }
-.loginLink:hover { color: #F5782D; }
+
+.loginLink:hover {
+    color: #F5782D;
+}
 
 .signupBtn {
     padding: 10px 25px;
@@ -68,7 +74,11 @@
     cursor: pointer;
     transition: transform 0.2s;
 }
-.signupBtn:hover { transform: scale(1.05); background: #c16125; }
+
+.signupBtn:hover {
+    transform: scale(1.05);
+    background: #c16125;
+}
 
 .heroSection {
     text-align: center;
@@ -76,6 +86,9 @@
     width: 90%;
     max-width: 800px;
     animation: fadeIn 1s ease-out;
+    position: relative;
+    z-index: 10;
+    /* Ensure hero (and dropdown) is above doctors */
 }
 
 .heroTitle {
@@ -108,7 +121,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .inputWrapper {
@@ -120,8 +133,8 @@
 
 .searchIcon {
     margin-right: 15px;
-    min-width: 20px; 
-    stroke: rgba(255, 255, 255, 0.7); 
+    min-width: 20px;
+    stroke: rgba(255, 255, 255, 0.7);
 }
 
 .heroInput {
@@ -132,7 +145,10 @@
     width: 100%;
     outline: none;
 }
-.heroInput::placeholder { color: rgba(255, 255, 255, 0.5); }
+
+.heroInput::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
 
 .heroSearchBtn {
     background: #6C5BD4;
@@ -145,7 +161,10 @@
     cursor: pointer;
     transition: 0.3s;
 }
-.heroSearchBtn:hover { background: #5849b0; }
+
+.heroSearchBtn:hover {
+    background: #5849b0;
+}
 
 .doctorsSection {
     width: 90%;
@@ -172,7 +191,11 @@
     font-weight: 600;
     transition: 0.2s;
 }
-.seeAll:hover { color: #8E2DE2; margin-right: -5px; }
+
+.seeAll:hover {
+    color: #8E2DE2;
+    margin-right: -5px;
+}
 
 .grid {
     display: grid;
@@ -203,7 +226,7 @@
 
 .card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
     border-color: rgba(108, 91, 212, 0.4);
 }
 
@@ -299,13 +322,113 @@
 
 /* Анимация появления */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-@media (max-width: 768px) {
-    .heroTitle { font-size: 40px; }
-    .searchContainer { flex-direction: column; padding: 15px; border-radius: 25px;}
-    .heroSearchBtn { width: 100%; margin-top: 10px; }
-    .grid { grid-template-columns: 1fr; }
+/* Добавьте это в ваш файл .module.css */
+
+.searchContainer {
+    position: relative;
+    /* Обязательно для абсолютного позиционирования dropdown */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Стили выпадающего списка (Overlay) */
+.dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    /* Появляется сразу под инпутом */
+    left: 0;
+    width: 100%;
+    background: #1c1c1e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    z-index: 1000;
+    /* Чтобы быть выше карточек */
+    max-height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.dropdownItem {
+    padding: 12px 25px;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+}
+
+.dropdownItem:hover {
+    background: rgba(108, 91, 212, 0.2);
+    color: white;
+}
+
+/* Кнопка крестика */
+.clearBtn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    margin-right: 10px;
+    transition: color 0.2s;
+}
+
+.clearBtn:hover {
+    color: #F5782D;
+}
+
+/* Улучшение инпута для расположения крестика */
+.inputWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+}
+
+.dropdownItem {
+    padding: 12px 25px;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    text-align: left;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.dropdownItem:hover {
+    background: rgba(108, 91, 212, 0.2);
+    color: white;
+    padding-left: 30px;
+}
+
+/* Стилизация скроллбара в выпадающем списке */
+.dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
 }
