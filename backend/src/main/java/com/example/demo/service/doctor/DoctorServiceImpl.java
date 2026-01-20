@@ -9,13 +9,9 @@ import com.example.demo.repository.VisitRepository;
 import com.example.demo.repository.specification.doctor.DoctorSpecificationBuilder;
 import com.example.demo.service.auth.CurrentUserService;
 import com.example.demo.service.image.ImageService;
-import com.example.demo.service.logout.LogoutService;
 import com.example.demo.service.patient.PatientService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +26,6 @@ public class DoctorServiceImpl implements DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
-    private final LogoutService logoutService;
     private final ImageService imageService;
     private final CurrentUserService currentUserService;
     private final VisitRepository visitRepository;
@@ -117,23 +112,6 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public Doctor deactivateDoctor(UUID id) {
-        Doctor doctor = getById(id);
-        doctor.setActive(false);
-        return doctorRepository.save(doctor);
-    }
-
-    @Override
-    public void delete(UUID id) {
-        doctorRepository.delete(getById(id));
-    }
-
-    @Override
-    public Doctor getCurrentDoctor() {
-        return currentUserService.getAuthenticatedDoctor();
-    }
-
-    @Override
     public Doctor updateCurrentDoctor(Doctor updated, MultipartFile image) {
         Doctor current = currentUserService.getAuthenticatedDoctor();
 
@@ -152,17 +130,24 @@ public class DoctorServiceImpl implements DoctorService {
 
 
     @Override
-    public void deactivateCurrentDoctor(HttpServletRequest request, HttpServletResponse response) {
+    public Doctor deactivateDoctor(UUID id) {
+        Doctor doctor = getById(id);
+        doctor.setActive(false);
+        return doctorRepository.save(doctor);
+    }
+
+    @Override
+    public void delete(UUID id) {
+        doctorRepository.delete(getById(id));
+    }
+
+    @Override
+    public Doctor deactivateCurrentDoctor() {
         Doctor current = currentUserService.getAuthenticatedDoctor();
         current.setActive(false);
-        doctorRepository.save(current);
-
-        logoutService.logout(
-                request,
-                response,
-                SecurityContextHolder.getContext().getAuthentication()
-        );
+        return doctorRepository.save(current);
     }
+
 
     @Override
     public Patient getPatientIfDoctorHasAccess(UUID patientId) {

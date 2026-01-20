@@ -5,9 +5,9 @@ import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.PatientResponse;
 import com.example.demo.mapper.PatientMapper;
 import com.example.demo.model.Patient;
+import com.example.demo.service.auth.CurrentUserService;
+import com.example.demo.service.logout.LogoutService;
 import com.example.demo.service.patient.PatientService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,32 +21,46 @@ public class PatientProfileController {
 
     private final PatientService patientService;
     private final PatientMapper patientMapper;
+    private final LogoutService logoutService;
+    private final CurrentUserService currentUserService;
 
     @GetMapping("/get")
     @PreAuthorize("hasAuthority('patient:read')")
     public ResponseEntity<ApiResponse<PatientResponse>> getProfile() {
         Patient patient = patientService.getCurrentPatient();
-        PatientResponse response = patientMapper.toResponse(patient);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Patient profile fetched successfully", response));
+
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Patient profile fetched successfully",
+                patientMapper.toResponse(patient)
+        ));
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('patient:update')")
-    public ResponseEntity<ApiResponse<PatientResponse>> updateProfile(@RequestBody PatientUpdateRequest request) {
-        Patient currentPatient = patientService.getAuthenticatedPatient();
-        patientMapper.updateEntity(currentPatient, request);
-        Patient updated = patientService.updateCurrentPatient(currentPatient);
-        PatientResponse response = patientMapper.toResponse(updated);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Patient profile updated successfully", response));
+    public ResponseEntity<ApiResponse<PatientResponse>> updateProfile(
+            @RequestBody PatientUpdateRequest request
+    ) {
+        Patient patient = patientService.getCurrentPatient();
+        patientMapper.updateEntity(patient, request);
+        Patient updated = patientService.updateCurrentPatient(patient);
+
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Patient profile updated successfully",
+                patientMapper.toResponse(updated)
+        ));
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('patient:delete')")
-    public ResponseEntity<ApiResponse<Void>> deleteProfile(HttpServletRequest request, HttpServletResponse response) {
-        patientService.deletePatientProfile(request, response);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(),
-                "Patient profile deleted and logged out successfully", null));
+    public ResponseEntity<ApiResponse<Void>> deleteProfile() {
+        patientService.deactivateCurrentPatient(currentUserService.getAuthenticatedPatient());
+        logoutService.logoutCurrentUser();
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Patient profile deleted and logged out successfully",
+                null
+        ));
     }
 }

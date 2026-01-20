@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import com.example.demo.security.CustomAccessDeniedHandler;
+import com.example.demo.security.CustomAuthenticationEntryPoint;
 import com.example.demo.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +29,8 @@ public class SecurityConfig {
     private final ApiProperties api;
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final CustomAuthenticationEntryPoint  customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler  customAccessDeniedHandler;
 
 
     private String[] whiteList() {
@@ -49,33 +53,32 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(whiteList()).permitAll()
-
                                 .requestMatchers(POST, api.getPrefix() + "/auth/logout").hasAuthority("user:logout")
-
                                 .requestMatchers(api.getPrefix() + "/admin/**").hasRole(ADMIN.name())
                                 .requestMatchers(GET, api.getPrefix() + "/admin/**").hasAuthority(ADMIN_READ.getPermission())
                                 .requestMatchers(POST, api.getPrefix() + "/admin/**").hasAuthority(ADMIN_CREATE.getPermission())
                                 .requestMatchers(PUT, api.getPrefix() + "/admin/**").hasAuthority(ADMIN_UPDATE.getPermission())
                                 .requestMatchers(DELETE, api.getPrefix() + "/admin/**").hasAuthority(ADMIN_DELETE.getPermission())
-
                                 .requestMatchers(api.getPrefix() + "/superadmin/**").hasRole(SUPERADMIN.name())
                                 .requestMatchers(GET, api.getPrefix() + "/superadmin/**").hasAuthority(SUPERADMIN_CREATE.getPermission())
                                 .requestMatchers(DELETE, api.getPrefix() + "/superadmin/**").hasAuthority(SUPERADMIN_DELETE.getPermission())
-
                                 .requestMatchers(api.getPrefix() + "/doctor/**").hasRole(DOCTOR.name())
                                 .requestMatchers(GET, api.getPrefix() + "/doctor/**").hasAnyAuthority(DOCTOR_READ.getPermission(), ADMIN_READ.getPermission())
                                 .requestMatchers(POST, api.getPrefix() + "/doctor/**").hasAnyAuthority(DOCTOR_CREATE.getPermission(), ADMIN_CREATE.getPermission())
                                 .requestMatchers(PUT, api.getPrefix() + "/doctor/**").hasAnyAuthority(DOCTOR_UPDATE.getPermission(), ADMIN_UPDATE.getPermission())
                                 .requestMatchers(DELETE, api.getPrefix() + "/doctor/**").hasAnyAuthority(DOCTOR_DELETE.getPermission(), ADMIN_DELETE.getPermission())
-
                                 .anyRequest().authenticated()
                 )
-
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }

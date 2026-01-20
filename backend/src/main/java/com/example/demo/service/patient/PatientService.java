@@ -16,10 +16,9 @@ public interface PatientService {
 
     Patient update(Patient patient);
 
-    // hard delete з логаутом
-    void delete(UUID id, HttpServletRequest request, HttpServletResponse response);
+    void delete(UUID id);
 
-    Patient deactivatePatientById(UUID id, HttpServletRequest request, HttpServletResponse response);
+    Patient deactivateCurrentPatient(Patient patient);
 
     List<Patient> searchPatientsForCurrentDoctor(String name);
 
@@ -30,7 +29,7 @@ public interface PatientService {
 
     Patient updateCurrentPatient(Patient patient);
 
-    void deletePatientProfile(HttpServletRequest request, HttpServletResponse response);
+    Patient deactivatePatientById(UUID id);
 
     // 🔹 Отримати автентифікованого пацієнта
     Patient getAuthenticatedPatient();

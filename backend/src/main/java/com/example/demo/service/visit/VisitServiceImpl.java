@@ -348,6 +348,15 @@ public class VisitServiceImpl implements VisitService {
         );
     }
 
+    @Override
+    public BigDecimal calculateTotalPrice(UUID visitId) {
+        List<VisitServiceItem> items = visitServiceItemService.getItemsForVisit(visitId);
+        return items.stream()
+                .map(i -> i.getPriceAtMomentOfPurchase()
+                        .multiply(BigDecimal.valueOf(i.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     @Transactional
     @Override
     public Visit addItemToVisit(UUID visitId, UUID medicalServiceId, Integer quantity) {
@@ -356,7 +365,9 @@ public class VisitServiceImpl implements VisitService {
             throw new AccessDeniedException("You cannot modify this visit");
         }
         visitServiceItemService.addItemToVisit(visitId, medicalServiceId, quantity);
-        return visitRepository.findById(visitId).orElse(visit);
+
+        return visitRepository.findByIdWithServices(visitId)
+                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
     }
 
     @Transactional
@@ -367,7 +378,9 @@ public class VisitServiceImpl implements VisitService {
             throw new AccessDeniedException("You cannot modify this visit");
         }
         visitServiceItemService.removeItem(itemId);
-        return visitRepository.findById(visitId).orElse(visit);
+
+        return visitRepository.findByIdWithServices(visitId)
+                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
     }
 
     @Transactional
@@ -378,7 +391,8 @@ public class VisitServiceImpl implements VisitService {
             throw new AccessDeniedException("You cannot modify this visit");
         }
         visitServiceItemService.clearItemsForVisit(visitId);
-        return visitRepository.findById(visitId).orElse(visit);
+        return visitRepository.findByIdWithServices(visitId)
+                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
     }
 
     @Transactional
@@ -389,16 +403,9 @@ public class VisitServiceImpl implements VisitService {
             throw new AccessDeniedException("You cannot modify this visit");
         }
         visitServiceItemService.updateItemQuantity(itemId, quantity);
-        return visitRepository.findById(visitId).orElse(visit);
-    }
 
-    @Override
-    public BigDecimal calculateTotalPrice(UUID visitId) {
-        List<VisitServiceItem> items = visitServiceItemService.getItemsForVisit(visitId);
-        return items.stream()
-                .map(i -> i.getPriceAtMomentOfPurchase()
-                        .multiply(BigDecimal.valueOf(i.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return visitRepository.findByIdWithServices(visitId)
+                .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
     }
 
     @Override

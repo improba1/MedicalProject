@@ -7,7 +7,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.specification.user.UserSpecificationBuilder;
 import com.example.demo.service.auth.CurrentUserService;
-import com.example.demo.service.logout.LogoutService;
+import com.example.demo.service.logout.LogoutServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final LogoutService logoutService;
+    private final LogoutServiceImpl logoutService;
     private final PasswordEncoder passwordEncoder;
     private final CurrentUserService currentUserService;
 
@@ -53,11 +53,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(UUID id) {
-        userRepository.deleteById(id);
-    }
-
-    @Override
     public User getCurrentUser() {
         return currentUserService.getAuthenticatedUser();
     }
@@ -70,19 +65,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deactivateCurrentUser(HttpServletRequest request, HttpServletResponse response) {
-        User currentUser = currentUserService.getAuthenticatedUser();
-        currentUser.setActive(false);
-        userRepository.save(currentUser);
-        logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+    public void delete(UUID id) {
+        User user = getById(id);
+        userRepository.delete(user);
     }
 
     @Override
-    public void deactivateUserById(UUID id, HttpServletRequest request, HttpServletResponse response) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+    public User deactivateCurrentUser() {
+        User currentUser = currentUserService.getAuthenticatedUser();
+        currentUser.setActive(false);
+        return userRepository.save(currentUser);
+    }
+
+    @Override
+    public User deactivateUserById(UUID id) {
+        User user = getById(id);
         user.setActive(false);
-        userRepository.save(user);
-        logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+        return userRepository.save(user);
     }
 }

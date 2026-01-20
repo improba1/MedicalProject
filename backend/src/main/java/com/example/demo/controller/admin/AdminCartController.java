@@ -12,6 +12,7 @@ import com.example.demo.service.visit.VisitService;
 import com.example.demo.service.visit_service_item.VisitServiceItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +36,19 @@ public class AdminCartController {
             @PathVariable UUID visitId,
             @RequestBody @Valid VisitServiceItemCreateRequest req
     ) {
-        Visit updated = visitService.addItemToVisit(visitId, req.getMedicalServiceId(), req.getQuantity());
-        return ResponseEntity.ok(ApiResponse.of(200, "Item added", visitMapper.toResponse(updated)));
+        Visit updated = visitService.addItemToVisit(
+                visitId,
+                req.getMedicalServiceId(),
+                req.getQuantity()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Item added",
+                        visitMapper.toResponse(updated)
+                ));
     }
 
     @PutMapping("/{visitId}/cart/update-quantity/items/{itemId}")
@@ -46,8 +58,19 @@ public class AdminCartController {
             @PathVariable UUID itemId,
             @RequestBody @Valid VisitServiceItemUpdateRequest req
     ) {
-        Visit updated = visitService.updateItemQuantity(visitId, itemId, req.getQuantity());
-        return ResponseEntity.ok(ApiResponse.of(200, "Item updated", visitMapper.toResponse(updated)));
+        Visit updated = visitService.updateItemQuantity(
+                visitId,
+                itemId,
+                req.getQuantity()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Item updated",
+                        visitMapper.toResponse(updated)
+                ));
     }
 
     @DeleteMapping("/{visitId}/cart/remove/items/{itemId}")
@@ -57,7 +80,14 @@ public class AdminCartController {
             @PathVariable UUID itemId
     ) {
         Visit updated = visitService.removeItemFromVisit(visitId, itemId);
-        return ResponseEntity.ok(ApiResponse.of(200, "Item removed", visitMapper.toResponse(updated)));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Item removed",
+                        visitMapper.toResponse(updated)
+                ));
     }
 
     @PostMapping("/{visitId}/cart/items/clear")
@@ -66,7 +96,14 @@ public class AdminCartController {
             @PathVariable UUID visitId
     ) {
         Visit updated = visitService.clearCart(visitId);
-        return ResponseEntity.ok(ApiResponse.of(200, "Cart cleared", visitMapper.toResponse(updated)));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Cart cleared",
+                        visitMapper.toResponse(updated)
+                ));
     }
 
     @GetMapping("/{visitId}/cart/get/items")
@@ -75,7 +112,14 @@ public class AdminCartController {
             @PathVariable UUID visitId
     ) {
         var items = visitServiceItemService.getItemsForVisit(visitId);
-        var res = itemMapper.toResponseList(items);
-        return ResponseEntity.ok(ApiResponse.of(200, "Items fetched", res));
+        var response = itemMapper.toResponseList(items);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(
+                        HttpStatus.OK.value(),
+                        "Items fetched",
+                        response
+                ));
     }
 }
