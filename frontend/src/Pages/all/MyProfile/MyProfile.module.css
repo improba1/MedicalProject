@@ -24,7 +24,6 @@
     max-width: 900px;
 }
 
-/* Glassmorphism Card */
 .contentCard {
     display: flex;
     flex-direction: row;
@@ -34,12 +33,11 @@
     border-radius: 24px;
     width: 100%;
     max-width: 900px;
-    height: 75vh; /* Fixed height relative to viewport */
+    height: 75vh;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     overflow: hidden;
 }
 
-/* --- Left Column (Visuals) --- */
 .visualColumn {
     width: 35%;
     background: rgba(255, 255, 255, 0.03);
@@ -56,7 +54,7 @@
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    border: 3px solid rgba(108, 91, 212, 0.5); /* Brand color border */
+    border: 3px solid rgba(108, 91, 212, 0.5); 
     overflow: hidden;
     background: #2a2a2a;
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
@@ -240,7 +238,6 @@
     font-size: 18px;
 }
 
-/* --- Services Section --- */
 .servicesGrid {
     display: grid;
     grid-template-columns: 1fr;
@@ -324,7 +321,6 @@
     background: rgba(108, 91, 212, 0.1);
 }
 
-/* --- Modal --- */
 .modalOverlay {
     position: fixed;
     top: 0;
@@ -444,7 +440,7 @@
 
 .loginGateBtn {
     margin-top: 10px;
-    background: #F5782D; /* Оранжевый акцент */
+    background: #F5782D; 
     color: white;
     border: none;
     padding: 10px 25px;
@@ -459,7 +455,6 @@
     transform: scale(1.05);
 }
 
-/* --- Search Input for Services --- */
 .serviceSearchInput {
     width: 100%;
     background: rgba(0, 0, 0, 0.2);

@@ -25,8 +25,8 @@
     position: fixed;
     width: 100%;
     height: 100%;
-    z-index: 2; /* Убедимся, что картинка не перекрывает кнопки с z-index 10 */
-    pointer-events: none; /* Чтобы картинка не мешала кликать */
+    z-index: 2; 
+    pointer-events: none; 
 }
 
 .txt {
@@ -52,15 +52,13 @@
 
 .dr {
     color: #F5782D;
-    /* Убрал top: 15%, так как это span внутри .welcomeback или рядом, позиционирование должно быть относительно родителя, но если это отдельный блок - оставь position */
 }
 
-/* Фоны под кнопками */
 .newraportbtnbackground {
     position: fixed;
     top: 50%;
     left: -50px;
-    background-color: #1a1a1a; /* Чуть темнее для контраста */
+    background-color: #1a1a1a; 
     height: 30%;
     width: 40%;
     border-radius: 50px;
@@ -73,27 +71,6 @@
     z-index: 4;
 }
 
-/* .buttonsbackgound {
-    position: fixed;
-    top: 45%;
-    left: -50px;
-    background-color: #1a1a1a;
-    height: 40%;
-    width: 45%;
-    border: solid #3e3e3e;;
-    border-radius: 50px;
-    padding: 25px 30px 30px 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    overflow-y: auto;
-    z-index: 4;
-} */
-
-/* --- СТИЛИЗАЦИЯ КНОПОК --- */
-
-/* Общие стили для всех кнопок для чистоты кода */
 .newraportbtn, .button1, .button2 {
     display: flex;
     align-items: center;
@@ -101,40 +78,29 @@
     cursor: pointer;
     z-index: 10;
     
-    /* Форма */
     height: 80px;
     width: 27%;
     border-radius: 50px;
     
-    /* Фон и Стекло */
-    background-color: rgba(18, 18, 18, 0.8); /* Темный полупрозрачный */
-    backdrop-filter: blur(10px); /* Размытие фона под кнопкой */
+    background-color: rgba(18, 18, 18, 0.8);
+    backdrop-filter: blur(10px); 
     
-    /* Текст */
     color: #FFFFFF;
     font-size: 22px;
-    /* font-weight: 600; */
-    /* letter-spacing: 1px; */
-    /* text-transform: uppercase; Для стиля */
-    
-    /* Анимация */
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* --- Правые кнопки (Фиолетовый акцент) --- */
 .button1 {
     position: fixed;
     top: 49%;
     left: 9%;
-    
-    /* Тонкая фиолетовая рамка */
     border: 2px solid #6C5BD4;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .button1:hover {
     transform: translateY(-5px);
-    background-color: rgba(108, 91, 212, 0.15); /* Легкая фиолетовая заливка */
+    background-color: rgba(108, 91, 212, 0.15); 
     box-shadow: 0 0 20px rgba(108, 91, 212, 0.6), inset 0 0 10px rgba(108, 91, 212, 0.2);
     text-shadow: 0 0 8px rgba(108, 91, 212, 0.8);
 }
@@ -147,8 +113,6 @@
     position: fixed;
     top: 66%;
     left: 9%;
-    
-    /* Тонкая фиолетовая рамка */
     border: 2px solid #6C5BD4;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }

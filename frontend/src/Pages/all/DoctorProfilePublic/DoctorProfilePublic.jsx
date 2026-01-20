@@ -1,4 +1,4 @@
-import React from 'react'; // Убрал useState/useEffect, тут они не нужны пока
+import React from 'react'; 
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import styles from '../MyProfile/MyProfile.module.css'; 
 import Background from '../../../Components/Background/Background';
@@ -18,7 +18,6 @@ const DoctorProfilePublic = () => {
         if (!checkIsLoggedIn()) {
             navigate('/signUpForm');
         } else {
-            // Логика если залогинен
         }
     };
 

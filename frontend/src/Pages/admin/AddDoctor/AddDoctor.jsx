@@ -5,7 +5,6 @@ import HeaderWithoutProfile from '../../../Components/HeaderWithoutProfile/Heade
 import { useNavigate } from 'react-router-dom';
 import { addDoctorApi } from '../../../Api/admin/addDoctorApi';
 
-// Список специализаций (в точности как в Java Enum)
 const SPECIALIZATIONS = [
     "CARDIOLOGIST",
     "DERMATOLOGIST",
@@ -38,7 +37,7 @@ const AddDoctor = () => {
     const [dragging, setDragging] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
-    const [successMsg, setSuccessMsg] = useState(''); // State for success message
+    const [successMsg, setSuccessMsg] = useState(''); 
     const navigate = useNavigate();
 
     const handleFile = (file) => {
@@ -55,15 +54,13 @@ const AddDoctor = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // ... (validation checks)
 
         setLoading(true);
         setErrorMsg('');
-        setSuccessMsg(''); // Clear any previous success message
+        setSuccessMsg(''); 
         
         const formData = new FormData();
 
-        // 1. Append fields directly for @ModelAttribute
         formData.append('email', email);
         formData.append('nickname', nickname);
         formData.append('phone', phone);
@@ -78,7 +75,6 @@ const AddDoctor = () => {
         if (startDate) formData.append('startDate', startDate);
         formData.append('rating', rating); 
 
-        // 2. Append the file directly
         if (imageFile) {
             formData.append('image', imageFile); 
         }
@@ -86,10 +82,8 @@ const AddDoctor = () => {
         try {
             const response = await addDoctorApi.createDoctor(formData);
             
-            // Check for success status (either via data object or direct status code)
             if (response && (response.data || response.status === 0 || response.status === 201)) {
                 setSuccessMsg("Doctor created successfully!");
-                // Clear form fields
                 setFirstname('');
                 setLastname('');
                 setEmail('');
@@ -104,9 +98,6 @@ const AddDoctor = () => {
                 setStartDate('');
                 setRating(1);
                 setImageFile(null);
-                
-                // Optional: Navigate away after a short delay
-                // setTimeout(() => navigate('/admin'), 2000); 
             }
         } catch (err) {
             console.error("API Error:", err);
@@ -122,7 +113,6 @@ const AddDoctor = () => {
         }
     };
 
-    // Helper для красивого отображения (CARDIOLOGIST -> Cardiologist)
     const formatEnum = (str) => str.charAt(0) + str.slice(1).toLowerCase();
 
     return (
@@ -136,7 +126,6 @@ const AddDoctor = () => {
                     <form onSubmit={handleSubmit} className={styles.formWrapper}>
                         <div className={styles.inputsContainer}>
                             
-                            {/* --- Left Column: Personal Info --- */}
                             <div className={styles.column}>
                                 <div className={styles.sectionTitle}>Personal Information</div>
                                 
@@ -170,11 +159,9 @@ const AddDoctor = () => {
                                 </div>
                             </div>
 
-                            {/* --- Right Column: Professional & Account --- */}
                             <div className={styles.column}>
                                 <div className={styles.sectionTitle}>Professional Details</div>
                                 
-                                {/* --- ИЗМЕНЕНИЕ ЗДЕСЬ: Выпадающий список Специализаций --- */}
                                 <div className={styles.inputGroup}>
                                     <label className={styles.label}>Specialization</label>
                                     <select 
@@ -234,7 +221,6 @@ const AddDoctor = () => {
                             </div>
                         </div>
 
-                        {/* --- Photo Upload --- */}
                         <div className={styles.inputGroup} style={{marginBottom: 40, width: '100%', maxWidth: '600px'}}>
                             <label className={styles.label}>Profile Photo</label>
                             <div 

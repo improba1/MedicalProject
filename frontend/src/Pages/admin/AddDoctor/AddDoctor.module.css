@@ -1,25 +1,24 @@
 .pageContainer {
     width: 100%;
-    height: 100vh; /* Фиксируем высоту на весь экран */
+    height: 100vh; 
     background-color: black;
     display: flex;
     flex-direction: column;
     position: relative;
     font-family: sans-serif;
-    overflow: hidden; /* Запрещаем скролл всей страницы */
+    overflow: hidden;
 }
 
 .mainContent {
-    flex: 1; /* Занимает все доступное место под хедером */
+    flex: 1; 
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px 70px 50px 70px; /* Отступы */
+    padding: 20px 70px 50px 70px; 
     width: 100%;
     box-sizing: border-box;
-    overflow-y: auto; /* Скроллится ТОЛЬКО контент */
+    overflow-y: auto; 
     
-    /* Стилизация скроллбара */
     scrollbar-width: thin;
     scrollbar-color: #444 transparent;
 }
@@ -53,7 +52,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-    gap: 60px; /* Увеличил отступ между колонками */
+    gap: 60px; 
     margin-bottom: 40px;
 }
 
@@ -61,10 +60,9 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 25px; /* Увеличил отступ между блоками */
+    gap: 25px; 
 }
 
-/* Группировка полей */
 .sectionTitle {
     color: #F5782D;
     font-size: 1.1rem;
@@ -88,7 +86,7 @@
     color: #bbb;
     font-size: 14px;
     font-weight: 500;
-    margin-left: 15px; /* Выравнивание по началу текста в инпуте */
+    margin-left: 15px; 
 }
 
 .input {
@@ -109,9 +107,8 @@
     background-color: #2a2a2c;
 }
 
-/* Специфические стили */
 .selectField {
-    @extend .input; /* Если препроцессор не используется, просто скопируйте стили input */
+    @extend .input; 
     width: 100%;
     padding: 15px 25px;
     border-radius: 50px;
@@ -129,7 +126,6 @@
     border-color: #F5782D;
 }
 
-/* File Upload */
 .fileUploadContainer {
     width: 100%;
     margin-top: 10px;
@@ -145,7 +141,7 @@
     justify-content: center;
     width: 100%;
     padding: 20px;
-    border-radius: 20px; /* Квадратнее для фото */
+    border-radius: 20px; 
     background-color: rgba(255, 255, 255, 0.05);
     border: 2px dashed #444;
     color: #888;

@@ -10,25 +10,20 @@ const EditDoctor = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Пытаемся взять данные из state роутера, если их нет - загрузим по ID
     const initialData = location.state?.doctor;
 
-    // Read-only данные (для контекста)
     const [staticInfo, setStaticInfo] = useState(initialData || {});
     
-    // Редактируемые данные
     const [address, setAddress] = useState(initialData?.address || '');
     const [qualification, setQualification] = useState(initialData?.qualification || '');
     const [rating, setRating] = useState(initialData?.rating || 0);
     
-    // Фото
     const [imageFile, setImageFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(initialData?.image?.downloadUrl || null);
 
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
-    // Если зашли по прямой ссылке и нет данных в state, грузим их
     useEffect(() => {
         if (!initialData && id) {
             const loadDoctor = async () => {
@@ -61,7 +56,6 @@ const EditDoctor = () => {
                 return;
             }
             setImageFile(file);
-            // Создаем временный URL для превью
             setPreviewUrl(URL.createObjectURL(file));
         }
     };
@@ -74,20 +68,16 @@ const EditDoctor = () => {
         try {
             const formData = new FormData();
             
-            // Добавляем строковые поля
             formData.append('address', address);
             formData.append('qualification', qualification);
-            formData.append('rating', Number(rating)); // Убеждаемся что это число
+            formData.append('rating', Number(rating));
 
-            // Добавляем файл ТОЛЬКО если он был выбран
             if (imageFile) {
                 formData.append('image', imageFile);
             }
 
-            // Отправляем запрос
             await adminDoctorApi.updateDoctor(id, formData);
             
-            // Успех -> назад к списку
             navigate('/admin/remove-doctor');
 
         } catch (err) {
@@ -108,7 +98,6 @@ const EditDoctor = () => {
 
                     <form onSubmit={handleSubmit} className={styles.formWrapper}>
                         
-                        {/* --- Read Only Info (Кто это?) --- */}
                         <div className={styles.readOnlySection}>
                             <div className={styles.inputGroup}>
                                 <label className={styles.label}>Full Name</label>
@@ -144,10 +133,8 @@ const EditDoctor = () => {
                             </div>
                         </div>
 
-                        {/* --- Editable Fields --- */}
                         <div className={styles.editSection}>
                             
-                            {/* Левая колонка: Текстовые поля */}
                             <div style={{display:'flex', flexDirection:'column', gap: 20}}>
                                 <div className={styles.inputGroup}>
                                     <label className={styles.label}>Address</label>
@@ -186,7 +173,6 @@ const EditDoctor = () => {
                                 </div>
                             </div>
 
-                            {/* Правая колонка: Фото */}
                             <div className={styles.photoSection}>
                                 <label className={styles.label} style={{marginLeft: 0}}>Profile Photo</label>
                                 

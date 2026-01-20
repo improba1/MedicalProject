@@ -23,19 +23,14 @@ const AppointmentDetails = () => {
 
             setLoading(true);
 
-            // 1. Пытаемся загрузить детали визита (ЭТОТ ЗАПРОС МОЖЕТ УПАСТЬ)
             try {
                 const visitResponse = await doctorVisitApi.getVisitById(visit.id);
                 setVisitData(visitResponse.data);
             } catch (error) {
                 console.error("Error fetching visit details (Backend issue):", error);
-                // Если бек упал, используем данные из пропсов, чтобы страница не была пустой
                 setVisitData(visit);
             }
 
-            // 2. ГРУЗИМ ПАЦИЕНТА ОТДЕЛЬНО
-            // Мы берем ID сразу из 'visit', который передали через навигацию.
-            // Нам плевать, упал предыдущий запрос или нет.
             if (visit.patientId) {
                 try {
                     const patientRes = await doctorVisitApi.getPatientById(visit.patientId);
@@ -92,7 +87,6 @@ const AppointmentDetails = () => {
                 
                 <div className={styles.contentCard}>
                     
-                    {/* --- Basic Info --- */}
                     <div className={styles.sectionHeader}>Basic Info</div>
                     <div className={styles.gridInfo}>
                         <InfoBox 
@@ -119,7 +113,6 @@ const AppointmentDetails = () => {
 
                     <div className={styles.divider} />
 
-                    {/* --- Services --- */}
                     <div className={styles.sectionHeader}>Medical Services</div>
                     <div className={styles.servicesList}>
                         {visitData.services && visitData.services.length > 0 ? (
@@ -136,7 +129,6 @@ const AppointmentDetails = () => {
 
                     <div className={styles.divider} />
 
-                    {/* --- Report Status --- */}
                     <div className={styles.reportSection}>
                         {hasReport ? (
                             <div className={styles.reportSuccess}>
