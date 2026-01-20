@@ -1,126 +1,147 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './BookAppointment.module.css';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import HeaderWithProfile from '../../../Components/HeaderWithoutProfile/HeaderWithoutProfile';
-import { doctorApi } from '../../../Api/doctor/AllDoctorsApi';
+import { availableScheduleApi } from '../../../Api/patient/AvailableScheduleApi';
+import { visitApi } from '../../../Api/patient/visitApi';
+// Импортируем API оплаты
+import { paymentApi } from '../../../Api/patient/paymentApi';
 
 const BookAppointment = () => {
+    const location = useLocation();
     const navigate = useNavigate();
-    const dropdownRef = useRef(null); // Реф для отслеживания клика вне списка
-    
-    const [allSpecializations, setAllSpecializations] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedSpec, setSelectedSpec] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const doctor = location.state?.doctorData;
 
-    // Закрытие при клике вне компонента
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [slots, setSlots] = useState([]);
+    const [selectedTime, setSelectedTime] = useState(null);
+    const [symptoms, setSymptoms] = useState('');
+    const [loading, setLoading] = useState(false);
+    // isSuccess больше не нужен здесь, так как мы уходим на оплату
 
     useEffect(() => {
-        const fetchSpecializations = async () => {
-            try {
-                const response = await doctorApi.getAllDoctors();
-                
-                if (response.status === 0 && response.data) {
-                    const uniqueSpecs = [
-                        ...new Set(response.data.map(doctor => doctor.specialization))
-                    ].filter(Boolean).sort(); 
-                    
-                    setAllSpecializations(uniqueSpecs);
+        if (doctor) {
+            const fetchSlots = async () => {
+                setLoading(true);
+                setSelectedTime(null); 
+                try {
+                    const response = await availableScheduleApi.searchSlots(doctor.id, selectedDate);
+                    const allSlots = response.data || [];
+
+                    const validSlots = allSlots
+                        .filter(slot => slot.availableTime.startsWith(selectedDate))
+                        .sort((a, b) => new Date(a.availableTime) - new Date(b.availableTime));
+
+                    setSlots(validSlots);
+                } catch (error) {
+                    console.error("Error fetching slots", error);
+                    setSlots([]); 
+                } finally {
+                    setLoading(false);
                 }
-            } catch (error) {
-                console.error("Ошибка при загрузке специализаций:", error);
-            } finally {
-                setLoading(false);
+            };
+            fetchSlots();
+        }
+    }, [doctor, selectedDate]);
+
+    const handleBooking = async () => {
+        if (!selectedTime) return;
+
+        try {
+            // 1. Создаем визит
+            const payload = {
+                doctorId: doctor.id,
+                appointmentTime: selectedTime,
+                patientSymptoms: symptoms
+            };
+            
+            const visitResponse = await visitApi.createVisit(payload);
+            // Получаем ID созданного визита (предполагаем, что бекенд возвращает объект визита в data)
+            const createdVisitId = visitResponse.data.id; 
+
+            if (createdVisitId) {
+                // 2. Запрашиваем ссылку на оплату
+                const paymentResponse = await paymentApi.payForVisit(createdVisitId);
+                
+                // В response.data лежит строка URL (судя по твоему примеру JSON)
+                const paymentUrl = paymentResponse.data; 
+
+                if (paymentUrl) {
+                    // 3. Редиректим пользователя на оплату
+                    window.location.href = paymentUrl;
+                } else {
+                    alert("Payment link not found.");
+                }
             }
-        };
-        fetchSpecializations();
-    }, []);
 
-    const filteredSpecs = allSpecializations.filter(spec =>
-        spec?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const handleSelect = (spec) => {
-        setSearchQuery(spec);
-        setSelectedSpec(spec);
-        setIsOpen(false);
+        } catch (error) {
+            console.error(error);
+            alert("Failed to process booking. Please try again.");
+        }
     };
 
     return (
         <AnimatedPage>
             <div className={styles.pageContainer}>
                 <HeaderWithProfile />
-                
-                <main className={styles.mainContent}>
-                    <h1 className={styles.title}>New appointment</h1>
-                    
-                    <div className={styles.card}>
-                        <div className={styles.selectWrapper} ref={dropdownRef}>
-                            <div className={styles.inputContainer}>
-                                <input
-                                    type="text"
-                                    className={styles.selectInput}
-                                    placeholder={loading ? "Loading..." : "Select specialization"}
-                                    value={searchQuery}
-                                    autoComplete="off"
-                                    onChange={(e) => {
-                                        setSearchQuery(e.target.value);
-                                        setIsOpen(true);
-                                        setSelectedSpec(null);
-                                    }}
-                                    onClick={() => setIsOpen(true)} // Открываем при клике
-                                    onFocus={() => setIsOpen(true)} // Открываем при фокусе
-                                    disabled={loading}
-                                />
-                                <div 
-                                    className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}
-                                    onClick={() => setIsOpen(!isOpen)}
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M6 9l6 6 6-6" />
-                                    </svg>
-                                </div>
+                <main className={styles.content}>
+                    <div className={styles.bookingCard}>
+                        <h1 className={styles.title}>Book an Appointment</h1>
+                        
+                        <div className={styles.doctorBrief}>
+                            <div className={styles.miniAvatar}>
+                                {doctor?.firstname?.[0]}{doctor?.lastname?.[0]}
                             </div>
+                            <div>
+                                <h3>Dr. {doctor?.firstname} {doctor?.lastname}</h3>
+                                <span>{doctor?.specialization}</span>
+                            </div>
+                        </div>
 
-                            {/* Выпадающий список */}
-                            {isOpen && (
-                                <ul className={styles.dropdown}>
-                                    {filteredSpecs.length > 0 ? (
-                                        filteredSpecs.map((spec, index) => (
-                                            <li 
-                                                key={index} 
-                                                className={styles.dropdownItem}
-                                                onClick={() => handleSelect(spec)}
-                                            >
-                                                {spec}
-                                            </li>
-                                        ))
-                                    ) : (
-                                        <li className={styles.noResults}>
-                                            {loading ? "Loading..." : "No results found"}
-                                        </li>
-                                    )}
-                                </ul>
-                            )}
+                        <div className={styles.formSection}>
+                            <label>1. Select Date</label>
+                            <input 
+                                type="date" 
+                                className={styles.dateInput}
+                                value={selectedDate}
+                                min={new Date().toISOString().split('T')[0]}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                            />
+                        </div>
+
+                        <div className={styles.formSection}>
+                            <label>2. Select Available Time</label>
+                            <div className={styles.slotsGrid}>
+                                {loading ? <p>Loading slots...</p> : 
+                                 slots.length > 0 ? slots.map((slot) => (
+                                    <button 
+                                        key={slot.id}
+                                        className={`${styles.slotBtn} ${selectedTime === slot.availableTime ? styles.activeSlot : ''}`}
+                                        onClick={() => setSelectedTime(slot.availableTime)}
+                                    >
+                                        {new Date(slot.availableTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                    </button>
+                                )) : <p className={styles.noSlots}>No slots available for this date.</p>}
+                            </div>
+                        </div>
+
+                        <div className={styles.formSection}>
+                            <label>3. Describe your symptoms</label>
+                            <textarea 
+                                className={styles.textarea}
+                                placeholder="Write briefly what bothers you..."
+                                value={symptoms}
+                                onChange={(e) => setSymptoms(e.target.value)}
+                            />
                         </div>
 
                         <button 
-                            className={styles.nextBtn}
-                            onClick={() => navigate('/book-appointment/select-doctor', { state: { specialization: selectedSpec } })}
-                            disabled={!selectedSpec || loading}
+                            className={styles.confirmBtn}
+                            disabled={!selectedTime}
+                            onClick={handleBooking}
                         >
-                            Next step
+                            Proceed to Payment
                         </button>
                     </div>
                 </main>

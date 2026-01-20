@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import React from 'react'; // Убрал useState/useEffect, тут они не нужны пока
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import styles from '../MyProfile/MyProfile.module.css'; 
 import Background from '../../../Components/Background/Background';
 import BackBtn from '../../../Components/BackButton/BackButton';
@@ -8,26 +8,22 @@ import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
 const DoctorProfilePublic = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { id } = useParams(); 
 
     const checkIsLoggedIn = () => {
-        return !!localStorage.getItem('acces_token'); 
+        return !!localStorage.getItem('access_token'); 
     };
 
     const handleBookClick = (e) => {
         e.stopPropagation();
-
         if (!checkIsLoggedIn()) {
             navigate('/signUpForm');
         } else {
-            console.log("User is logged in, proceed to booking");
-            // navigate(`/booking/${doctor.id}`); 
+            // Логика если залогинен
         }
     };
 
     const doctorData = location.state?.doctorData;
 
-    
     if (!doctorData) {
         return (
             <Background>
@@ -88,6 +84,18 @@ const DoctorProfilePublic = () => {
 
                             <div className={styles.divider} />
                             
+                            <SectionTitle title="Medical Services" />
+                            <div className={styles.loginGate}>
+                                <div className={styles.loginGateIcon}>🔒</div>
+                                <h4>Full Service List Hidden</h4>
+                                <p>Please log in or register to view the complete list of medical services and prices.</p>
+                                <Link to="/login" className={styles.loginGateBtn}>
+                                    Log In to View
+                                </Link>
+                            </div>
+
+                            <div className={styles.divider} />
+
                             <SectionTitle title="Contact Details" />
                             <div className={styles.infoGrid}>
                                 <InfoRow label="Email" value={doctorData.email} />

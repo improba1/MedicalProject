@@ -1,32 +1,36 @@
-.pageContainer{
+.pageContainer {
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: 90vh;
+    align-items: center; /* Центрирует по вертикали */
+    min-height: 100vh;   /* Заставляет блок быть высотой минимум с экран */
     width: 100%;
+    padding: 20px;       /* Внутренний отступ, чтобы форма не касалась краев */
+    box-sizing: border-box; /* Чтобы padding не добавлял лишнюю ширину */
+    overflow-x: hidden;  /* Убирает горизонтальный скролл */
 }
 
 .backBtn{
     position: absolute;
 }
 
-.wrapper{
+.wrapper {
     position: relative;
     width: 850px; 
-    height: auto; 
-    min-height: 600px;
+    max-width: 100%;     /* ВАЖНО: Если экран меньше 850px, блок сожмется */
+    height: 690px; 
     background-color: rgb(24, 24, 24);
     border-radius: 40px;
     padding: 40px 60px;
     z-index: 10;
     box-sizing: border-box;
+    /* Убрал min-height: 600px, так как auto лучше справится с контентом */
 }
-
 .inputsContainer {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Две равные колонки */
-    gap: 0 40px; /* Отступ между колонками */
+    grid-template-columns: 1fr 1fr;
+    gap: 0 40px;
     margin-bottom: 20px;
+    margin-top: 20px; /* Добавлено */
 }
 
 .fullWidth {
@@ -41,7 +45,7 @@
 .wrapper .header h1{
     text-align: center;
     color: white;
-    margin-bottom: 30px;
+    margin-bottom: 1px;
 }
 
 .wrapper .inputBox{

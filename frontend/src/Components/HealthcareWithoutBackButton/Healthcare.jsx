@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './SecondHealthcareText.module.css';
+import styles from './Healthcare.module.css';
 import { Link } from 'react-router-dom';
 
-const SecondHealthcare = () => {
+const Healthcare = () => {
     let link;
     if (localStorage.role === 'DOCTOR'){
         link = '/doc-home-page';
@@ -13,10 +13,9 @@ const SecondHealthcare = () => {
     }
     return (
         <Link to={link}>
-            <span className={styles.sechealthcare}>Healthcare</span>
+            <span className={styles.healthcare}>Healthcare</span>
         </Link>
     );
 };
 
-export default SecondHealthcare;
-
+export default Healthcare;

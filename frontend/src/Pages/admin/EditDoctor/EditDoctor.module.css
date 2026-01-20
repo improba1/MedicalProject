@@ -1,0 +1,187 @@
+.pageContainer {
+    width: 100%;
+    height: 100vh;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mainContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 70px 50px 70px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #444 transparent;
+}
+
+.mainContent::-webkit-scrollbar {
+    width: 8px;
+}
+.mainContent::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 4px;
+}
+
+.title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.formWrapper {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.readOnlySection {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.editSection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.label {
+    color: #bbb;
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 15px;
+}
+
+/* Стили для редактируемых полей */
+.input {
+    width: 100%;
+    padding: 15px 25px;
+    border-radius: 50px;
+    background-color: #222224;
+    border: 1px solid #444;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.input:focus {
+    border-color: #F5782D;
+    background-color: #2a2a2c;
+}
+
+/* Стили для Read-Only полей */
+.inputReadOnly {
+    width: 100%;
+    padding: 15px 25px;
+    border-radius: 50px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid #333;
+    color: #888;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    cursor: not-allowed;
+}
+
+/* Загрузка фото */
+.photoSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.previewImage {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #F5782D;
+    background: #222;
+}
+
+.fileUploadLabel {
+    background: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+    border: 1px solid #444;
+}
+
+.fileUploadLabel:hover {
+    background: #444;
+    border-color: #F5782D;
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.actionButtons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.cancelBtn {
+    padding: 15px 40px;
+    border-radius: 50px;
+    background: transparent;
+    border: 1px solid #555;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.saveBtn {
+    padding: 15px 60px;
+    border-radius: 50px;
+    background: #F5782D;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(245, 120, 45, 0.3);
+}
+
+.saveBtn:hover {
+    transform: translateY(-2px);
+}
+
+.errorMessage {
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}

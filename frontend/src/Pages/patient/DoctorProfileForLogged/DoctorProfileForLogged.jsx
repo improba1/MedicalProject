@@ -1,0 +1,193 @@
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import styles from '../../all/MyProfile/MyProfile.module.css'; 
+import Background from '../../../Components/Background/Background';
+import BackBtn from '../../../Components/BackButton/BackButton';
+import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import { patientMedicalServiceApi } from '../../../Api/patient/medicalServiceApi';
+
+const DoctorProfileForLogged = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const doctorData = location.state?.doctorData;
+
+    const [services, setServices] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    
+    // Состояние для сворачивания/разворачивания (false = свернуто изначально)
+    const [isServicesExpanded, setIsServicesExpanded] = useState(false);
+
+    // Загрузка услуг
+    useEffect(() => {
+        if (doctorData?.id) {
+            const loadServices = async () => {
+                try {
+                    const response = await patientMedicalServiceApi.search(doctorData.id, searchQuery);
+                    // Проверка структуры данных (фикс из прошлого ответа)
+                    const servicesArray = Array.isArray(response.data) ? response.data : (response.data?.data || []); 
+                    setServices(servicesArray);
+                } catch (error) {
+                    console.error("Failed to load services", error);
+                }
+            };
+            
+            const delayDebounceFn = setTimeout(() => {
+                loadServices();
+            }, 500);
+
+            return () => clearTimeout(delayDebounceFn);
+        }
+    }, [doctorData, searchQuery]);
+
+    const handleBookClick = () => {
+        navigate('/book-appointment', { state: { doctorData: doctorData } });
+    };
+
+    if (!doctorData) {
+        return (
+            <Background>
+                <div style={{color:'white', textAlign:'center', marginTop:'20%'}}>
+                    Doctor data not found. <br/>
+                    <button onClick={() => navigate(-1)} style={{marginTop:20, cursor:'pointer'}}>Go Back</button>
+                </div>
+            </Background>
+        );
+    }
+
+    const imageUrl = doctorData.image?.downloadUrl;
+
+    return (
+        <Background>
+            <div className={styles.topNav}>
+                <div className={styles.navLeft}>
+                    <BackBtn />
+                    <HealthcareTxt />
+                </div>
+            </div>
+
+            <div className={styles.wrapper}>
+                <h1 className={styles.pageTitle}>Specialist Profile</h1>
+                
+                <div className={styles.contentCard}>
+                    <div className={styles.visualColumn}>
+                        <div className={styles.photoContainer}>
+                            {imageUrl ? (
+                                <img 
+                                    src={imageUrl} 
+                                    alt="Profile" 
+                                    className={styles.profileImage}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200?text=No+Photo'; }}
+                                />
+                            ) : (
+                                <div className={styles.placeholderImage}>No Photo</div>
+                            )}
+                        </div>
+                        
+                        <h2 className={styles.userName}>{doctorData.firstname} {doctorData.lastname}</h2>
+                        <span className={styles.userRole}>{doctorData.specialization || 'Doctor'}</span>
+                        
+                        <div className={styles.ratingBadge}>
+                            <span>⭐ {doctorData.rating || 0}</span>
+                        </div>
+                    </div>
+
+                    <div className={styles.detailsColumn}>
+                        <div className={styles.detailsScrollArea}>
+                            <SectionTitle title="Professional Information" />
+                            <div className={styles.infoGrid}>
+                                <InfoRow label="Specialization" value={doctorData.specialization} />
+                                <InfoRow label="Qualification" value={doctorData.qualification} />
+                                <InfoRow label="Experience" value={`${doctorData.experienceYears || 0} years`} />
+                                <InfoRow label="Started working" value={doctorData.startDate} />
+                            </div>
+
+                            <div className={styles.divider} />
+                            
+                            {/* --- COLLAPSIBLE MEDICAL SERVICES --- */}
+                            <div 
+                                onClick={() => setIsServicesExpanded(!isServicesExpanded)}
+                                style={{
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center', 
+                                    cursor: 'pointer',
+                                    marginBottom: '10px'
+                                }}
+                            >
+                                <SectionTitle title="Medical Services" />
+                                {/* Стрелочка меняется в зависимости от состояния */}
+                                <div style={{ transform: isServicesExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b4cc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            {/* Показываем контент только если isServicesExpanded === true */}
+                            {isServicesExpanded && (
+                                <div style={{animation: 'fadeIn 0.3s ease-in-out'}}>
+                                    <input 
+                                        type="text"
+                                        className={styles.serviceSearchInput}
+                                        placeholder="Search services..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onClick={(e) => e.stopPropagation()} // Чтобы клик по инпуту не сворачивал список
+                                    />
+
+                                    <div className={styles.servicesGrid}>
+                                        {services.length > 0 ? (
+                                            services.map(service => (
+                                                <div key={service.id} className={styles.serviceCard}>
+                                                    <div className={styles.serviceInfo}>
+                                                        <h4>{service.name}</h4>
+                                                        <p>{service.description}</p>
+                                                        <span className={styles.servicePrice}>${service.price}</span>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div style={{color: '#888', textAlign: 'center', padding: '20px'}}>
+                                                No services found.
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className={styles.divider} />
+                            
+                            <SectionTitle title="Contact Details" />
+                            <div className={styles.infoGrid}>
+                                <InfoRow label="Email" value={doctorData.email} />
+                                <InfoRow label="Phone" value={doctorData.phone} />
+                            </div>
+                        </div>
+                        
+                        <div className={styles.actionArea}>
+                            <button 
+                                className={styles.editButton} 
+                                onClick={handleBookClick}
+                            >
+                                Book Appointment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Background>
+    );
+};
+
+const SectionTitle = ({ title }) => (
+    <h3 className={styles.sectionTitle} style={{margin: 0}}>{title}</h3>
+);
+
+const InfoRow = ({ label, value }) => (
+    <div className={styles.infoRow}>
+        <span className={styles.label}>{label}:</span>
+        <span className={styles.value}>{value || '-'}</span>
+    </div>
+);
+
+export default DoctorProfileForLogged;

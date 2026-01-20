@@ -19,12 +19,15 @@ import AppointmentDetails from './Pages/doctor/AppointmentDetails/AppointmentDet
 import EditRaport from './Pages/doctor/EditRaport/EditRaport';
 import EditProfile from './Pages/all/EditProfile/EditProfile';
 import AdminHomePage from './Pages/admin/AdminHomePage/AdminHomePage';
-import RemoveDoctor from './Pages/admin/RemoveDoctor/RemoveDoctor';
+import RemoveDoctor from './Pages/admin/ManageDoctors/ManageDoctors';
 import AddDoctor from './Pages/admin/AddDoctor/AddDoctor';
 import PatientHomePage from './Pages/patient/PatientHomePage/PatientHomePage';
 import BookAppointment from './Pages/patient/BookAppointment/BookAppointment';
 import Start from './Pages/all/PublicFindDoctors/PublicFindDoctors';
 import DoctorProfilePublic from './Pages/all/DoctorProfilePublic/DoctorProfilePublic';
+import DoctorProfileForLogged from './Pages/patient/DoctorProfileForLogged/DoctorProfileForLogged';
+import EditDoctor from './Pages/admin/EditDoctor/EditDoctor';
+
 
 function App() {
   const location = useLocation();
@@ -51,7 +54,7 @@ function App() {
         <Route path="/edit-raport" element={<EditRaport />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/doctor-profile-public" element={<DoctorProfilePublic />} />
-
+        <Route path="admin/edit-doctor/:id" element={<EditDoctor />} />
 
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/admin/remove-doctor" element={<RemoveDoctor />} />
@@ -61,6 +64,7 @@ function App() {
 
         <Route path="/patient" element={<PatientHomePage />} />
         <Route path="/book-appointment" element={<BookAppointment />} />
+        <Route path="/doctor-profile-logged" element={<DoctorProfileForLogged />} />
 
 
 

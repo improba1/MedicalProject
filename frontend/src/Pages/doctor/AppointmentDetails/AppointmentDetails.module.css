@@ -1,90 +1,256 @@
-
-.container {
+.navHeader {
     position: fixed;
-    padding-left: 5%;
-    padding-top: 5%;
-    color: white;
-    font-family: 'Arial', sans-serif;
-}
-
-
-.pageTitle {
-    position: fixed;
-    left: 5%;
-    top: 150px;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.contentRow {
-    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
     display: flex;
-    left: 5%;
-    top: 30%;
+    justify-content: space-between;
     align-items: center;
-    gap: 80px; 
-    flex-wrap: wrap; 
+    padding: 0 40px;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(15px);
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    box-sizing: border-box;
 }
 
+.navLeft {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
 
-.infoCard {
-    background-color: #1a1a1a; 
-    border-radius: 24px;      
-    padding: 40px;
-    min-width: 350px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+/* --- Container Fix --- */
+.container {
+    /* Фиксируем высоту контейнера на весь экран */
+    height: 100%; 
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    justify-content: center; /* Центрируем карточку */
+    padding-top: 80px; /* Отступ от хедера */
+    box-sizing: border-box;
+    overflow: hidden; /* Запрещаем скролл самой страницы */
 }
 
-
-.infoRow {
-    font-size: 1.1rem;
-    line-height: 1.6;
-}
-
-.label {
-    color: #b0b0b0; 
-    font-weight: 400;
-}
-
-.value {
-    color: #ffffff;
-    font-weight: 400;
-    margin-left: 5px;
-}
-
-
-.documentLink {
-    color: #ffffff;
-    text-decoration: underline;
-    cursor: pointer;
-    margin-left: 5px;
-}
-.documentLink:hover {
-    color: #cccccc;
-}
-
-
-.editBtn {
-    position: fixed;
-    bottom: 6%;
-    right: 4%;
-    background-color: #7b61ff; 
+.pageTitle {
     color: white;
-    font-size: 1.2rem;
-    font-weight: 600;
-    border: none;
-    padding: 20px 60px; 
-    border-radius: 50px; 
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(123, 97, 255, 0.4); 
-    transition: transform 0.2s, background-color 0.2s;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    flex-shrink: 0; /* Чтобы заголовок не сплющивался */
 }
 
-.editBtn:hover {
-    background-color: #6a50e0;
-    transform: scale(1.05);
+/* --- Scrolling Content Card --- */
+.contentCard {
+    background: rgba(30, 30, 30, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 40px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    
+    /* Скролл внутри карточки */
+    max-height: 70vh; /* Максимальная высота карточки */
+    overflow-y: auto; /* Включаем вертикальный скролл */
+    
+    /* Стилизация скроллбара */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.contentCard::-webkit-scrollbar {
+    width: 6px;
+}
+.contentCard::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.sectionHeader {
+    color: #6C5BD4;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+}
+
+.gridInfo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.infoBox {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.iconCircle {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ddd;
+}
+
+.boxLabel {
+    display: block;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 2px;
+}
+
+.boxValue {
+    display: block;
+    font-size: 1rem;
+    color: white;
+    font-weight: 600;
+}
+
+.divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 30px 0;
+}
+
+.servicesList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.serviceItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.servicePrice {
+    font-weight: bold;
+    color: #4BB543;
+}
+
+.noData {
+    color: #888;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* Report Statuses */
+.reportSection {
+    margin-top: 10px;
+}
+
+.reportSuccess, .reportWarning {
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.reportSuccess {
+    background: rgba(75, 181, 67, 0.1);
+    border: 1px solid rgba(75, 181, 67, 0.3);
+}
+
+.reportWarning {
+    background: rgba(245, 120, 45, 0.1);
+    border: 1px solid rgba(245, 120, 45, 0.3);
+}
+
+.reportIcon {
+    display: flex;
+    align-items: center;
+}
+
+.reportSuccess h3 { color: #4BB543; margin: 0 0 5px 0; font-size: 1.1rem; }
+.reportWarning h3 { color: #F5782D; margin: 0 0 5px 0; font-size: 1.1rem; }
+
+.reportSuccess p, .reportWarning p { color: #ccc; margin: 0; font-size: 0.9rem; }
+
+.mono {
+    font-family: monospace;
+    background: rgba(0,0,0,0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.actionLink {
+    text-decoration: none;
+}
+
+.primaryBtn {
+    background: #6C5BD4;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(108, 91, 212, 0.4);
+    transition: transform 0.2s;
+}
+
+.primaryBtn:hover {
+    transform: translateY(-3px);
+}
+
+.viewReportBtn {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid #4BB543;
+    color: #4BB543;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.viewReportBtn:hover {
+    background: rgba(75, 181, 67, 0.1);
+}
+
+.centerMessage {
+    color: white;
+    text-align: center;
+    margin-top: 20vh;
+    font-size: 1.5rem;
+}
+
+.backLink {
+    margin-top: 20px;
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
 }

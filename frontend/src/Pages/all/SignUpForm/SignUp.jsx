@@ -84,7 +84,6 @@ const SignUpForm = () => {
                                 </div>
 
                                    <div className={styles.inputsContainer}>
-                                        {/* Имя и Фамилия */}
                                         <div className={styles.inputBox}>
                                             <input required type="text" placeholder="First name" value={firstname} onChange={(e) => setFirstName(e.target.value)} />
                                         </div>
@@ -92,7 +91,6 @@ const SignUpForm = () => {
                                             <input required type="text" placeholder="Last name" value={lastname} onChange={(e) => setLastName(e.target.value)} />
                                         </div>
 
-                                        {/* Почта и Телефон */}
                                         <div className={styles.inputBox}>
                                             <input required type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                         </div>
@@ -100,7 +98,6 @@ const SignUpForm = () => {
                                             <input required type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                                         </div>
 
-                                        {/* Пол и Дата рождения */}
                                         <div className={styles.inputBox}>
                                             <select 
                                                 required 
@@ -126,7 +123,6 @@ const SignUpForm = () => {
                                             />
                                         </div>
 
-                                        {/* Логин и Пароль */}
                                         <div className={styles.inputBox}>
                                             <input required type="text" placeholder="Login" value={nickname} onChange={(e) => setLogin(e.target.value)} />
                                         </div>
@@ -134,7 +130,6 @@ const SignUpForm = () => {
                                             <input required type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                                         </div>
 
-                                        {/* Адрес на всю ширину (добавляем класс fullWidth) */}
                                         <div className={`${styles.inputBox} ${styles.fullWidth}`}>
                                             <input required type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
                                         </div>

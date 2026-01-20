@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
 import Background from '../../../Components/Background/Background';
 import BackBtn from '../../../Components/BackButton/BackButton';
 import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
 import styles from './MyPatients.module.css';
 import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
-import { reportApi } from '../../../Api/doctor/raportApi';  
+// Импортируем новый API
+import { doctorVisitApi } from '../../../Api/doctor/visitApi';  
 
 const MyPatients = () => {
     const navigate = useNavigate();
@@ -17,10 +18,28 @@ const MyPatients = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await reportApi.getAllReports();  
-                const list = response.data || [];
-                const sortedList = list.sort((a, b) => 
-                    new Date(b.appointmentTime) - new Date(a.appointmentTime)
+                // 1. Получаем список визитов
+                const response = await doctorVisitApi.getUpcomingVisits();  
+                const visits = response.data || [];
+                
+                // 2. Для каждого визита подгружаем данные пациента
+                const enrichedVisits = await Promise.all(visits.map(async (visit) => {
+                    try {
+                        if (visit.patientId) {
+                            const patientRes = await doctorVisitApi.getPatientById(visit.patientId);
+                            // Сохраняем данные пациента внутри объекта визита
+                            return { ...visit, patientData: patientRes.data };
+                        }
+                        return visit;
+                    } catch (err) {
+                        console.error(`Failed to load patient ${visit.patientId}`, err);
+                        return visit; 
+                    }
+                }));
+
+                // 3. Сортировка (Ближайшие сверху)
+                const sortedList = enrichedVisits.sort((a, b) => 
+                    new Date(a.appointmentTime) - new Date(b.appointmentTime)
                 );
 
                 setAppointments(sortedList);
@@ -34,13 +53,17 @@ const MyPatients = () => {
         fetchData();
     }, []);
 
+    // --- ВОТ ЭТИ ФУНКЦИИ БЫЛИ ПРОПУЩЕНЫ ---
     const getCardStyle = (statusString) => {
         const status = statusString ? statusString.toUpperCase() : 'UNKNOWN';
-        if (status === 'SCHEDULED' || status === 'COMPLETED' || status === 'CONFIRMED') {
-            return `${styles.card} ${styles.statusNormal}`;
+        if (status === 'SCHEDULED' || status === 'CONFIRMED') {
+            return `${styles.card} ${styles.statusNormal}`; 
         } 
+        else if (status === 'COMPLETED') {
+            return `${styles.card} ${styles.statusGray}`; 
+        }
         else {
-            return `${styles.card} ${styles.statusRed}`;
+            return `${styles.card} ${styles.statusRed}`; 
         }
     };
 
@@ -55,13 +78,19 @@ const MyPatients = () => {
             hour12: false  
         });
     };
+    // ----------------------------------------
 
     const filteredList = appointments.filter(item => {
         const term = searchTerm.toLowerCase();
+        
+        // Поиск по ID
         const pid = item.patientId ? item.patientId.toLowerCase() : '';
+        // Поиск по Имени/Фамилии (если загрузились)
+        const pName = item.patientData ? item.patientData.firstname.toLowerCase() : '';
+        const pLast = item.patientData ? item.patientData.lastname.toLowerCase() : '';
         const stat = item.status ? item.status.toLowerCase() : '';
         
-        return pid.includes(term) || stat.includes(term);
+        return pid.includes(term) || stat.includes(term) || pName.includes(term) || pLast.includes(term);
     });
 
     return (
@@ -71,13 +100,13 @@ const MyPatients = () => {
             <HealthcareTxt />
             <MyProfileBtn />
             
-            <h1 className={styles.pageTitle}>My Appointments</h1>
-            <p className={styles.pageSubtitle}>Overview of your visits history</p>
+            <h1 className={styles.pageTitle}>Active Appointments</h1>
+            <p className={styles.pageSubtitle}>Upcoming visits schedule</p>
             
             <div className={styles.contentContainer}>
                 <input 
                     type="text" 
-                    placeholder="Search by Patient ID or Status..." 
+                    placeholder="Search by Name or ID..." 
                     className={styles.searchInput}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -85,13 +114,13 @@ const MyPatients = () => {
 
                 {loading ? (
                     <div style={{color: 'white', textAlign: 'center', marginTop: '20px'}}>
-                        Loading data...
+                        Loading schedule...
                     </div>
                 ) : (
                     <div className={styles.listWrapper}>
                         {filteredList.length === 0 ? (
                             <div style={{color: 'white', textAlign: 'center', opacity: 0.8}}>
-                                No appointments found.
+                                No active appointments found.
                             </div>
                         ) : (
                             filteredList.map((item) => (
@@ -105,20 +134,27 @@ const MyPatients = () => {
                                             {formatDate(item.appointmentTime)}
                                         </span>
                                         
-                                        <span className={styles.subText}>
-                                            Patient: {item.patientId}
+                                        <span className={styles.diseaseTitle}>
+                                            {item.patientData 
+                                                ? `${item.patientData.firstname} ${item.patientData.lastname}`
+                                                : "Loading Name..."
+                                            }
                                         </span>
 
-                                        {item.raportId && (
-                                            <span style={{fontSize: '11px', color: '#999'}}>
-                                                Raport #: {item.raportId.slice(0, 8)}...
+                                        <span className={styles.subText}>
+                                            ID: <span style={{fontFamily: 'monospace'}}>{item.patientId.slice(0, 8)}...</span>
+                                        </span>
+
+                                        {item.services && item.services.length > 0 && (
+                                            <span style={{fontSize: '12px', color: '#ccc', marginTop: '5px'}}>
+                                                Service: {item.services[0].serviceName || "Consultation"}
                                             </span>
                                         )}
                                     </div>
 
                                     <div className={styles.statusColumn}>
                                         <span className={styles.statusTag}>
-                                            {item.status || "Unknown"}
+                                            {item.status || "SCHEDULED"}
                                         </span>
                                     </div>
                                 </div>

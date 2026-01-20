@@ -68,7 +68,7 @@ const LoginForm = () => {
 
                                 <div className={styles.header}>
                                     <BackButton className={styles.backBtn} />
-                                    <h1 className={styles.title}>Sign In</h1>
+                                    <h1 className={styles.title}>Log In</h1>
                                 </div>
 
                                     <div className={styles.inputBox}>
@@ -98,7 +98,7 @@ const LoginForm = () => {
 
 
 
-                                <button type="submit" className={styles.submitBtn}>Sign In</button>
+                                <button type="submit" className={styles.submitBtn}>Log In</button>
 
                                 <div className={styles.registerLink}>
                                     <p>Don't have an account? <Link className={styles.transLink} to="/signUpForm">Sign Up</Link></p>

@@ -23,7 +23,6 @@ const NewRaport = (props) => {
     };
 
     const handleGenerateDiagnosis = async () => {
-        // Basic Validation
         if (!aiFormData.age || !aiFormData.sex || !aiFormData.symptoms) {
             setAiResult("Please fill in all fields (Symptoms, Sex, Age).");
             return;
@@ -31,14 +30,10 @@ const NewRaport = (props) => {
 
         setLoading(true);
         try {
-            // Data Formatting
-            // 1. Age: Convert to integer
             const ageInt = parseInt(aiFormData.age, 10);
 
-            // 2. Gender: Map 'MALE'/'FEMALE' to 'male'/'female'
             const gender = aiFormData.sex.toLowerCase();
 
-            // 3. Symptoms: Convert string to array (split by comma)
             const symptomsArray = aiFormData.symptoms.split(',').map(s => s.trim()).filter(s => s.length > 0);
 
             const payload = {
@@ -88,7 +83,6 @@ const NewRaport = (props) => {
                 <button className={styles.create}>Create referral</button>
             </Link>
 
-            {/* AI Section */}
             <div className={styles.aiContainer}>
                 <h2 className={styles.aiTitle}>AI Assistant</h2>
                 <AnimatedInput

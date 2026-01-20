@@ -1,5 +1,5 @@
 .background {
-    position: fixed; /* или absolute */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -7,20 +7,29 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: 1; /* ниже черного квадрата */
+    z-index: 1;
 }
 
-.backgroundBlack{
-    position: absolute; 
+.backgroundBlack {
+    position: absolute;
     left: 2%;
     right: 2%;
     top: 2%;
     bottom: 2%;
     border-radius: 50px;
     background-color: black;
-    z-index: 2; 
+    z-index: 2;
 }
-.txt{
+
+.img {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* Убедимся, что картинка не перекрывает кнопки с z-index 10 */
+    pointer-events: none; /* Чтобы картинка не мешала кликать */
+}
+
+.txt {
     position: fixed;
     left: 110px;
     right: 30%;
@@ -28,56 +37,30 @@
     color: white;
     font-size: 24px;
     font-weight: 600;
+    z-index: 5;
 }
 
-
-.welcomeback{
+.welcomeback {
     position: fixed;
-    left: 8%;
+    left: 6%;
     top: 15%;
     color: white;
     font-size: 50px;
     font-weight: 700;
+    z-index: 5;
 }
 
-.dr{
-    top: 15%;
+.dr {
     color: #F5782D;
-    font-size: 50px;
-    font-weight: 700;
+    /* Убрал top: 15%, так как это span внутри .welcomeback или рядом, позиционирование должно быть относительно родителя, но если это отдельный блок - оставь position */
 }
 
-.newraportbtn{
-    position: fixed;
-    top: 60%;
-    left: 3%;
-    width: 27%;
-    height: 80px;
-    border-radius: 50px;
-    background-color: #F5782D;
-    border-color: #242424;
-    color: #FFFFFF;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s;
-}
-
-.newraportbtn:hover {
-    background-color: #ea580c;
-    transform: scale(1.05);
-}
-
-
-
-.newraportbtnbackground{
+/* Фоны под кнопками */
+.newraportbtnbackground {
     position: fixed;
     top: 50%;
     left: -50px;
-    background-color: #242424;
+    background-color: #1a1a1a; /* Чуть темнее для контраста */
     height: 30%;
     width: 40%;
     border-radius: 50px;
@@ -87,15 +70,17 @@
     align-items: flex-start;
     gap: 5px;
     overflow-y: auto;
+    z-index: 4;
 }
 
-.buttonsbackgound{
+/* .buttonsbackgound {
     position: fixed;
     top: 45%;
-    right: -50px;
-    background-color: #242424;
+    left: -50px;
+    background-color: #1a1a1a;
     height: 40%;
-    width: 50%;
+    width: 45%;
+    border: solid #3e3e3e;;
     border-radius: 50px;
     padding: 25px 30px 30px 50px;
     display: flex;
@@ -103,60 +88,78 @@
     align-items: flex-start;
     gap: 5px;
     overflow-y: auto;
-}
+    z-index: 4;
+} */
 
-.button1{
-    position: fixed;
-    top: 54%;
-    right: 9%;
-    width: 27%;
-    height: 80px;
-    border-radius: 50px;
-    background-color: #6C5BD4;
-    color: #FFFFFF;
-    cursor: pointer;
+/* --- СТИЛИЗАЦИЯ КНОПОК --- */
+
+/* Общие стили для всех кнопок для чистоты кода */
+.newraportbtn, .button1, .button2 {
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s;
+    z-index: 10;
+    
+    /* Форма */
+    height: 80px;
+    width: 27%;
+    border-radius: 50px;
+    
+    /* Фон и Стекло */
+    background-color: rgba(18, 18, 18, 0.8); /* Темный полупрозрачный */
+    backdrop-filter: blur(10px); /* Размытие фона под кнопкой */
+    
+    /* Текст */
+    color: #FFFFFF;
+    font-size: 22px;
+    /* font-weight: 600; */
+    /* letter-spacing: 1px; */
+    /* text-transform: uppercase; Для стиля */
+    
+    /* Анимация */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* --- Правые кнопки (Фиолетовый акцент) --- */
+.button1 {
+    position: fixed;
+    top: 49%;
+    left: 9%;
+    
+    /* Тонкая фиолетовая рамка */
+    border: 2px solid #6C5BD4;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .button1:hover {
-    background-color: #5447a5;
-    transform: scale(1.05);
+    transform: translateY(-5px);
+    background-color: rgba(108, 91, 212, 0.15); /* Легкая фиолетовая заливка */
+    box-shadow: 0 0 20px rgba(108, 91, 212, 0.6), inset 0 0 10px rgba(108, 91, 212, 0.2);
+    text-shadow: 0 0 8px rgba(108, 91, 212, 0.8);
 }
 
-.button2{
+.button1:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+.button2 {
     position: fixed;
     top: 66%;
-    right: 9%;
-    width: 27%;
-    height: 80px;
-    border-radius: 50px;
-    background-color: #6C5BD4;
-    color: #FFFFFF;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s;
+    left: 9%;
+    
+    /* Тонкая фиолетовая рамка */
+    border: 2px solid #6C5BD4;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .button2:hover {
-    background-color: #5447a5;
-    transform: scale(1.05);
+    transform: translateY(-5px);
+    background-color: rgba(108, 91, 212, 0.15);
+    box-shadow: 0 0 20px rgba(108, 91, 212, 0.6), inset 0 0 10px rgba(108, 91, 212, 0.2);
+    text-shadow: 0 0 8px rgba(108, 91, 212, 0.8);
 }
 
-.img{
-    position: fixed;
-    width: 100%;
-    height: 100%;
+.button2:active {
+    transform: translateY(-2px) scale(0.98);
 }
-
-
-
-
