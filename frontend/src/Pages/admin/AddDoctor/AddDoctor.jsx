@@ -38,6 +38,7 @@ const AddDoctor = () => {
     const [dragging, setDragging] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState(''); // State for success message
     const navigate = useNavigate();
 
     const handleFile = (file) => {
@@ -54,49 +55,62 @@ const AddDoctor = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!sex) { setErrorMsg('Please select a gender'); return; }
-        if (!specialization) { setErrorMsg('Please select a specialization'); return; }
+        // ... (validation checks)
 
         setLoading(true);
         setErrorMsg('');
+        setSuccessMsg(''); // Clear any previous success message
         
         const formData = new FormData();
-        const doctorData = {
-            email, 
-            nickname, 
-            phone, 
-            password, 
-            firstname, 
-            lastname,
-            birthDate: birthDate || null, 
-            sex, 
-            address, 
-            specialization, // Теперь это строка из ENUM
-            qualification, 
-            startDate: startDate || null, 
-            rating: Number(rating)
-        };
 
-        // Log data to console to verify it's not empty before sending
-        console.log("Sending doctor data:", doctorData);
+        // 1. Append fields directly for @ModelAttribute
+        formData.append('email', email);
+        formData.append('nickname', nickname);
+        formData.append('phone', phone);
+        formData.append('password', password);
+        formData.append('firstname', firstname);
+        formData.append('lastname', lastname);
+        if (birthDate) formData.append('birthDate', birthDate); 
+        formData.append('sex', sex);
+        formData.append('address', address);
+        formData.append('specialization', specialization);
+        formData.append('qualification', qualification);
+        if (startDate) formData.append('startDate', startDate);
+        formData.append('rating', rating); 
 
-        // Append JSON data as a Blob with application/json type
-        formData.append("doctor", new Blob([JSON.stringify(doctorData)], { type: 'application/json' }));
-        
+        // 2. Append the file directly
         if (imageFile) {
-            formData.append("image", imageFile);
+            formData.append('image', imageFile); 
         }
         
         try {
             const response = await addDoctorApi.createDoctor(formData);
-            if (response && (response.data || response.status === 0)) {
-                navigate('/admin'); 
+            
+            // Check for success status (either via data object or direct status code)
+            if (response && (response.data || response.status === 0 || response.status === 201)) {
+                setSuccessMsg("Doctor created successfully!");
+                // Clear form fields
+                setFirstname('');
+                setLastname('');
+                setEmail('');
+                setNickname('');
+                setPhone('');
+                setPassword('');
+                setBirthDate('');
+                setSex('');
+                setAddress('');
+                setSpecialization('');
+                setQualification('');
+                setStartDate('');
+                setRating(1);
+                setImageFile(null);
+                
+                // Optional: Navigate away after a short delay
+                // setTimeout(() => navigate('/admin'), 2000); 
             }
         } catch (err) {
             console.error("API Error:", err);
-            // Display specific error message from backend if available
             const message = err.response?.data?.message || "Server error. Check console for details.";
-            // Optionally, list specific validation errors
             if (err.response?.data?.errors) {
                  const validationErrors = err.response.data.errors.map(e => `${e.field}: ${e.message}`).join(', ');
                  setErrorMsg(`${message} (${validationErrors})`);
@@ -242,6 +256,7 @@ const AddDoctor = () => {
                             </div>
                         </div>
 
+                        {successMsg && <div style={{color: '#4BB543', marginBottom: '20px', textAlign: 'center', fontSize: '18px', fontWeight: 'bold'}}>{successMsg}</div>}
                         {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
 
                         <button type="submit" className={styles.createBtn} disabled={loading}>

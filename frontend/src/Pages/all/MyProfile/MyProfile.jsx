@@ -271,21 +271,34 @@ const MyProfile = () => {
                             />
                         </div>
 
-                        <div className={styles.inputGroup}>
-                            <label>Price ($)</label>
-                            <input 
-                                type="number"
-                                className={styles.modalInput}
-                                value={formData.price}
-                                onChange={e => setFormData({...formData, price: e.target.value})}
-                                placeholder="0.00"
-                            />
+                        {/* 1. Используем form вместо div и вешаем onSubmit сюда */}
+<form onSubmit={handleSaveService} className={styles.modalContent}> 
+    
+    <div className={styles.inputGroup}>
+        <label>Price ($)</label>
+        <input 
+            type="number"
+            className={styles.modalInput}
+            value={formData.price}
+            onChange={e => setFormData({...formData, price: e.target.value})}
+            placeholder="0.00"
+            // autoFocus // Можно добавить, чтобы фокус сразу был тут
+        />
                         </div>
 
                         <div className={styles.modalActions}>
-                            <button onClick={() => setIsModalOpen(false)} className={styles.cancelBtn}>Cancel</button>
-                            <button onClick={handleSaveService} className={styles.saveBtn}>Save</button>
+                            {/* Для кнопки Cancel обязательно type="button", чтобы она не отправляла форму */}
+                            <button type="button" onClick={() => setIsModalOpen(false)} className={styles.cancelBtn}>
+                                Cancel
+                            </button>
+                            
+                            {/* 2. Убираем onClick и onSubmit с кнопки. Оставляем только type="submit" */}
+                            <button type="submit" className={styles.saveBtn}>
+                                Save
+                            </button>
                         </div>
+
+                    </form>
                     </div>
                 </div>
             )}
