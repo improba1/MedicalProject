@@ -188,7 +188,6 @@
     grid-column: 1 / -1;
 }
 
-/* --- CARD STYLE --- */
 .card {
     background: rgba(30, 30, 30, 0.6);
     backdrop-filter: blur(10px);
@@ -297,7 +296,6 @@
     border-color: #6C5BD4;
 }
 
-/* Анимация появления */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }

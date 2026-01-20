@@ -4,7 +4,6 @@
     font-family: sans-serif;
 }
 
-/* --- ГЛАВНЫЙ БЛОК (Заголовок + Карточки) --- */
 .mainContent {
     position: fixed;
     left: 7%;
@@ -13,14 +12,12 @@
     font-family: 'Arial', sans-serif;
 }
 
-/* Имя пациента */
 .patientName {
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 40px; 
 }
 
-/* Секции */
 .section {
     margin-bottom: 50px;
 }
@@ -32,14 +29,12 @@
     color: #e0e0e0;
 }
 
-/* Сетка карточек (чтобы стояли в ряд) */
 .grid {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
 }
 
-/* --- ДИЗАЙН КАРТОЧКИ --- */
 .card {
     background-color: #242424; 
     border-radius: 16px;
@@ -50,7 +45,7 @@
     flex-direction: column;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    cursor: pointer; /* Курсор превращается в руку */
+    cursor: pointer; 
     border: 1px solid transparent;
 }
 
@@ -70,7 +65,6 @@
     justify-content: center;
     align-items: center;
     font-size: 18px;
-    /* Плавность для иконки */
     transition: all 0.3s ease;
 }
 
@@ -100,18 +94,13 @@
 }
 
 .card:hover {
-    transform: translateY(-8px); /* Поднимаем карточку вверх на 8px */
-    background-color: #262626;   /* Делаем фон чуть светлее */
-    box-shadow: 0 15px 30px rgba(0,0,0,0.5); /* Большая мягкая тень */
-    border-color: rgba(255, 255, 255, 0.1);  /* Тонкая светлая обводка */
+    transform: translateY(-8px); 
+    background-color: #262626;   
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5); 
+    border-color: rgba(255, 255, 255, 0.1);  
 }
 
-/* БОНУС: Анимация иконки внутри карточки */
-/* Когда наводим на .card, увеличиваем .iconBox */
 .card:hover .iconBox {
-    transform: scale(1.1) rotate(5deg); /* Чуть увеличиваем и поворачиваем */
-    background-color: rgba(255, 255, 255, 0.3); /* Делаем оранжевый ярче */
+    transform: scale(1.1) rotate(5deg); 
+    background-color: rgba(255, 255, 255, 0.3); 
 }
-
-/* ... остальные стили (iconBox, date, text и т.д.) оставь как были, 
-   но добавь transition в .iconBox, чтобы он тоже плавно рос */

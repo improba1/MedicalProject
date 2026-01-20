@@ -16,7 +16,7 @@ const ManageDoctors = () => {
         try {
             const payload = {
                 name: searchName || null,
-                isActive: null, // Ищем всех, активных и нет
+                isActive: null, 
                 specialization: null
             };
 
@@ -45,8 +45,6 @@ const ManageDoctors = () => {
     };
 
     const handleEdit = (doctor) => {
-        // Переходим на страницу редактирования, передавая данные доктора в state
-        // чтобы не грузить их заново (или можно грузить по ID на новой странице)
         navigate(`/admin/edit-doctor/${doctor.id}`, { state: { doctor } });
     };
 
@@ -63,7 +61,6 @@ const ManageDoctors = () => {
                 <main className={styles.contentWrapper}>
                     <h1 className={styles.title}>Manage Doctors</h1>
 
-                    {/* --- Filter Bar --- */}
                     <form onSubmit={handleSearchSubmit} className={styles.filterSection}>
                         <div style={{position: 'relative', flex: 1}}>
                             <input 
@@ -84,7 +81,6 @@ const ManageDoctors = () => {
                         </button>
                     </form>
 
-                    {/* --- List Grid --- */}
                     <div className={styles.doctorsGrid}>
                         {loading ? (
                             <div style={{color:'white', width:'100%', textAlign:'center'}}>Loading...</div>
@@ -92,7 +88,6 @@ const ManageDoctors = () => {
                             doctors.map((doc) => (
                                 <div key={doc.id} className={styles.card}>
                                     
-                                    {/* Avatar */}
                                     <img 
                                         src={doc.image?.downloadUrl || 'https://via.placeholder.com/150'} 
                                         alt="doc" 
@@ -111,7 +106,6 @@ const ManageDoctors = () => {
                                         </div>
 
                                         <div className={styles.cardActions}>
-                                            {/* Edit Button */}
                                             <button 
                                                 type="button"
                                                 onClick={() => handleEdit(doc)}
@@ -121,7 +115,6 @@ const ManageDoctors = () => {
                                                 Edit
                                             </button>
 
-                                            {/* Delete Button */}
                                             <button 
                                                 type="button"
                                                 onClick={() => handleHardDelete(doc.id, doc.lastname)}

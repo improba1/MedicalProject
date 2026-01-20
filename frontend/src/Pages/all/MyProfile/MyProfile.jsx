@@ -14,28 +14,20 @@ const MyProfile = () => {
     const [loading, setLoading] = useState(true);
     const [role, setRole] = useState('');
     
-    // --- State для услуг ---
-    const [services, setServices] = useState([]); // Храним услуги отдельно
+    const [services, setServices] = useState([]); 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingService, setEditingService] = useState(null);
     const [formData, setFormData] = useState({ name: '', description: '', price: '' });
 
-    // Функция загрузки услуг (отдельно от профиля)
     const fetchServices = async (doctorId) => {
         try {
             const response = await medicalServiceApi.search(doctorId);
             
-            // БЫЛО (Ошибка):
-            // setServices(response.data || []); 
-
-            // СТАЛО (Правильно):
-            // response.data — это JSON от сервера. 
-            // response.data.data — это массив услуг внутри JSON.
             setServices(response.data.data || []); 
             
         } catch (error) {
             console.error("Error loading services:", error);
-            setServices([]); // На всякий случай сбрасываем в пустой массив при ошибке
+            setServices([]);
         }
     };
 
@@ -90,7 +82,6 @@ const MyProfile = () => {
         if (window.confirm('Are you sure you want to delete this service?')) {
             try {
                 await medicalServiceApi.delete(id);
-                // Обновляем список услуг
                 if (profile) fetchServices(profile.id);
             } catch (error) {
                 console.error(error);
@@ -115,7 +106,6 @@ const MyProfile = () => {
             }
             
             setIsModalOpen(false);
-            // Обновляем список услуг
             if (profile) fetchServices(profile.id);
         } catch (error) {
             console.error(error);
@@ -199,7 +189,6 @@ const MyProfile = () => {
                                     <SectionTitle title="Medical Services" />
                                     
                                     <div className={styles.servicesGrid}>
-                                        {/* Используем state services вместо profile.medicalServices */}
                                         {services.map(service => (
     <div key={service.id} className={styles.serviceCard}>
         <div className={styles.serviceInfo}>
@@ -208,7 +197,6 @@ const MyProfile = () => {
             <span className={styles.servicePrice}>${service.price}</span>
         </div>
         <div className={styles.serviceActions}>
-            {/* Кнопка Редактировать */}
             <button onClick={() => openEditModal(service)} className={styles.iconBtn}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -216,7 +204,6 @@ const MyProfile = () => {
                 </svg>
             </button>
             
-            {/* Кнопка Удалить */}
             <button onClick={() => handleDeleteService(service.id)} className={`${styles.iconBtn} ${styles.deleteBtn}`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -271,21 +258,30 @@ const MyProfile = () => {
                             />
                         </div>
 
-                        <div className={styles.inputGroup}>
-                            <label>Price ($)</label>
-                            <input 
-                                type="number"
-                                className={styles.modalInput}
-                                value={formData.price}
-                                onChange={e => setFormData({...formData, price: e.target.value})}
-                                placeholder="0.00"
-                            />
+<form onSubmit={handleSaveService} className={styles.modalContent}> 
+    
+    <div className={styles.inputGroup}>
+        <label>Price ($)</label>
+        <input 
+            type="number"
+            className={styles.modalInput}
+            value={formData.price}
+            onChange={e => setFormData({...formData, price: e.target.value})}
+            placeholder="0.00"
+        />
                         </div>
 
                         <div className={styles.modalActions}>
-                            <button onClick={() => setIsModalOpen(false)} className={styles.cancelBtn}>Cancel</button>
-                            <button onClick={handleSaveService} className={styles.saveBtn}>Save</button>
+                            <button type="button" onClick={() => setIsModalOpen(false)} className={styles.cancelBtn}>
+                                Cancel
+                            </button>
+                            
+                            <button type="submit" className={styles.saveBtn}>
+                                Save
+                            </button>
                         </div>
+
+                    </form>
                     </div>
                 </div>
             )}

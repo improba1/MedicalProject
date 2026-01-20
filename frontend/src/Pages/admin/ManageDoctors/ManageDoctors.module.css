@@ -33,7 +33,7 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Чтобы скроллился список внутри, а не wrapper */
+    overflow: hidden; 
 }
 
 .title {
@@ -43,7 +43,6 @@
     padding: 20px;
 }
 
-/* --- Search & Filters --- */
 .filterSection {
     background: #1c1c1e;
     padding: 20px;
@@ -53,14 +52,14 @@
     align-items: center;
     margin-bottom: 20px;
     border: 1px solid #333;
-    width: 100%; /* Убеждаемся, что секция занимает ширину родителя */
-    box-sizing: border-box; /* Паддинги включены в ширину */
+    width: 100%; 
+    box-sizing: border-box; 
 }
 
 .searchInput {
-    flex: 1; /* Занимает все свободное место (было flex: 2, но 1 достаточно, если у других элементов нет flex-grow) */
-    width: 100%; /* Растягивается на всю ширину flex-блока */
-    min-width: 0; /* Критично для input внутри flex, чтобы он не распирал контейнер */
+    flex: 1; 
+    width: 100%; 
+    min-width: 0; 
     background: #2c2c2e;
     border: 1px solid #444;
     padding: 12px;
@@ -69,7 +68,7 @@
     font-size: 16px;
     outline: none;
     text-align: left;
-    box-sizing: border-box; /* Чтобы padding не увеличивал размер элемента */
+    box-sizing: border-box;
 }
 
 .searchInput:focus {
@@ -77,9 +76,8 @@
 }
 
 .filterSelect {
-    /* flex: 1 убрал, лучше задать фиксированную ширину или auto, чтобы он не был гигантским */
     width: 200px; 
-    flex-shrink: 0; /* Не сжимается */
+    flex-shrink: 0;
     background: #2c2c2e;
     border: 1px solid #444;
     padding: 12px 20px;
@@ -92,7 +90,7 @@
 }
 
 .searchBtn {
-    flex-shrink: 0; /* Кнопка не сжимается */
+    flex-shrink: 0; 
     background: #F5782D;
     color: white;
     border: none;
@@ -111,16 +109,14 @@
     background: #e0651c;
 }
 
-/* --- Grid List --- */
 .doctorsGrid {
-    flex: 1; /* Занимает оставшееся место */
-    overflow-y: auto; /* Включаем скролл для списка */
+    flex: 1; 
+    overflow-y: auto; 
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 20px;
-    padding-bottom: 40px; /* Отступ снизу для скролла */
+    padding-bottom: 40px; 
     
-    /* Скроллбар */
     scrollbar-width: thin;
     scrollbar-color: #444 transparent;
 }
@@ -133,7 +129,6 @@
     border-radius: 4px;
 }
 
-/* --- Doctor Card --- */
 .card {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -214,7 +209,6 @@
     border: 1px solid #ff4d4d;
 }
 
-/* --- Action Buttons --- */
 .cardActions {
     margin-top: 15px;
     display: flex;

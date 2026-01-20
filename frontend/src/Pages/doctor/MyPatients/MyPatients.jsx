@@ -6,7 +6,6 @@ import BackBtn from '../../../Components/BackButton/BackButton';
 import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
 import styles from './MyPatients.module.css';
 import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
-// Импортируем новый API
 import { doctorVisitApi } from '../../../Api/doctor/visitApi';  
 
 const MyPatients = () => {
@@ -18,16 +17,13 @@ const MyPatients = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // 1. Получаем список визитов
                 const response = await doctorVisitApi.getUpcomingVisits();  
                 const visits = response.data || [];
                 
-                // 2. Для каждого визита подгружаем данные пациента
                 const enrichedVisits = await Promise.all(visits.map(async (visit) => {
                     try {
                         if (visit.patientId) {
                             const patientRes = await doctorVisitApi.getPatientById(visit.patientId);
-                            // Сохраняем данные пациента внутри объекта визита
                             return { ...visit, patientData: patientRes.data };
                         }
                         return visit;
@@ -37,7 +33,6 @@ const MyPatients = () => {
                     }
                 }));
 
-                // 3. Сортировка (Ближайшие сверху)
                 const sortedList = enrichedVisits.sort((a, b) => 
                     new Date(a.appointmentTime) - new Date(b.appointmentTime)
                 );
@@ -53,7 +48,6 @@ const MyPatients = () => {
         fetchData();
     }, []);
 
-    // --- ВОТ ЭТИ ФУНКЦИИ БЫЛИ ПРОПУЩЕНЫ ---
     const getCardStyle = (statusString) => {
         const status = statusString ? statusString.toUpperCase() : 'UNKNOWN';
         if (status === 'SCHEDULED' || status === 'CONFIRMED') {
@@ -78,14 +72,11 @@ const MyPatients = () => {
             hour12: false  
         });
     };
-    // ----------------------------------------
 
     const filteredList = appointments.filter(item => {
         const term = searchTerm.toLowerCase();
         
-        // Поиск по ID
         const pid = item.patientId ? item.patientId.toLowerCase() : '';
-        // Поиск по Имени/Фамилии (если загрузились)
         const pName = item.patientData ? item.patientData.firstname.toLowerCase() : '';
         const pLast = item.patientData ? item.patientData.lastname.toLowerCase() : '';
         const stat = item.status ? item.status.toLowerCase() : '';

@@ -21,18 +21,16 @@
     gap: 20px;
 }
 
-/* --- Container Fix --- */
 .container {
-    /* Фиксируем высоту контейнера на весь экран */
     height: 100%; 
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Центрируем карточку */
-    padding-top: 80px; /* Отступ от хедера */
+    justify-content: center;
+    padding-top: 80px; 
     box-sizing: border-box;
-    overflow: hidden; /* Запрещаем скролл самой страницы */
+    overflow: hidden;
 }
 
 .pageTitle {
@@ -40,10 +38,9 @@
     font-size: 2rem;
     margin-bottom: 20px;
     text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    flex-shrink: 0; /* Чтобы заголовок не сплющивался */
+    flex-shrink: 0;
 }
 
-/* --- Scrolling Content Card --- */
 .contentCard {
     background: rgba(30, 30, 30, 0.6);
     backdrop-filter: blur(20px);
@@ -54,11 +51,9 @@
     max-width: 800px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     
-    /* Скролл внутри карточки */
-    max-height: 70vh; /* Максимальная высота карточки */
-    overflow-y: auto; /* Включаем вертикальный скролл */
+    max-height: 70vh;
+    overflow-y: auto; 
     
-    /* Стилизация скроллбара */
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
@@ -156,7 +151,6 @@
     font-style: italic;
 }
 
-/* Report Statuses */
 .reportSection {
     margin-top: 10px;
 }

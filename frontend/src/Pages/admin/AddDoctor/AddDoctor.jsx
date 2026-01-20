@@ -5,7 +5,6 @@ import HeaderWithoutProfile from '../../../Components/HeaderWithoutProfile/Heade
 import { useNavigate } from 'react-router-dom';
 import { addDoctorApi } from '../../../Api/admin/addDoctorApi';
 
-// Список специализаций (в точности как в Java Enum)
 const SPECIALIZATIONS = [
     "CARDIOLOGIST",
     "DERMATOLOGIST",
@@ -38,6 +37,7 @@ const AddDoctor = () => {
     const [dragging, setDragging] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState(''); 
     const navigate = useNavigate();
 
     const handleFile = (file) => {
@@ -54,49 +54,54 @@ const AddDoctor = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!sex) { setErrorMsg('Please select a gender'); return; }
-        if (!specialization) { setErrorMsg('Please select a specialization'); return; }
 
         setLoading(true);
         setErrorMsg('');
+        setSuccessMsg(''); 
         
         const formData = new FormData();
-        const doctorData = {
-            email, 
-            nickname, 
-            phone, 
-            password, 
-            firstname, 
-            lastname,
-            birthDate: birthDate || null, 
-            sex, 
-            address, 
-            specialization, // Теперь это строка из ENUM
-            qualification, 
-            startDate: startDate || null, 
-            rating: Number(rating)
-        };
 
-        // Log data to console to verify it's not empty before sending
-        console.log("Sending doctor data:", doctorData);
+        formData.append('email', email);
+        formData.append('nickname', nickname);
+        formData.append('phone', phone);
+        formData.append('password', password);
+        formData.append('firstname', firstname);
+        formData.append('lastname', lastname);
+        if (birthDate) formData.append('birthDate', birthDate); 
+        formData.append('sex', sex);
+        formData.append('address', address);
+        formData.append('specialization', specialization);
+        formData.append('qualification', qualification);
+        if (startDate) formData.append('startDate', startDate);
+        formData.append('rating', rating); 
 
-        // Append JSON data as a Blob with application/json type
-        formData.append("doctor", new Blob([JSON.stringify(doctorData)], { type: 'application/json' }));
-        
         if (imageFile) {
-            formData.append("image", imageFile);
+            formData.append('image', imageFile); 
         }
         
         try {
             const response = await addDoctorApi.createDoctor(formData);
-            if (response && (response.data || response.status === 0)) {
-                navigate('/admin'); 
+            
+            if (response && (response.data || response.status === 0 || response.status === 201)) {
+                setSuccessMsg("Doctor created successfully!");
+                setFirstname('');
+                setLastname('');
+                setEmail('');
+                setNickname('');
+                setPhone('');
+                setPassword('');
+                setBirthDate('');
+                setSex('');
+                setAddress('');
+                setSpecialization('');
+                setQualification('');
+                setStartDate('');
+                setRating(1);
+                setImageFile(null);
             }
         } catch (err) {
             console.error("API Error:", err);
-            // Display specific error message from backend if available
             const message = err.response?.data?.message || "Server error. Check console for details.";
-            // Optionally, list specific validation errors
             if (err.response?.data?.errors) {
                  const validationErrors = err.response.data.errors.map(e => `${e.field}: ${e.message}`).join(', ');
                  setErrorMsg(`${message} (${validationErrors})`);
@@ -108,7 +113,6 @@ const AddDoctor = () => {
         }
     };
 
-    // Helper для красивого отображения (CARDIOLOGIST -> Cardiologist)
     const formatEnum = (str) => str.charAt(0) + str.slice(1).toLowerCase();
 
     return (
@@ -122,7 +126,6 @@ const AddDoctor = () => {
                     <form onSubmit={handleSubmit} className={styles.formWrapper}>
                         <div className={styles.inputsContainer}>
                             
-                            {/* --- Left Column: Personal Info --- */}
                             <div className={styles.column}>
                                 <div className={styles.sectionTitle}>Personal Information</div>
                                 
@@ -156,11 +159,9 @@ const AddDoctor = () => {
                                 </div>
                             </div>
 
-                            {/* --- Right Column: Professional & Account --- */}
                             <div className={styles.column}>
                                 <div className={styles.sectionTitle}>Professional Details</div>
                                 
-                                {/* --- ИЗМЕНЕНИЕ ЗДЕСЬ: Выпадающий список Специализаций --- */}
                                 <div className={styles.inputGroup}>
                                     <label className={styles.label}>Specialization</label>
                                     <select 
@@ -220,7 +221,6 @@ const AddDoctor = () => {
                             </div>
                         </div>
 
-                        {/* --- Photo Upload --- */}
                         <div className={styles.inputGroup} style={{marginBottom: 40, width: '100%', maxWidth: '600px'}}>
                             <label className={styles.label}>Profile Photo</label>
                             <div 
@@ -242,6 +242,7 @@ const AddDoctor = () => {
                             </div>
                         </div>
 
+                        {successMsg && <div style={{color: '#4BB543', marginBottom: '20px', textAlign: 'center', fontSize: '18px', fontWeight: 'bold'}}>{successMsg}</div>}
                         {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
 
                         <button type="submit" className={styles.createBtn} disabled={loading}>

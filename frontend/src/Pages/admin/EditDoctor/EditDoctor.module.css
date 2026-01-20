@@ -74,7 +74,6 @@
     margin-left: 15px;
 }
 
-/* Стили для редактируемых полей */
 .input {
     width: 100%;
     padding: 15px 25px;
@@ -93,7 +92,6 @@
     background-color: #2a2a2c;
 }
 
-/* Стили для Read-Only полей */
 .inputReadOnly {
     width: 100%;
     padding: 15px 25px;
@@ -107,7 +105,6 @@
     cursor: not-allowed;
 }
 
-/* Загрузка фото */
 .photoSection {
     display: flex;
     flex-direction: column;
