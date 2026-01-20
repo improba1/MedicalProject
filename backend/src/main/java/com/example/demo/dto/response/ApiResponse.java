@@ -10,7 +10,8 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApiResponse<T> {
-    private Instant timestamp = Instant.now();
+
+    private Instant timestamp;
     private int status;
     private String message;
     private T data;

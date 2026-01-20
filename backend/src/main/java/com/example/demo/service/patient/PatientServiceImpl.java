@@ -4,10 +4,7 @@ import com.example.demo.model.Patient;
 import com.example.demo.repository.PatientRepository;
 import com.example.demo.repository.specification.patient.PatientSpecificationBuilder;
 import com.example.demo.service.auth.CurrentUserService;
-import com.example.demo.service.logout.LogoutService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +18,6 @@ import java.util.UUID;
 public class PatientServiceImpl implements PatientService {
 
     private final PatientRepository patientRepository;
-    private final LogoutService logoutService;
     private final PasswordEncoder passwordEncoder;
     private final CurrentUserService currentUserService;
 
@@ -43,10 +39,9 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public void delete(UUID id, HttpServletRequest request, HttpServletResponse response) {
+    public void delete(UUID id) {
         Patient patient = getById(id);
         patientRepository.delete(patient);
-        logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Override
@@ -67,12 +62,10 @@ public class PatientServiceImpl implements PatientService {
 
 
     @Override
-    public Patient deactivatePatientById(UUID id, HttpServletRequest request, HttpServletResponse response) {
+    public Patient deactivatePatientById(UUID id) {
         Patient patient = getById(id);
         patient.setActive(false);
-        Patient updated = patientRepository.save(patient);
-        logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return updated;
+        return patientRepository.save(patient);
     }
 
 
@@ -84,23 +77,19 @@ public class PatientServiceImpl implements PatientService {
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated patient not found"));
     }
 
-    // повертаємо ентіті — контролер робить mapping
     @Override
     public Patient getCurrentPatient() {
         return getAuthenticatedPatient();
     }
 
-    // сервіс оновлює ентіті, але дані доходять у вигляді вже зміненого Patient
     @Override
     public Patient updateCurrentPatient(Patient patient) {
         return patientRepository.save(patient);
     }
 
     @Override
-    public void deletePatientProfile(HttpServletRequest request, HttpServletResponse response) {
-        Patient currentPatient = getAuthenticatedPatient();
-        currentPatient.setActive(false);
-        patientRepository.save(currentPatient);
-        logoutService.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+    public Patient deactivateCurrentPatient(Patient patient) {
+        patient.setActive(false);
+        return patientRepository.save(patient);
     }
 }

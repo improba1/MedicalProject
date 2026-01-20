@@ -5,9 +5,8 @@ import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
+import com.example.demo.service.logout.LogoutService;
 import com.example.demo.service.user.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,27 +20,44 @@ public class AdminProfileController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final LogoutService logoutService;
 
-    @PreAuthorize("hasAuthority('admin:read')")
     @GetMapping("/get")
+    @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<ApiResponse<UserResponse>> getProfile() {
         User admin = userService.getCurrentUser();
-        UserResponse response = userMapper.toResponse(admin);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile fetched successfully", response));
+
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Admin profile fetched successfully",
+                userMapper.toResponse(admin)
+        ));
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('admin:update')")
-    public ResponseEntity<ApiResponse<UserResponse>> updateProfile(@RequestBody UserUpdateRequest request) {
+    public ResponseEntity<ApiResponse<UserResponse>> updateProfile(
+            @RequestBody UserUpdateRequest request
+    ) {
         User updatedAdmin = userService.updateCurrentUser(request);
-        UserResponse response = userMapper.toResponse(updatedAdmin);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile updated successfully", response));
+
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Admin profile updated successfully",
+                userMapper.toResponse(updatedAdmin)
+        ));
     }
 
     @DeleteMapping("/deactivate")
     @PreAuthorize("hasAuthority('admin:delete')")
-    public ResponseEntity<ApiResponse<Void>> deactivateProfile(HttpServletRequest request, HttpServletResponse response) {
-        userService.deactivateCurrentUser(request, response);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Admin profile deactivated and logged out successfully", null));
+    public ResponseEntity<ApiResponse<Void>> deactivateProfile() {
+        userService.deactivateCurrentUser();   // ✅ тільки бізнес-логіка
+        logoutService.logoutCurrentUser();     // ✅ logout тут
+
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "Admin profile deactivated and logged out successfully",
+                null
+        ));
     }
 }

@@ -56,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
 
         var jwtToken = jwtService.generateToken(savedPatient);
         var refreshToken = jwtService.generateRefreshToken(savedPatient);
+
         saveUserToken(savedPatient, jwtToken);
 
         return AuthResponse.builder()
@@ -79,10 +80,8 @@ public class AuthServiceImpl implements AuthService {
                 .or(() -> userRepository.findByNickname(request.getLogin()))
                 .filter(User::isActive)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
 
@@ -106,8 +105,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+        var validUserTokens = tokenRepository.findAllValidTokenByUserId(user.getId());
         if (validUserTokens.isEmpty()) return;
+
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);

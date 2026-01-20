@@ -3,8 +3,6 @@ package com.example.demo.service.doctor;
 import com.example.demo.enums.Specialization;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Patient;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,11 +21,11 @@ public interface DoctorService {
     Doctor deactivateDoctor(UUID id);
     void delete(UUID id);
 
+
     // DOCTOR (тільки себе)
-    Doctor getCurrentDoctor();
     Doctor updateCurrentDoctor(Doctor updated, MultipartFile image);
     Doctor updateCurrentDoctorImage(MultipartFile image);
-    void deactivateCurrentDoctor(HttpServletRequest request, HttpServletResponse response);
+    Doctor deactivateCurrentDoctor();
 
     Patient getPatientIfDoctorHasAccess(UUID patientId);
 }
