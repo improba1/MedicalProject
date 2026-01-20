@@ -49,3 +49,36 @@ Follow these steps to set up the project locally.
 ### 1. Clone the repository
 ```bash
 git clone [https://github.com/your-username/medical-project.git](https://github.com/your-username/medical-project.git)
+```
+2. Backend Configuration
+Navigate to the backend folder and configure your database connection in application.properties:
+
+Properties
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/your_db
+spring.datasource.username=postgres
+spring.datasource.password=password
+Run the server:
+
+```bash
+mvn spring-boot:run
+```
+
+3. Frontend Setup
+Navigate to the frontend folder, install dependencies, and start the client:
+
+```bash
+npm install
+npm start
+```
+
+🔐 API Reference
+Here are the primary endpoints used in the application:
+
+POST /api/v1/auth/authenticate — User login and token generation.
+
+POST /api/v1/patient/me/visits/create — Booking logic.
+
+GET /api/v1/patient/medical-services/search — Fetch services for price calculation.
+
+POST /api/v1/admin/doctors/create — Register new staff (Multipart support).
