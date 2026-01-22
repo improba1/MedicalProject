@@ -28,6 +28,7 @@ import DoctorProfilePublic from './Pages/all/DoctorProfilePublic/DoctorProfilePu
 import DoctorProfileForLogged from './Pages/patient/DoctorProfileForLogged/DoctorProfileForLogged';
 import EditDoctor from './Pages/admin/EditDoctor/EditDoctor';
 import PaymentSuccess from './Pages/patient/PaymentSuccess/PaymentSuccess'
+import CancelVisitSuccess from './Pages/patient/CancelVisitSuccess/CancelVisitSuccess'
 import PaymentPage from './Pages/patient/PaymentPage/PaymentPage'
 import UpcomingVisits from './Pages/patient/UpcomingVisits/UpcomingVisits'
 
@@ -69,6 +70,7 @@ function App() {
         <Route path="/book-appointment" element={<BookAppointment />} />
         <Route path="/doctor-profile-logged" element={<DoctorProfileForLogged />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/cancel-visit-success" element={<CancelVisitSuccess />} />
         <Route path="/payment-page" element={<PaymentPage />} />
         <Route path="/upcoming-visits" element={<UpcomingVisits />} />
 

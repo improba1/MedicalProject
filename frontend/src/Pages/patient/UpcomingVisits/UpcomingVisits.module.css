@@ -1,168 +1,179 @@
 .pageContainer {
-    width: 100%;
+    background-color: #000;
     min-height: 100vh;
-    background: black;
-    color: white;
+    color: #fff;
 }
 
 .content {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 120px 20px;
+    padding: 100px 20px 40px;
 }
 
-.header {
+.titleSection {
     display: flex;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 40px;
+    gap: 30px;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 .backBtn {
     background: #1c1c1e;
-    border: 1px solid #333;
+    border: none;
     color: #8e8e93;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border-radius: 20px;
     cursor: pointer;
+    font-size: 14px;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
 }
 
 .list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
 .card {
     background: #1c1c1e;
-    border-radius: 20px;
-    padding: 20px;
+    border-radius: 25px;
+    padding: 24px 30px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 25px;
     border: 1px solid #333;
 }
 
+/* Стилизация блока даты как на фото */
 .dateSide {
-    background: #2c2c2e;
-    min-width: 80px;
+    background: #232326;
+    min-width: 90px;
+    height: 100px;
     padding: 10px;
-    border-radius: 12px;
+    border-radius: 20px;
     text-align: center;
-    border: 1px solid #6C5CE7;
+    border: 2px solid #5a4ccb;
+    /* Фиолетовая рамка */
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 .day {
-    font-size: 1.6rem;
+    font-size: 28px;
     font-weight: 800;
+    color: #fff;
     line-height: 1;
 }
 
 .month {
-    font-size: 0.8rem;
-    color: #6C5CE7;
-    text-transform: uppercase;
+    font-size: 14px;
+    color: #5a4ccb;
+    /* Фиолетовый текст */
     font-weight: 700;
+    margin-top: 4px;
 }
 
 .time {
-    font-size: 0.8rem;
-    color: #ccc;
-    margin-top: 4px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 4px;
+    font-size: 13px;
+    color: #8e8e93;
+    margin-top: 5px;
 }
 
 .infoSide {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 0;
-    /* Fix flex overflow */
 }
 
 .doctorHeader {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
 .doctorHeader h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .spec {
-    color: #F5782D;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
+    color: #f5782d;
+    /* Оранжевый акцент */
+    font-size: 12px;
+    font-weight: 700;
     letter-spacing: 0.5px;
 }
 
 .servicesList {
-    font-size: 0.9rem;
-    color: #a1a1aa;
-    line-height: 1.4;
+    font-size: 15px;
+    color: #8e8e93;
 }
 
-.serviceTag {
-    color: #d1d1d6;
-}
-
+/* Правая сторона */
 .statusSide {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 8px;
+    gap: 15px;
 }
 
 .status {
-    font-size: 0.7rem;
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-weight: 700;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.scheduled,
+.pending {
+    background: rgba(245, 120, 45, 0.15);
+    color: #f5782d;
 }
 
 .paid {
-    background: rgba(75, 181, 67, 0.2);
-    color: #4BB543;
-}
-
-.pending {
-    background: rgba(245, 120, 45, 0.2);
-    color: #F5782D;
+    background: rgba(75, 181, 67, 0.15);
+    color: #4bb543;
 }
 
 .price {
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.divider {
+    width: 1px;
+    height: 60px;
+    background-color: #333;
+}
+
+.cancelSection {
+    padding-left: 10px;
+}
+
+.cancelBtn {
+    background: none;
+    border: none;
+    color: #444;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.cancelBtn:hover {
+    color: #ff3b30;
+    transform: scale(1.1);
 }
 
 .statusMsg {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 100px;
     color: #8e8e93;
-}
-
-.cancelBtn {
-    background: rgba(255, 59, 48, 0.1);
-    border: 1px solid rgba(255, 59, 48, 0.3);
-    color: #FF3B30;
-    padding: 8px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.8rem;
-    margin-top: 10px;
-    transition: all 0.2s;
-}
-
-.cancelBtn:hover {
-    background: rgba(255, 59, 48, 0.2);
-    transform: translateY(-1px);
 }

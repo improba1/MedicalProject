@@ -45,18 +45,12 @@ const PaymentPage = () => {
     const handleFinalPay = async () => {
         setProcessing(true);
         try {
-            // STUB: Заглушка, так как бекенд отдает 500 ошибку при создании сессии
-            // const response = await paymentApi.initiatePayment(visitId);
-            // const stripeUrl = response.data;
+            const response = await paymentApi.initiatePayment(visitId);
+            const stripeUrl = response.data;
 
-            // if (stripeUrl) {
-            //     window.location.href = stripeUrl; // Редирект на Stripe
-            // }
-
-            // Имитация успешной оплаты
-            setTimeout(() => {
-                navigate('/payment-success');
-            }, 1000);
+            if (stripeUrl) {
+                window.location.href = stripeUrl; // Редирект на Stripe
+            }
 
         } catch (error) {
             console.error(error);

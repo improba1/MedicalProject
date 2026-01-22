@@ -15,7 +15,6 @@ const UpcomingVisits = () => {
         const loadData = async () => {
             setLoading(true);
             try {
-                // 1. Параллельная загрузка визитов и врачей
                 const [visitsResponse, doctorsResponse] = await Promise.all([
                     upcomingVisitsApi.getUpcomingVisits(),
                     publicDoctorApi.getAllDoctors()
@@ -23,24 +22,20 @@ const UpcomingVisits = () => {
 
                 const rawVisits = visitsResponse.data || visitsResponse || [];
                 const doctorsList = doctorsResponse.data?.data || [];
-
-                // Создаем Map для быстрого поиска врача по ID
                 const doctorsMap = new Map(doctorsList.map(doc => [doc.id, doc]));
 
-                // 2. Обогащаем визиты данными о врачах
                 const enrichedVisits = rawVisits.map(visit => {
                     const doctor = doctorsMap.get(visit.doctorId);
                     return {
                         ...visit,
-                        doctorName: doctor ? `${doctor.firstname} ${doctor.lastname}` : "Unknown Doctor",
-                        specialization: doctor ? doctor.specialization : "General",
-                        doctorImage: doctor?.image?.downloadUrl
+                        doctorName: doctor ? `${doctor.firstname} ${doctor.lastname}` : "Doctor",
+                        specialization: doctor ? doctor.specialization : "Specialist"
                     };
                 });
 
                 setVisits(enrichedVisits);
             } catch (error) {
-                console.error("Failed to load upcoming visits", error);
+                console.error("Failed to load visits", error);
             } finally {
                 setLoading(false);
             }
@@ -52,10 +47,9 @@ const UpcomingVisits = () => {
         if (window.confirm("Are you sure you want to cancel this visit?")) {
             try {
                 await upcomingVisitsApi.cancelVisit(visitId);
-                // Remove cancelled visit from list immediately
                 setVisits(prev => prev.filter(v => v.id !== visitId));
+                alert("Visit cancelled");
             } catch (error) {
-                console.error("Failed to cancel visit", error);
                 alert("Failed to cancel visit");
             }
         }
@@ -66,9 +60,11 @@ const UpcomingVisits = () => {
             <div className={styles.pageContainer}>
                 <HeaderWithProfile />
                 <main className={styles.content}>
-                    <div className={styles.header}>
-                        <button className={styles.backBtn} onClick={() => navigate('/patient')}>← Back</button>
-                        <h1>Upcoming Visits</h1>
+                    <div className={styles.titleSection}>
+                        <button className={styles.backBtn} onClick={() => navigate('/patient')}>
+                            ← Back
+                        </button>
+                        <h1 className={styles.title}>Upcoming Visits</h1>
                     </div>
 
                     {loading ? (
@@ -77,56 +73,50 @@ const UpcomingVisits = () => {
                         <div className={styles.list}>
                             {visits.map(visit => (
                                 <div key={visit.id} className={styles.card}>
+                                    {/* Блок даты слева */}
                                     <div className={styles.dateSide}>
                                         <div className={styles.day}>{new Date(visit.appointmentTime).getDate()}</div>
                                         <div className={styles.month}>
-                                            {new Date(visit.appointmentTime).toLocaleString('en-US', { month: 'short' })}
+                                            {new Date(visit.appointmentTime).toLocaleString('en-US', { month: 'short' }).toUpperCase()}
                                         </div>
                                         <div className={styles.time}>
                                             {new Date(visit.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </div>
                                     </div>
 
+                                    {/* Основная инфо */}
                                     <div className={styles.infoSide}>
                                         <div className={styles.doctorHeader}>
                                             <h3>{visit.doctorName}</h3>
                                             <span className={styles.spec}>{visit.specialization}</span>
                                         </div>
-
-                                        {/* Список услуг */}
-                                        {visit.services && visit.services.length > 0 && (
-                                            <div className={styles.servicesList}>
-                                                {visit.services.map((service, index) => (
-                                                    <span key={index} className={styles.serviceTag}>
-                                                        {service.serviceName}
-                                                        {index < visit.services.length - 1 && ", "}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        )}
+                                        <div className={styles.servicesList}>
+                                            {visit.services?.map((s, i) => s.serviceName).join(", ")}
+                                        </div>
                                     </div>
 
+                                    {/* Правая часть: Статус и Цена */}
                                     <div className={styles.statusSide}>
-                                        <span className={`${styles.status} ${styles[visit.status?.toLowerCase()] || styles.pending}`}>
-                                            {visit.status}
+                                        <span className={`${styles.status} ${styles[visit.status?.toLowerCase()] || styles.scheduled}`}>
+                                            {visit.status || 'SCHEDULED'}
                                         </span>
                                         <span className={styles.price}>${visit.totalPrice || 0}</span>
+                                    </div>
 
-                                        {/* Show Cancel button if relevant status */}
-                                        {['PENDING', 'PAID', 'APPROVED', 'PLANNED'].includes(visit.status) && (
-                                            <button
-                                                className={styles.cancelBtn}
-                                                onClick={() => handleCancel(visit.id)}
-                                            >
-                                                Cancel
-                                            </button>
-                                        )}
+                                    {/* Кнопка отмены как на предыдущих схемах */}
+                                    <div className={styles.divider}></div>
+                                    <div className={styles.cancelSection}>
+                                        <button className={styles.cancelBtn} onClick={() => handleCancel(visit.id)}>
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className={styles.statusMsg}>No upcoming visits found.</div>
+                        <div className={styles.statusMsg}>No upcoming visits.</div>
                     )}
                 </main>
             </div>
