@@ -3,7 +3,7 @@ import styles from './SignUp.module.css';
 import { Link } from 'react-router-dom';
 import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
 import BackButton from '../../../Components/BackButton/BackButton';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../../../Api/all/authApi';
 import { profileApi } from '../../../Api/all/profileApi';
 
@@ -12,7 +12,6 @@ const SignUpForm = () => {
 
     const [firstname, setFirstName] = useState('');
     const [lastname, setLastName] = useState('');
-    const [age, setAge] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [nickname, setLogin] = useState('');
@@ -20,9 +19,9 @@ const SignUpForm = () => {
     const [sex, setSex] = useState(''); 
     const [birthDate, setBirthDay] = useState('');
     const [address, setAddress] = useState('');
-    
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleRegister = async (e) => {
         e.preventDefault(); 
@@ -31,7 +30,6 @@ const SignUpForm = () => {
         const userData = {
             firstname: firstname, 
             lastname: lastname,
-            age: parseInt(age),    
             email: email,
             phone: phone,         
             nickname: nickname,    
@@ -43,14 +41,21 @@ const SignUpForm = () => {
 
         try {
             const data = await authApi.register(userData);
-
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('refresh_token', data.refresh_token);
             localStorage.setItem('role', data.role);
             localStorage.setItem('userId', data.id);
 
+            const origin = location.state?.from;
+            const savedDoctorData = location.state?.doctorData;
+
+            if (origin && savedDoctorData && data.role === 'PATIENT') {
+            navigate(origin, { state: { doctorData: savedDoctorData } });
+            return;
+            } 
+
             let profileData;
-                        
+
             if (data.role === 'DOCTOR') {
                 const profileRes = await profileApi.getDoctorProfile();
                 profileData = profileRes.data;
@@ -137,7 +142,15 @@ const SignUpForm = () => {
                                     {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
                                 <button type="submit" className={styles.submitBtn}>Sign Up</button>
                                 <div className={styles.loginLink}>
-                                    <p>Already have an account? <Link to="/login" className={styles.link}>Login</Link></p>
+                                    <p>Already have an account? 
+                                        <Link 
+                                            to="/login" 
+                                            className={styles.link} 
+                                            state={location.state}
+                                        >
+                                            Login
+                                        </Link>
+                                    </p>
                                 </div>
                         </form>
                     </div>

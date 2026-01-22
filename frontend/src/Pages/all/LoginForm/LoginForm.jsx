@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import styles from './LoginForm.module.css';
 import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
@@ -17,6 +18,7 @@ const LoginForm = () => {
     const [error, setError] = useState('');
     
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -31,8 +33,18 @@ const LoginForm = () => {
 
 
             let profileData;
-            
-            if (data.role === 'DOCTOR') {
+
+            const origin = location.state?.from;
+            const savedDoctorData = location.state?.doctorData;
+            let role = data.role;
+
+            console.log("DEBUG LOGIN:", { origin, hasDoctorData: !!savedDoctorData,  role});
+
+            if (origin && savedDoctorData && data.role === 'PATIENT') {
+                console.log("redirecting to doc page");
+                navigate(origin, { state: { doctorData: savedDoctorData } });
+            } else {
+                if (data.role === 'DOCTOR') {
                 const profileRes = await profileApi.getDoctorProfile();
                 profileData = profileRes.data;
                 localStorage.setItem('userName', profileData.firstname);
@@ -47,15 +59,15 @@ const LoginForm = () => {
                 profileData = profileRes.data;
                 localStorage.setItem('userName', profileData.firstname);
                 navigate('/admin');
+            } 
             }
-           
+            
 
         } catch (err) {
             console.error("Login error:", err);
             setError('Wrong password or login');
         }
     }
-    
 
     return(
             <AnimatedPage>
@@ -70,45 +82,34 @@ const LoginForm = () => {
                                     <BackButton className={styles.backBtn} />
                                     <h1 className={styles.title}>Log In</h1>
                                 </div>
-
                                     <div className={styles.inputBox}>
 
-
-
                                         <input required type="text" placeholder="Enter your login" value={login} onChange={(e) => setLogin(e.target.value)}></input>
-
-
-
                                         <FaUser className={styles.icon}/>
                                     </div>
                                     <div className={styles.inputBox}>
-
-
-
                                         <input required type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
-
-
-
                                         <RiLockPasswordFill className={styles.icon}/>
                                     </div>
-
-
-
                                 {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
-
-
-
                                 <button type="submit" className={styles.submitBtn}>Log In</button>
 
                                 <div className={styles.registerLink}>
-                                    <p>Don't have an account? <Link className={styles.transLink} to="/signUpForm">Sign Up</Link></p>
+                                    <p>Don't have an account? 
+                                        <Link 
+                                            className={styles.transLink} 
+                                            to="/signUpForm" 
+                                            state={location.state} 
+                                        >
+                                            Sign Up
+                                        </Link>
+                                    </p>
                                 </div>
                         </form>
                     </div>
                 </div>
             </AnimatedPage>
     )
-
 }
 
 export default LoginForm

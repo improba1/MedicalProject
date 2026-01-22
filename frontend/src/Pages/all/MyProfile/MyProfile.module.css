@@ -470,3 +470,23 @@
 .serviceSearchInput:focus {
     border-color: #6C5BD4;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Опционально для скролла списка услуг, если их много */
+.servicesGrid {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+  /* Стилизация скроллбара */
+  scrollbar-width: thin;
+}
