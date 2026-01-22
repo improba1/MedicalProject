@@ -39,20 +39,23 @@ public class Raport {
     private String symptoms;
 
     @Lob
+    @Column(name = "treatment_plan")
     private String treatmentPlan;
 
     @Lob
+    @Column(name = "doctor_notes")
     private String doctorNotes;
 
-    @Column(nullable = false)
+    @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
 
     @Lob
-    @Column(nullable = false)
+    @Column(name = "services_snapshot", nullable = false)
     private String servicesSnapshot;
 
     @Column(nullable = false, name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "payment_receipt")
     private String paymentReceipt;
 }
