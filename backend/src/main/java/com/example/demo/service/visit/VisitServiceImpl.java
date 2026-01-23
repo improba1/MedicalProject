@@ -36,7 +36,7 @@ public class VisitServiceImpl implements VisitService {
     private final VisitServiceItemService visitServiceItemService;
 
     private Visit getVisit(UUID id) {
-        return visitRepository.findById(id)
+        return visitRepository.findByIdWithServices(id)
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found"));
     }
 
