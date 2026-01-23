@@ -14,12 +14,18 @@ const DoctorProfilePublic = () => {
     };
 
     const handleBookClick = (e) => {
-        e.stopPropagation();
-        if (!checkIsLoggedIn()) {
-            navigate('/signUpForm');
-        } else {
-        }
-    };
+    e.stopPropagation();
+    if (!checkIsLoggedIn()) {
+        navigate('/signUpForm', { 
+            state: { 
+                from: '/doctor-profile-logged', 
+                doctorData: doctorData   
+            } 
+        });
+    } else {
+        navigate('/doctor-profile-logged', { state: { doctorData: doctorData } });
+    }
+};
 
     const doctorData = location.state?.doctorData;
 

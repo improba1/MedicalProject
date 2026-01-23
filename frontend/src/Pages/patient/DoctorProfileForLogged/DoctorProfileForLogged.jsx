@@ -6,38 +6,55 @@ import BackBtn from '../../../Components/BackButton/BackButton';
 import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
 import { patientMedicalServiceApi } from '../../../Api/patient/medicalServiceApi';
 
+const SectionTitle = ({ title, style }) => (
+    <h3 className={styles.sectionTitle} style={style}>{title}</h3>
+);
+
+const InfoRow = ({ label, value }) => (
+    <div className={styles.infoRow}>
+        <span className={styles.label}>{label}:</span>
+        <span className={styles.value}>{value || '-'}</span>
+    </div>
+);
+
 const DoctorProfileForLogged = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    
     const doctorData = location.state?.doctorData;
 
     const [services, setServices] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    
-    // Состояние для сворачивания/разворачивания (false = свернуто изначально)
     const [isServicesExpanded, setIsServicesExpanded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Загрузка услуг
     useEffect(() => {
-        if (doctorData?.id) {
-            const loadServices = async () => {
-                try {
-                    const response = await patientMedicalServiceApi.search(doctorData.id, searchQuery);
-                    // Проверка структуры данных (фикс из прошлого ответа)
-                    const servicesArray = Array.isArray(response.data) ? response.data : (response.data?.data || []); 
-                    setServices(servicesArray);
-                } catch (error) {
-                    console.error("Failed to load services", error);
-                }
-            };
-            
-            const delayDebounceFn = setTimeout(() => {
-                loadServices();
-            }, 500);
+        if (!doctorData?.id) return; 
 
-            return () => clearTimeout(delayDebounceFn);
-        }
-    }, [doctorData, searchQuery]);
+        const loadServices = async () => {
+            setIsLoading(true);
+            try {
+                const response = await patientMedicalServiceApi.search(doctorData.id, searchQuery);
+                const servicesArray = Array.isArray(response.data) 
+                    ? response.data 
+                    : (response.data?.data || []);
+                
+                setServices(servicesArray);
+            } catch (error) {
+                console.error("Failed to load services", error);
+                setServices([]); 
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        const delayDebounceFn = setTimeout(() => {
+            loadServices();
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+        
+    }, [doctorData?.id, searchQuery]);
 
     const handleBookClick = () => {
         navigate('/book-appointment', { state: { doctorData: doctorData } });
@@ -47,8 +64,11 @@ const DoctorProfileForLogged = () => {
         return (
             <Background>
                 <div style={{color:'white', textAlign:'center', marginTop:'20%'}}>
-                    Doctor data not found. <br/>
-                    <button onClick={() => navigate(-1)} style={{marginTop:20, cursor:'pointer'}}>Go Back</button>
+                    <h3>Doctor data not found.</h3>
+                    <p>Please go back and select a doctor again.</p>
+                    <button onClick={() => navigate(-1)} style={{marginTop:20, cursor:'pointer', padding: '10px 20px'}}>
+                        Go Back
+                    </button>
                 </div>
             </Background>
         );
@@ -93,55 +113,59 @@ const DoctorProfileForLogged = () => {
 
                     <div className={styles.detailsColumn}>
                         <div className={styles.detailsScrollArea}>
+                            
                             <SectionTitle title="Professional Information" />
                             <div className={styles.infoGrid}>
                                 <InfoRow label="Specialization" value={doctorData.specialization} />
                                 <InfoRow label="Qualification" value={doctorData.qualification} />
-                                <InfoRow label="Experience" value={`${doctorData.experienceYears || 0} years`} />
+                                <InfoRow label="Experience" value={doctorData.experienceYears ? `${doctorData.experienceYears} years` : '0 years'} />
                                 <InfoRow label="Started working" value={doctorData.startDate} />
                             </div>
 
                             <div className={styles.divider} />
                             
-                            {/* --- COLLAPSIBLE MEDICAL SERVICES --- */}
                             <div 
                                 onClick={() => setIsServicesExpanded(!isServicesExpanded)}
+                                className={styles.collapsibleHeader} 
                                 style={{
                                     display: 'flex', 
                                     justifyContent: 'space-between', 
                                     alignItems: 'center', 
                                     cursor: 'pointer',
-                                    marginBottom: '10px'
+                                    marginBottom: '10px',
+                                    userSelect: 'none'
                                 }}
                             >
-                                <SectionTitle title="Medical Services" />
-                                {/* Стрелочка меняется в зависимости от состояния */}
-                                <div style={{ transform: isServicesExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}>
+                                <SectionTitle title="Medical Services" style={{ margin: 0 }} />
+                                <div style={{ 
+                                    transform: isServicesExpanded ? 'rotate(180deg)' : 'rotate(0deg)', 
+                                    transition: 'transform 0.3s ease' 
+                                }}>
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b4cc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <polyline points="6 9 12 15 18 9"></polyline>
                                     </svg>
                                 </div>
                             </div>
                             
-                            {/* Показываем контент только если isServicesExpanded === true */}
                             {isServicesExpanded && (
-                                <div style={{animation: 'fadeIn 0.3s ease-in-out'}}>
+                                <div className={styles.servicesContainer} style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
                                     <input 
                                         type="text"
                                         className={styles.serviceSearchInput}
                                         placeholder="Search services..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        onClick={(e) => e.stopPropagation()} // Чтобы клик по инпуту не сворачивал список
+                                        onClick={(e) => e.stopPropagation()} 
                                     />
-
                                     <div className={styles.servicesGrid}>
-                                        {services.length > 0 ? (
+                                        {isLoading ? (
+                                            <div style={{textAlign: 'center', padding: '10px', color: '#666'}}>Loading...</div>
+                                        ) : services.length > 0 ? (
                                             services.map(service => (
                                                 <div key={service.id} className={styles.serviceCard}>
                                                     <div className={styles.serviceInfo}>
                                                         <h4>{service.name}</h4>
-                                                        <p>{service.description}</p>
+                                                        {service.description && <p>{service.description}</p>}
                                                         <span className={styles.servicePrice}>${service.price}</span>
                                                     </div>
                                                 </div>
@@ -154,9 +178,7 @@ const DoctorProfileForLogged = () => {
                                     </div>
                                 </div>
                             )}
-
                             <div className={styles.divider} />
-                            
                             <SectionTitle title="Contact Details" />
                             <div className={styles.infoGrid}>
                                 <InfoRow label="Email" value={doctorData.email} />
@@ -178,16 +200,5 @@ const DoctorProfileForLogged = () => {
         </Background>
     );
 };
-
-const SectionTitle = ({ title }) => (
-    <h3 className={styles.sectionTitle} style={{margin: 0}}>{title}</h3>
-);
-
-const InfoRow = ({ label, value }) => (
-    <div className={styles.infoRow}>
-        <span className={styles.label}>{label}:</span>
-        <span className={styles.value}>{value || '-'}</span>
-    </div>
-);
 
 export default DoctorProfileForLogged;
