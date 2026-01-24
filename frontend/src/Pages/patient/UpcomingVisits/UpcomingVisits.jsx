@@ -24,14 +24,16 @@ const UpcomingVisits = () => {
                 const doctorsList = doctorsResponse.data?.data || [];
                 const doctorsMap = new Map(doctorsList.map(doc => [doc.id, doc]));
 
-                const enrichedVisits = rawVisits.map(visit => {
-                    const doctor = doctorsMap.get(visit.doctorId);
-                    return {
-                        ...visit,
-                        doctorName: doctor ? `${doctor.firstname} ${doctor.lastname}` : "Doctor",
-                        specialization: doctor ? doctor.specialization : "Specialist"
-                    };
-                });
+                const enrichedVisits = rawVisits
+                    .filter(visit => !['CANCELED', 'CANCELLED'].includes(visit.status?.toUpperCase()))
+                    .map(visit => {
+                        const doctor = doctorsMap.get(visit.doctorId);
+                        return {
+                            ...visit,
+                            doctorName: doctor ? `${doctor.firstname} ${doctor.lastname}` : "Doctor",
+                            specialization: doctor ? doctor.specialization : "Specialist"
+                        };
+                    });
 
                 setVisits(enrichedVisits);
             } catch (error) {
