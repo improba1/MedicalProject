@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import styles from './NewRaport.module.css';
 import Background from '../../../Components/Background/Background';
 import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
@@ -8,8 +8,25 @@ import BackBtn from '../../../Components/BackButton/BackButton';
 import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
 import AnimatedInput from '../../../Components/AnimatedInput/AnimatedInput';
 import { aiApi } from '../../../Api/doctor/aiApi';
+import { doctorsNameApi } from '../../../Api/doctor/doctorsNameApi';
 
 const NewRaport = (props) => {
+    const { id } = useParams();
+    const location = useLocation();
+    const { patientName: statePatientName } = location.state || {}; // Get patient name from state
+
+    // Identify patient name
+    const [patientName, setPatientName] = useState(statePatientName || props.name || "Unknown Patient");
+    const [doctorName, setDoctorName] = useState("Dr. Unknown");
+
+    const [formData, setFormData] = useState({
+        anamnesis: '',
+        symptoms: '',
+        diagnosis: '',
+        treatment: '',
+        additional: ''
+    });
+
     const [aiFormData, setAiFormData] = useState({
         symptoms: '',
         sex: '',
@@ -17,6 +34,48 @@ const NewRaport = (props) => {
     });
     const [aiResult, setAiResult] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const [hasLabTest, setHasLabTest] = useState(false);
+    const [hasReferral, setHasReferral] = useState(false);
+
+    // Load saved data & fetch doctor name & check referrals
+    useEffect(() => {
+        const fetchDoctor = async () => {
+            try {
+                const profile = await doctorsNameApi.getDoctorName();
+                if (profile && profile.firstname && profile.lastname) {
+                    setDoctorName(`Dr. ${profile.firstname} ${profile.lastname}`);
+                }
+            } catch (error) {
+                console.error("Failed to fetch doctor profile", error);
+            }
+        };
+        fetchDoctor();
+
+        if (id) {
+            const savedData = localStorage.getItem(`report_draft_${id}`);
+            if (savedData) {
+                setFormData(JSON.parse(savedData));
+            }
+            // Check flags
+            if (localStorage.getItem(`labTestCreated_${id}`)) {
+                setHasLabTest(true);
+            }
+            if (localStorage.getItem(`referralCreated_${id}`)) {
+                setHasReferral(true);
+            }
+        }
+    }, [id]);
+
+    // Save data on change
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        const updatedData = { ...formData, [name]: value };
+        setFormData(updatedData);
+        if (id) {
+            localStorage.setItem(`report_draft_${id}`, JSON.stringify(updatedData));
+        }
+    };
 
     const handleAiChange = (e, name) => {
         setAiFormData(prev => ({ ...prev, [name]: e.target.value }));
@@ -31,9 +90,7 @@ const NewRaport = (props) => {
         setLoading(true);
         try {
             const ageInt = parseInt(aiFormData.age, 10);
-
             const gender = aiFormData.sex.toLowerCase();
-
             const symptomsArray = aiFormData.symptoms.split(',').map(s => s.trim()).filter(s => s.length > 0);
 
             const payload = {
@@ -67,20 +124,59 @@ const NewRaport = (props) => {
             <BackBtn></BackBtn>
             <MyProfileBtn></MyProfileBtn>
 
-            <span className={styles.newraport}>New raport: <span className={styles.patientname}>{props.name}</span></span>
+            <span className={styles.newraport}>Edit raport: <span className={styles.patientname}>{patientName}</span></span>
             <div className={styles.placeholder}>
-                <input className={styles.anamnesis} type="text" placeholder="Anamnesis"></input>
-                <input className={styles.symptoms} type="text" placeholder="Symptoms"></input>
-                <input className={styles.diagnosis} type="text" placeholder="Diagnosis"></input>
-                <input className={styles.treatment} type="text" placeholder="Treatment"></input>
+                <input
+                    className={styles.anamnesis}
+                    type="text"
+                    placeholder="Anamnesis"
+                    name="anamnesis"
+                    value={formData.anamnesis}
+                    onChange={handleChange}
+                ></input>
+                <input
+                    className={styles.symptoms}
+                    type="text"
+                    placeholder="Symptoms"
+                    name="symptoms"
+                    value={formData.symptoms}
+                    onChange={handleChange}
+                ></input>
+                <input
+                    className={styles.diagnosis}
+                    type="text"
+                    placeholder="Diagnosis"
+                    name="diagnosis"
+                    value={formData.diagnosis}
+                    onChange={handleChange}
+                ></input>
+                <input
+                    className={styles.treatment}
+                    type="text"
+                    placeholder="Treatment"
+                    name="treatment"
+                    value={formData.treatment}
+                    onChange={handleChange}
+                ></input>
             </div>
-            <textarea className={styles.additional} type="text" placeholder="Additional notes"></textarea>
+            <textarea
+                className={styles.additional}
+                type="text"
+                placeholder="Additional notes"
+                name="additional"
+                value={formData.additional}
+                onChange={handleChange}
+            ></textarea>
 
-            <Link to="/lab-test">
-                <button className={styles.lab}>Lab test referral</button>
+            <Link to="/lab-test" state={{ reportId: id }}>
+                <button className={styles.lab}>
+                    {hasLabTest ? "Lab test Referral (Added)" : "Lab test referral"}
+                </button>
             </Link>
-            <Link to="/create-referral">
-                <button className={styles.create}>Create referral</button>
+            <Link to="/create-referral" state={{ reportId: id }}>
+                <button className={styles.create}>
+                    {hasReferral ? "Referral (Added)" : "Create referral"}
+                </button>
             </Link>
 
             <div className={styles.aiContainer}>
@@ -131,7 +227,16 @@ const NewRaport = (props) => {
                 </div>
             </div>
 
-            <Link to="/conclusion">
+            <Link
+                to="/conclusion"
+                state={{
+                    reportData: formData,
+                    patientName: patientName,
+                    doctorName: doctorName,
+                    hasLabTest: hasLabTest,
+                    hasReferral: hasReferral
+                }}
+            >
                 <button className={styles.next}>Next step</button>
             </Link>
         </Background>

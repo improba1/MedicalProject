@@ -1,0 +1,33 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+}
+
+.ticket {
+    padding: 40px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    min-width: 300px;
+}
+
+.row {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.label {
+    font-weight: 700;
+}
+
+.value {
+    font-weight: 400;
+}

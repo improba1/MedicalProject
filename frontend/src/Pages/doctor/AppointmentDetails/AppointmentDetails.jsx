@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Background from '../../../Components/Background/Background';
 import LogOutBtn from '../../../Components/LogOutButton/LogOutButton';
-import BackBtn from '../../../Components/BackButton/BackButton'; 
+import BackBtn from '../../../Components/BackButton/BackButton';
 import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
 import styles from './AppointmentDetails.module.css';
 import MyProfileBtn from '../../../Components/MyProfileButton/MyProfileButton';
-import { doctorVisitApi } from '../../../Api/doctor/visitApi'; 
+import { doctorVisitApi } from '../../../Api/doctor/visitApi';
 
 const AppointmentDetails = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { visit } = location.state || {}; 
+    const { visit } = location.state || {};
 
     const [visitData, setVisitData] = useState(null);
     const [patientName, setPatientName] = useState('Loading...');
@@ -54,7 +54,7 @@ const AppointmentDetails = () => {
         return (
             <Background>
                 <div className={styles.centerMessage}>
-                    No visit selected. <br/>
+                    No visit selected. <br />
                     <button onClick={() => navigate(-1)} className={styles.backLink}>Go Back</button>
                 </div>
             </Background>
@@ -84,30 +84,30 @@ const AppointmentDetails = () => {
 
             <div className={styles.container}>
                 <h1 className={styles.pageTitle}>Appointment Details</h1>
-                
+
                 <div className={styles.contentCard}>
-                    
+
                     <div className={styles.sectionHeader}>Basic Info</div>
                     <div className={styles.gridInfo}>
-                        <InfoBox 
-                            label="Date & Time" 
-                            value={formatDate(visitData.appointmentTime)} 
-                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>} 
+                        <InfoBox
+                            label="Date & Time"
+                            value={formatDate(visitData.appointmentTime)}
+                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>}
                         />
-                        <InfoBox 
-                            label="Patient Name" 
-                            value={patientName} 
-                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>} 
+                        <InfoBox
+                            label="Patient Name"
+                            value={patientName}
+                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>}
                         />
-                        <InfoBox 
-                            label="Status" 
-                            value={visitData.status || "SCHEDULED"} 
-                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>} 
+                        <InfoBox
+                            label="Status"
+                            value={visitData.status || "SCHEDULED"}
+                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>}
                         />
-                        <InfoBox 
-                            label="Total Price" 
-                            value={`$${visitData.totalPrice || 0}`} 
-                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>} 
+                        <InfoBox
+                            label="Total Price"
+                            value={`$${visitData.totalPrice || 0}`}
+                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>}
                         />
                     </div>
 
@@ -119,7 +119,7 @@ const AppointmentDetails = () => {
                             visitData.services.map((service, index) => (
                                 <div key={index} className={styles.serviceItem}>
                                     <span className={styles.serviceName}>{service.serviceName || "Medical Service"}</span>
-                                    <span className={styles.servicePrice}>${service.priceAtMomentOfPurchase || 0}</span> 
+                                    <span className={styles.servicePrice}>${service.priceAtMomentOfPurchase || 0}</span>
                                 </div>
                             ))
                         ) : (
@@ -137,9 +137,17 @@ const AppointmentDetails = () => {
                                 </div>
                                 <div>
                                     <h3>Report Created</h3>
-                                    <p>Report ID: <span className={styles.mono}>{visitData.raportId.slice(0,8)}...</span></p>
+                                    <p>Report ID: <span className={styles.mono}>{visitData.raportId.slice(0, 8)}...</span></p>
                                 </div>
-                                <button className={styles.viewReportBtn}>View</button> 
+                                {/* <Link
+                                    to="/conclusion"
+                                    state={{
+                                        raportId: visitData.raportId,
+                                        patientName: patientName
+                                    }}
+                                >
+                                    <button className={styles.viewReportBtn}>View</button>
+                                </Link> */}
                             </div>
                         ) : (
                             <div className={styles.reportWarning}>
@@ -155,8 +163,12 @@ const AppointmentDetails = () => {
                     </div>
 
                     <div className={styles.actions}>
-                        <Link 
-                            to={hasReport ? `/edit-raport/${visitData.raportId}` : `/create-raport/${visitData.id}`}
+                        <Link
+                            to={hasReport ? `/new-raport/${visitData.raportId}` : `/new-raport/${visitData.id}`}
+                            state={{
+                                visit: visitData,
+                                patientName: patientName // Pass patient name here
+                            }}
                             className={styles.actionLink}
                         >
                             <button className={styles.primaryBtn}>

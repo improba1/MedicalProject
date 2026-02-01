@@ -31,6 +31,8 @@ import PaymentSuccess from './Pages/patient/PaymentSuccess/PaymentSuccess'
 import CancelVisitSuccess from './Pages/patient/CancelVisitSuccess/CancelVisitSuccess'
 import PaymentPage from './Pages/patient/PaymentPage/PaymentPage'
 import UpcomingVisits from './Pages/patient/UpcomingVisits/UpcomingVisits'
+import LabTestTicket from './Pages/doctor/LabTestTicket/LabTestTicket'
+import RefferalTicket from './Pages/doctor/RefferalTicket/RefferalTicket'
 
 
 function App() {
@@ -46,7 +48,9 @@ function App() {
         <Route path="/signUpForm" element={<SignUpForm />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/doc-home-page" element={<DoctorHomePage name="Dr.House" />} />
-        <Route path="/new-raport" element={<NewRaport />} />
+
+        <Route path="/new-raport/:id" element={<NewRaport />} />
+
         <Route path="/manage-schedule" element={<ManageSchedule />} />
         <Route path="/my-patients" element={<MyPatients name="patient's name" />} />
         <Route path="/my-patients/:id" element={<PatientDetails />} />
@@ -55,7 +59,9 @@ function App() {
         <Route path="/lab-test" element={<LabTest />} />
         <Route path="/create-referral" element={<CreateReferral />} />
         <Route path="/appointment-details" element={<AppointmentDetails />} />
-        <Route path="/edit-raport" element={<EditRaport />} />
+
+        <Route path="/edit-raport/:id" element={<EditRaport />} />
+
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/doctor-profile-public" element={<DoctorProfilePublic />} />
         <Route path="admin/edit-doctor/:id" element={<EditDoctor />} />
@@ -73,6 +79,8 @@ function App() {
         <Route path="/cancel-visit-success" element={<CancelVisitSuccess />} />
         <Route path="/payment-page" element={<PaymentPage />} />
         <Route path="/upcoming-visits" element={<UpcomingVisits />} />
+        <Route path="/lab-test-ticket" element={<LabTestTicket />} />
+        <Route path="/refferal-ticket" element={<RefferalTicket />} />
 
 
 
