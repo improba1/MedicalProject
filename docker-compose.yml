@@ -9,7 +9,7 @@ services:
       - app-network
 
   assistant:
-    image: ghcr.io/bderdz/med_rag_assistant:latest
+    build: ./ai_assistant
     ports:
       - "8000:8000"
     depends_on:

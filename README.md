@@ -6,11 +6,16 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
+
 ## ❖ Overview
 
 This full-stack web application digitizes the clinic experience, creating a seamless bridge between patients, doctors, and administrators. It serves as a unified platform for scheduling appointments, managing medical records, and overseeing clinic staff.
 
 The system replaces manual booking with a real-time digital scheduler, ensuring that patients can access healthcare services instantly while doctors can focus on patient care rather than administrative tasks.
+
+Additionally, the system includes an AI-based medical diagnosis support module designed to assist doctors during patient visits.  
+The module uses Retrieval-Augmented Generation (RAG) to suggest possible diagnoses based on patient symptoms, age, and gender.
+*This component acts as a decision-support tool and does not replace medical professionals.*
 
 ## ⚡ Core Features
 
@@ -24,6 +29,7 @@ The system replaces manual booking with a real-time digital scheduler, ensuring 
 * **Workspace:** A dedicated dashboard to view daily schedules and upcoming visits.
 * **Slot Management:** Configure working hours and available time slots.
 * **Reporting:** Create, edit, and save medical conclusions and diagnoses.
+* **AI Diagnosis Support:** AI-based assistant providing diagnosis suggestions based on patient symptoms using medical knowledge retrieval and LLM reasoning.
 * **Profile Customization:** Update professional details and profile photos.
 
 ### For Administrators
@@ -35,14 +41,32 @@ The system replaces manual booking with a real-time digital scheduler, ensuring 
 
 The project relies on a modern, scalable architecture containerized via Docker.
 
-| Area | Technology |
-| :--- | :--- |
-| **Backend** | Java, Spring Boot 3, Spring Security (JWT), Hibernate |
-| **Frontend** | React.js, React Router v6, Axios, CSS Modules |
-| **Database** | PostgreSQL |
-| **DevOps** | Docker, Maven, npm |
+| Area             | Technology                                            |
+|:-----------------|:------------------------------------------------------|
+| **Backend**      | Java, Spring Boot 3, Spring Security (JWT), Hibernate |
+| **Frontend**     | React.js, React Router v6, Axios, CSS Modules         |
+| **AI Assistant** | Python, FastAPI, LangChain, Gemini API,ChromaDB       |
+| **Database**     | PostgreSQL                                            |
+| **DevOps**       | Docker, Maven, npm                                    |
 
-## ➤ Getting Started
+## 🐳 Running the Full System with Docker Compose
+
+The entire system (backend, frontend, database, and AI diagnosis assistant) can be started using Docker Compose.
+
+### Prerequisites
+- Docker
+- Docker Compose
+- .env file
+
+**You need to create a `.env` file with variables from `.env.example` file.**
+
+### Start the system
+Run this command in the project root directory:
+```bash
+docker-compose up --build
+```
+
+## ➤ Running Locally
 
 Follow these steps to set up the project locally.
 
