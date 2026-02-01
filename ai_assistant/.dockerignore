@@ -1,0 +1,12 @@
+.env
+.venv
+.env-*
+.env.*
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.idea/
+.logs/
+.chroma_db/
+.github
