@@ -164,7 +164,7 @@ const BookAppointment = () => {
                                             onClick={() => toggleService(service.id)}
                                         >
                                             <span className={styles.serviceName}>{service.name}</span>
-                                            <span className={styles.servicePrice}>{service.price} $</span>
+                                            <span className={styles.servicePrice}>{service.price} PLN</span>
                                         </div>
                                     );
                                 }) : <p className={styles.noSlots}>No services available.</p>}

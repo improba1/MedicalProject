@@ -106,9 +106,13 @@ const AppointmentDetails = () => {
                         />
                         <InfoBox
                             label="Total Price"
-                            value={`$${visitData.totalPrice || 0}`}
-                            icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>}
-                        />
+                            value={`PLN ${visitData.totalPrice || 0}`}
+                            icon={
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                </svg>
+                            } />
                     </div>
 
                     <div className={styles.divider} />
@@ -119,7 +123,7 @@ const AppointmentDetails = () => {
                             visitData.services.map((service, index) => (
                                 <div key={index} className={styles.serviceItem}>
                                     <span className={styles.serviceName}>{service.serviceName || "Medical Service"}</span>
-                                    <span className={styles.servicePrice}>${service.priceAtMomentOfPurchase || 0}</span>
+                                    <span className={styles.servicePrice}>PLN {service.priceAtMomentOfPurchase || 0}</span>
                                 </div>
                             ))
                         ) : (

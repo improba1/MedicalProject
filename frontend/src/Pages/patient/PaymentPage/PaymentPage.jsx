@@ -78,7 +78,7 @@ const PaymentPage = () => {
                                         <span className={styles.quantity}>Qty: {item.quantity}</span>
                                     </div>
                                     <span className={styles.price}>
-                                        ${(item.priceAtMomentOfPurchase * item.quantity).toFixed(2)}
+                                        PLN {(item.priceAtMomentOfPurchase * item.quantity).toFixed(2)}
                                     </span>
                                 </div>
                             ))}
@@ -89,7 +89,7 @@ const PaymentPage = () => {
                         <div className={styles.totalSection}>
                             <span>Total to Pay:</span>
                             <span className={styles.totalAmount}>
-                                ${cartData?.totalPrice?.toFixed(2)}
+                                PLN {cartData?.totalPrice?.toFixed(2)}
                             </span>
                         </div>
 

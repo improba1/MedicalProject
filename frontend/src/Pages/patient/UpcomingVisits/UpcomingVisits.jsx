@@ -102,7 +102,7 @@ const UpcomingVisits = () => {
                                         <span className={`${styles.status} ${styles[visit.status?.toLowerCase()] || styles.scheduled}`}>
                                             {visit.status || 'SCHEDULED'}
                                         </span>
-                                        <span className={styles.price}>${visit.totalPrice || 0}</span>
+                                        <span className={styles.price}>PLN {visit.totalPrice || 0}</span>
                                     </div>
 
                                     {/* Кнопка отмены как на предыдущих схемах */}
