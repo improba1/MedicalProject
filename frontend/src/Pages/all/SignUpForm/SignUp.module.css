@@ -1,131 +1,251 @@
-.pageContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    min-height: 100vh;   
-    width: 100%;
-    padding: 20px;      
-    box-sizing: border-box; 
-    overflow-x: hidden;  
-}
-
-.backBtn{
-    position: absolute;
-}
-
-.wrapper {
-    position: relative;
-    width: 850px; 
-    max-width: 100%;     
-    height: 690px; 
-    background-color: rgb(24, 24, 24);
-    border-radius: 40px;
-    padding: 40px 60px;
-    z-index: 10;
-    box-sizing: border-box;
-}
-.inputsContainer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 40px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-}
-
-.fullWidth {
-    grid-column: span 2;
-}
-
-.leftPart, .rightPart {
-    flex: 1;
-    width: 100%;
-}
-
-.wrapper .header h1{
-    text-align: center;
-    color: white;
-    margin-bottom: 1px;
-}
-
-.wrapper .inputBox{
-    position: relative;
-    width: 100%;
-    height: 50px;
-    margin: 20px 0;
-}
-
-.inputBox input,
-.inputBox select{
-    appearance: none;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    outline: none;
-    border: none;
-    border: 1px solid grey;
-    border-radius: 40px;
-    font-size: 16px;
-    box-sizing: border-box; 
-    padding: 0px 20px;
-    color: white;
-}
-
-.inputBox select option {
-    color: black;
-    background: white;
-}
-
-.inputBox input::placeholder{
-    color: rgb(95, 91, 91);
-}
-
-.header{
+/* Фоновая картинка на весь экран */
+.pageBackground {
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    position: relative;
+    background-image: url('/src/Assets/AdobeStock_480309969-scaled.jpeg'); /* Укажи свой путь */
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
 }
 
-.title{
-    margin: 0;
-}
-
-.wrapper .submitBtn{
+/* Стеклянная панель (Glassmorphism) */
+/* .glassPanel { 
+    background: rgba(255, 255, 255, 0.); 
+    backdrop-filter: blur(25px); 
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    padding: 40px;
     width: 100%;
-    max-width: 400px;
-    display: block;
-    margin: 30px auto 10px auto;
-    height: 45px;
-    background: #F5782D;
-    border: none;
-    outline: none;
-    border-radius: 45px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 700;
-    color: white;
+    max-width: 800px; 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+ }  */
+
+.header {
+    margin-bottom: 30px;
 }
 
-.wrapper .loginLink{
-    font-size: 14.5px;
+.title {
+    font-family: Arial;
+    font-weight: 100;
+    font-size: 45px;
+    color: #696969;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 0.9rem;
+    margin-left: 5px;
+    margin-top: 10px;
+}
+
+/* --- SLIDER LOGIC --- */
+/* Контейнер, скрывающий всё, что выходит за его пределы */
+.sliderWindow {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    padding: 10px 0; /* Чтобы тени инпутов не обрезались */
+}
+
+/* Лента, в которой лежат оба шага. Её ширина 200%, чтобы вместить два шага по 100% */
+.sliderTrack {
+    display: flex;
+    width: 200%;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Плавная анимация */
+}
+
+/* Сдвиг ленты на 50% влево (что покажет Шаг 2) */
+.step2Active {
+    transform: translateX(-50%);
+}
+
+/* Контейнер отдельного шага */
+.stepPane {
+    width: 50%; /* 50% от 200% ширины трека = 100% ширины окна */
+    flex-shrink: 0;
+    padding: 0 10px; /* Отступы по краям */
+}
+/* -------------------- */
+
+/* Сетка для первого шага (2 колонки) */
+.inputsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+/* Колонка для второго шага (1 колонка) */
+.inputsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 345px;
+    margin-bottom: 25px;
+}
+
+.customSelectContainer {
+    position: relative;
+    width: 100%;
+    user-select: none; /* Чтобы текст не выделялся при двойном клике */
+    cursor: pointer;
+}
+
+/* Стили самого поля (копируют стили твоих input) */
+.customSelectInput {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between; /* Раскидывает текст и стрелку по краям */
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+/* Эффект при клике (когда меню открыто) */
+.customSelectInput.active {
+    border-color: #a0d8ef;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(160, 216, 239, 0.5);
+}
+
+.arrow {
+    width: 20px; /* Ширина иконки */
+    height: 20px; /* Высота иконки */
+    
+    /* Твой SVG из прошлого шага */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    
+    /* Плавная анимация переворота */
+    transition: transform 0.3s ease; 
+}
+
+/* Класс, который добавляется при открытом меню */
+.arrowOpen {
+    transform: rotate(180deg); /* Переворачиваем галочку вверх ногами */
+}
+
+/* Стили выпадающего меню (Glassmorphism) */
+.customOptionsContainer {
+    position: absolute;
+    top: 100%; /* Прикрепляем ровно под инпутом */
+    left: 0;
+    width: 100%;
+    margin-top: 8px; /* Небольшой отступ вниз */
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    overflow: hidden; /* Чтобы углы у option не вылезали за радиус */
+    z-index: 10; /* Чтобы меню было поверх других элементов */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили отдельных элементов списка */
+.customOption {
+    padding: 12px 20px;
+    color: #333;
+    transition: background 0.2s ease;
+}
+
+.customOption:hover {
+    background: rgba(255, 255, 255, 0.9); /* Высветляем при наведении */
+}
+
+/* Стилизация самих инпутов */
+input{
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 25px; /* Закругленные края как на дизайне */
+    border: 2px solid rgba(212, 248, 255, 0.8);
+    background: rgba(255, 255, 255, 0.7);
+    outline: none;
+    font-size: 1rem;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+input:focus{
+    border-color: #a0d8ef; /* Голубая обводка при фокусе */
+    background: #fff;
+    box-shadow: 0 0 10px rgba(160, 216, 239, 0.5);
+}
+
+/* Кнопки и навигация */
+.actionsBox {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.actionsBoxReverse {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.primaryBtn {
+    background: #AFEEFE;
+    color: #555555;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s;
+    min-width: 150px;
+}
+
+.primaryBtn:hover {
+    background: #8af1ff;
+}
+
+.arrowBtn {
+    margin-bottom: 5px;
+    background: none;
+    border: none;
+    font-size: 3rem;
+    color: #AFEEFE;
+    cursor: pointer;
+    line-height: 1;
+    transition: transform 0.2s;
+}
+
+.arrowBtn:hover {
+    transform: scale(1.3);
+}
+
+.errorText {
+    color: #ff4d4f;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.loginLink {
     text-align: center;
     margin-top: 20px;
+    font-size: 0.9rem;
+    color: #555555;
 }
 
-.loginLink p{
-    color: white;
+.switchLink {
+    color: #5ad0ff;
+    font-weight: bold;
+    cursor: pointer;
     text-decoration: none;
-    font-weight: 600;
+    margin-left: 5px;
 }
 
-.link{
-    color: #F5782D;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.link:hover{
+.switchLink:hover {
     text-decoration: underline;
 }

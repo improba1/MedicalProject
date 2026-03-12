@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './LoginForm.module.css';
-import { FaUser } from "react-icons/fa";
-import { RiLockPasswordFill } from "react-icons/ri";
-import { Link } from 'react-router-dom';
-import AnimatedPage from '../../../Components/AnimatedPage/AnimatedPage';
-import BackButton from '../../../Components/SecondBackButton/SecondBackButton';
-import { useNavigate } from 'react-router-dom';
 import { authApi } from '../../../Api/all/authApi';
 import { profileApi } from '../../../Api/all/profileApi';
 
-
-const LoginForm = () => {
-
+const LoginForm = ({ onSwitch }) => {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -23,7 +15,6 @@ const LoginForm = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         setError(''); 
-
         try {
             const data = await authApi.login(login, password);
             localStorage.setItem('access_token', data.access_token);
@@ -31,86 +22,72 @@ const LoginForm = () => {
             localStorage.setItem('role', data.role);
             localStorage.setItem('userId', data.id);
 
-
             let profileData;
-
             const origin = location.state?.from;
             const savedDoctorData = location.state?.doctorData;
-            let role = data.role;
-
-            console.log("DEBUG LOGIN:", { origin, hasDoctorData: !!savedDoctorData,  role});
-
+            
             if (origin && savedDoctorData && data.role === 'PATIENT') {
-                console.log("redirecting to doc page");
                 navigate(origin, { state: { doctorData: savedDoctorData } });
             } else {
                 if (data.role === 'DOCTOR') {
-                const profileRes = await profileApi.getDoctorProfile();
-                profileData = profileRes.data;
-                localStorage.setItem('userName', profileData.firstname);
-                navigate('/doc-home-page')
-            } else if (data.role === 'PATIENT') {
-                const profileRes = await profileApi.getPatientProfile();
-                profileData = profileRes.data;
-                localStorage.setItem('userName', profileData.firstname);
-                navigate('/patient');
-            } else if (data.role === 'ADMIN') {
-                const profileRes = await profileApi.getAdminProfile();
-                profileData = profileRes.data;
-                localStorage.setItem('userName', profileData.firstname);
-                navigate('/admin');
-            } 
+                    const profileRes = await profileApi.getDoctorProfile();
+                    profileData = profileRes.data;
+                    localStorage.setItem('userName', profileData.firstname);
+                    navigate('/doc-home-page')
+                } else if (data.role === 'PATIENT') {
+                    const profileRes = await profileApi.getPatientProfile();
+                    profileData = profileRes.data;
+                    localStorage.setItem('userName', profileData.firstname);
+                    navigate('/patient');
+                } else if (data.role === 'ADMIN') {
+                    const profileRes = await profileApi.getAdminProfile();
+                    profileData = profileRes.data;
+                    localStorage.setItem('userName', profileData.firstname);
+                    navigate('/admin');
+                } 
             }
-            
-
         } catch (err) {
             console.error("Login error:", err);
             setError('Wrong password or login');
         }
-    }
+    };
 
     return(
-            <AnimatedPage>
-                <div className={styles.pageContainer}>
-                    <div className={styles.wrapper}>
+        <div className={styles.glassPanel}> 
+            <form onSubmit={handleLogin}> 
+                
+                <div className={styles.header}>
+                    {/* Убрали BackButton отсюда */}
+                    <h1 className={styles.title}>Welcome back</h1>
+                    <p className={styles.subtitle}>Your journey to better health starts here.</p>
+                </div>
 
-
-                        <form action="" onSubmit={handleLogin}> 
-
-
-                                <div className={styles.header}>
-                                    <BackButton className={styles.backBtn} />
-                                    <h1 className={styles.title}>Log In</h1>
-                                </div>
-                                    <div className={styles.inputBox}>
-
-                                        <input required type="text" placeholder="Enter your login" value={login} onChange={(e) => setLogin(e.target.value)}></input>
-                                        <FaUser className={styles.icon}/>
-                                    </div>
-                                    <div className={styles.inputBox}>
-                                        <input required type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
-                                        <RiLockPasswordFill className={styles.icon}/>
-                                    </div>
-                                {error && <div style={{color: 'red', marginTop: '10px', textAlign: 'center'}}>{error}</div>}
-                                <button type="submit" className={styles.submitBtn}>Log In</button>
-
-                                <div className={styles.registerLink}>
-                                    <p>Don't have an account? 
-                                        <Link 
-                                            className={styles.transLink} 
-                                            to="/signUpForm" 
-                                            state={location.state} 
-                                        >
-                                            Sign Up
-                                        </Link>
-                                    </p>
-                                </div>
-                        </form>
+                <div className={styles.inputsColumn}>
+                    <div className={styles.inputBox}>
+                        <input required type="text" placeholder="Enter your login" value={login} onChange={(e) => setLogin(e.target.value)} />
+                        
+                    </div>
+                    
+                    <div className={styles.inputBox}>
+                        <input required type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        
                     </div>
                 </div>
-            </AnimatedPage>
+
+                {error && <div className={styles.errorText}>{error}</div>}
+                
+                <button type="submit" className={styles.submitBtn}>Log In</button>
+
+                <div className={styles.switchLinkContainer}>
+                    <p>Don't have an account? 
+                        <span className={styles.switchLink} onClick={onSwitch}>
+                            Sign Up
+                        </span>
+                    </p>
+                </div>
+            </form>
+        </div>
     )
 }
 
-export default LoginForm
-
+export default LoginForm;

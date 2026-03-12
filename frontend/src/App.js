@@ -33,6 +33,7 @@ import PaymentPage from './Pages/patient/PaymentPage/PaymentPage'
 import UpcomingVisits from './Pages/patient/UpcomingVisits/UpcomingVisits'
 import LabTestTicket from './Pages/doctor/LabTestTicket/LabTestTicket'
 import RefferalTicket from './Pages/doctor/RefferalTicket/RefferalTicket'
+import AuthContainer from './Pages/all/AuthContainer/AuthContainer';
 
 
 function App() {
@@ -44,8 +45,8 @@ function App() {
 
         <Route path="/" element={<Start />} />
         <Route path="/welcome" element={<WelcomeScreen />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/signUpForm" element={<SignUpForm />} />
+        <Route path="/login" element={<AuthContainer />} />
+        <Route path="/signUpForm" element={<AuthContainer />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/doc-home-page" element={<DoctorHomePage name="Dr.House" />} />
 
