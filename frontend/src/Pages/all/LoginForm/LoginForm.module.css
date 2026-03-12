@@ -1,111 +1,108 @@
-.pageContainer{
+/* --- СТИЛИ ФОРМЫ ВХОДА --- */
+
+/* .glassPanel {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    will-change: transform, backdrop-filter;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+} */
+
+.header {
+    margin-bottom: 30px;
+}
+
+/* Заголовок точь-в-точь как в регистрации */
+.title {
+    font-family: Arial;
+    font-weight: 100;
+    font-size: 45px;
+    color: #696969;
+    margin-bottom: 5px;
+    margin-top: 0;
+}
+
+/* Подзаголовок точь-в-точь как в регистрации */
+.subtitle {
+    color: #666;
+    font-size: 0.9rem;
+    margin-left: 5px;
+    margin-top: 10px;
+}
+
+.inputsColumn {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    width: 100%;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 345px;
+    margin: 0 auto 25px 5px;
 }
 
-.backBtn{
-    position:absolute;
-    top: 30px;
-    left: 30px;
-    width: 30px;
-    height: 40px;
-}
-
-.wrapper{
-    position: relative;
-    width: 420px;
-    height: 450px;
-    background-color: rgb(24, 24, 24);
-    border-radius: 40px;
-    padding: 30px 40px;
-    z-index: 10;
-}
-
-.wrapper .header h1{
-    text-align: center;
-    color: white;
-}
-
-.wrapper .inputBox{
+.inputBox {
     position: relative;
     width: 100%;
-    height: 50px;
-    margin: 40px 0;
 }
 
-.inputBox input{
+.inputBox input {
     width: 100%;
-    height: 100%;
-    background: transparent;
+    padding: 12px 20px; /* Отступ слева под иконку */
+    border-radius: 25px;
+    border: 2px solid rgba(212, 248, 255, 0.8);
+    background: rgba(255, 255, 255, 0.7);
     outline: none;
+    font-size: 1rem;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.inputBox input:focus {
+    border-color: #a0d8ef;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(160, 216, 239, 0.5);
+}
+
+.submitBtn {
+    background: #AFEEFE;
+    color: #555555;
     border: none;
-    border: 1px solid grey;
-    border-radius: 40px;
-    font-size: 16px;
-    padding: 20px 45px 20px 20px;
-    color: white;
-}
-
-.inputBox input::placeholder{
-    color: rgb(95, 91, 91);
-}
-
-.header{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.title{
-    margin: 0;
-}
-
-.inputBox .icon{
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-    color: rgb(95, 91, 91);
-}
-
-.wrapper .submitBtn{
-    width: 100%;
-    height: 45px;
-    margin-top: 30px;
-    background: #F5782D;
-    border: none;
-    outline: none;
-    border-radius: 45px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    padding: 12px 30px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 700;
-    color: white;
+    transition: background 0.3s;
+    min-width: 150px;
+    display: block;
 }
 
-.wrapper .registerLink{
-    font-size: 14.5px;
+.submitBtn:hover {
+    background: #8af1ff;
+}
+
+.errorText {
+    color: #ff4d4f;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.switchLinkContainer {
     text-align: center;
     margin-top: 20px;
+    font-size: 0.9rem;
+    color: #555555;
 }
 
-.registerLink p{
-    color: white;
+.switchLink {
+    color: #5ad0ff;
+    font-weight: bold;
+    cursor: pointer;
     text-decoration: none;
-    font-weight: 600;
+    margin-left: 5px;
 }
 
-.transLink{
-    color: #F5782D;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.transLink:hover{
+.switchLink:hover {
     text-decoration: underline;
 }
