@@ -12,9 +12,7 @@ const Healthcare = () => {
         link = '/admin';
     }
     return (
-        <Link to={link}>
-            <span className={styles.healthcare}>Healthcare</span>
-        </Link>
+            <span className={styles.healthcare}>Health<span className={styles.care}>Care</span></span>
     );
 };
 

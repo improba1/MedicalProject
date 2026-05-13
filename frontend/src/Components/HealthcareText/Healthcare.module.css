@@ -1,8 +1,9 @@
 .healthcare{
-    position: fixed;
-    top: 6%;
-    left: 10%;
-    color: white;
+    color: rgb(68, 68, 68);
     font-size: 24px;
     font-weight: 600;
+}
+
+.care{
+    color: #96eaff;
 }

@@ -1,9 +1,9 @@
 import React from 'react'; 
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import styles from '../MyProfile/MyProfile.module.css'; 
-import Background from '../../../Components/Background/Background';
+import styles from './DoctorProfilePublic.module.css'; // Подключаем НОВЫЙ файл стилей
 import BackBtn from '../../../Components/BackButton/BackButton';
 import HealthcareTxt from '../../../Components/HealthcareText/Healthcare';
+import { FaStar, FaLock } from 'react-icons/fa'; // Добавляем иконки
 
 const DoctorProfilePublic = () => {
     const location = useLocation();
@@ -14,36 +14,37 @@ const DoctorProfilePublic = () => {
     };
 
     const handleBookClick = (e) => {
-    e.stopPropagation();
-    if (!checkIsLoggedIn()) {
-        navigate('/signUpForm', { 
-            state: { 
-                from: '/doctor-profile-logged', 
-                doctorData: doctorData   
-            } 
-        });
-    } else {
-        navigate('/doctor-profile-logged', { state: { doctorData: doctorData } });
-    }
-};
+        e.stopPropagation();
+        if (!checkIsLoggedIn()) {
+            navigate('/signUpForm', { 
+                state: { 
+                    from: '/doctor-profile-logged', 
+                    doctorData: doctorData   
+                } 
+            });
+        } else {
+            navigate('/doctor-profile-logged', { state: { doctorData: doctorData } });
+        }
+    };
 
     const doctorData = location.state?.doctorData;
 
     if (!doctorData) {
         return (
-            <Background>
-                <div style={{color:'white', textAlign:'center', marginTop:'20%'}}>
-                    Doctor not found. <br/>
-                    <button onClick={() => navigate(-1)} style={{marginTop:20, cursor:'pointer'}}>Go Back</button>
+            <div className={styles.pageContainer}>
+                <div className={styles.notFoundMessage}>
+                    <h2>Doctor not found.</h2>
+                    <button onClick={() => navigate(-1)} className={styles.goBackBtn}>Go Back</button>
                 </div>
-            </Background>
+            </div>
         );
     }
 
     const imageUrl = doctorData.image?.downloadUrl;
 
     return (
-        <Background>
+        <div className={styles.pageContainer}>
+            {/* Светлая навигация */}
             <div className={styles.topNav}>
                 <div className={styles.navLeft}>
                     <BackBtn />
@@ -55,6 +56,7 @@ const DoctorProfilePublic = () => {
                 <h1 className={styles.pageTitle}>Specialist Profile</h1>
                 
                 <div className={styles.contentCard}>
+                    {/* ЛЕВАЯ КОЛОНКА: Фото и базовая инфа */}
                     <div className={styles.visualColumn}>
                         <div className={styles.photoContainer}>
                             {imageUrl ? (
@@ -62,10 +64,12 @@ const DoctorProfilePublic = () => {
                                     src={imageUrl} 
                                     alt="Profile" 
                                     className={styles.profileImage}
-                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200?text=No+Photo'; }}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/300x400?text=No+Photo'; }}
                                 />
                             ) : (
-                                <div className={styles.placeholderImage}>No Photo</div>
+                                <div className={styles.placeholderImage}>
+                                    {doctorData.firstname[0]}{doctorData.lastname[0]}
+                                </div>
                             )}
                         </div>
                         
@@ -73,10 +77,12 @@ const DoctorProfilePublic = () => {
                         <span className={styles.userRole}>{doctorData.specialization || 'Doctor'}</span>
                         
                         <div className={styles.ratingBadge}>
-                            <span>⭐ {doctorData.rating || 0}</span>
+                            <FaStar className={styles.starIcon} /> 
+                            <span>{doctorData.rating || '5.0'}</span>
                         </div>
                     </div>
 
+                    {/* ПРАВАЯ КОЛОНКА: Детали */}
                     <div className={styles.detailsColumn}>
                         <div className={styles.detailsScrollArea}>
                             <SectionTitle title="Professional Information" />
@@ -91,7 +97,7 @@ const DoctorProfilePublic = () => {
                             
                             <SectionTitle title="Medical Services" />
                             <div className={styles.loginGate}>
-                                <div className={styles.loginGateIcon}>🔒</div>
+                                <FaLock className={styles.loginGateIcon} />
                                 <h4>Full Service List Hidden</h4>
                                 <p>Please log in or register to view the complete list of medical services and prices.</p>
                                 <Link to="/login" className={styles.loginGateBtn}>
@@ -110,7 +116,7 @@ const DoctorProfilePublic = () => {
                         
                         <div className={styles.actionArea}>
                             <button 
-                                className={styles.editButton} 
+                                className={styles.bookButton} 
                                 onClick={handleBookClick}
                             >
                                 Book Appointment
@@ -119,7 +125,7 @@ const DoctorProfilePublic = () => {
                     </div>
                 </div>
             </div>
-        </Background>
+        </div>
     );
 };
 

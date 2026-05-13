@@ -1,18 +1,13 @@
 .button {
-    position: fixed;
-    left: 5%;
-    top: 6%;
     background: transparent;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0;
     transition: transform 0.2s ease, opacity 0.2s ease;
-    color: white; 
-    width: 44px;
-    height: 44px;
+    color: rgb(88, 88, 88); 
+    width: 30px;
+    height: 30px;
 }
 
 .button:hover {
