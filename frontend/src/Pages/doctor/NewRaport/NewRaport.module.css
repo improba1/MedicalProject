@@ -111,6 +111,14 @@
     color: white;
 }
 
+.anamnesis:focus,
+.symptoms:focus,
+.diagnosis:focus,
+.treatment:focus{
+    border-color: #F5782D;
+    background-color: #2b2b2b;
+}
+
 .placeholder {
     position: fixed;
     left: 8%;
@@ -181,6 +189,7 @@
 
 .aiInputFull:focus {
     border-color: #F5782D;
+    background-color: #2b2b2b;
 }
 
 .aiRow {
@@ -219,6 +228,7 @@
 .aiSelectInput:focus,
 .aiInputSmall:focus {
     border-color: #F5782D;
+    background-color: #2b2b2b;
 }
 
 .aiSelectInput option {

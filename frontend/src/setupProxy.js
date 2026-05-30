@@ -6,8 +6,11 @@ module.exports = function (app) {
     app.use(
         '/assistant',
         createProxyMiddleware({
-            target: 'http://assistant:8000', // Docker DNS
-            changeOrigin: true
+            target: 'http://localhost:8000', // Docker DNS //changed from http://assistant:8000
+            changeOrigin: true,
+            pathRewrite:{
+                '^/assistant' : '',
+            }
         })
     );
 
